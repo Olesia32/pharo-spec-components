@@ -21,6 +21,8 @@ TestPresenter >> initialize [
 	mainPresenter := LabelPresenter new.
 	mainPresenter
 		text: 'Hello from Spec 2!';
+		italic;
 		fontSize: 24;
+		color: '#4f7942';
 		bold
 ]

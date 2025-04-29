@@ -2,9 +2,7 @@ Class {
 	#name : 'LabelPresenter',
 	#superclass : 'BasePresenter',
 	#instVars : [
-		'label',
-		'styleProperties',
-		'styleApplied'
+		'label'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -30,6 +28,11 @@ LabelPresenter >> defaultLayout [
 		  yourself
 ]
 
+{ #category : 'font description' }
+LabelPresenter >> fontFamily: aFontFamily [
+self setGeneratedStyleProperty: #name value: aFontFamily 
+]
+
 { #category : 'accessing' }
 LabelPresenter >> fontSize: aNumber [
 
@@ -38,19 +41,16 @@ LabelPresenter >> fontSize: aNumber [
 
 { #category : 'as yet unclassified' }
 LabelPresenter >> generateAndApplyStyle [
-
-	| styleName |
-	styleName := StyleManager
-		             installGeneratedStyleFrom: self styleProperties
-		             in: self application.
+ 
+   |styleName|
+   styleName := super generateAndApplyStyle.
 	label addStyle: styleName
 ]
 
 { #category : 'initialization' }
 LabelPresenter >> initialize [
 
-	super initialize.
-	styleProperties := Dictionary new.
+	super initialize
 ]
 
 { #category : 'initialization' }
@@ -63,19 +63,6 @@ LabelPresenter >> initializePresenters [
 { #category : 'accessing' }
 LabelPresenter >> italic [
 self setGeneratedStyleProperty: #italic value: true
-]
-
-{ #category : 'initialization' }
-LabelPresenter >> setGeneratedStyleProperty: key value: val [
-    self styleProperties at: key put: val.
-
-]
-
-{ #category : 'accessing' }
-LabelPresenter >> styleProperties [
-    "Гарантовано повертає словник (навіть якщо ще не створений)"
-    styleProperties ifNil: [ styleProperties := Dictionary new ].
-    ^ styleProperties
 ]
 
 { #category : 'accessing' }

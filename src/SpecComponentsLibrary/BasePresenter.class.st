@@ -1,16 +1,12 @@
 Class {
 	#name : 'BasePresenter',
 	#superclass : 'SpPresenter',
+	#instVars : [
+		'styleProperties'
+	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
-
-{ #category : 'api' }
-BasePresenter >> addStyle: aStyleName [
-    "Додає стиль до демонстратора"
-    self mainPresenter ifNotNil: [ :presenter |
-        presenter addStyle: aStyleName]
-]
 
 { #category : 'as yet unclassified' }
 BasePresenter >> connectPresenters [
@@ -24,6 +20,15 @@ BasePresenter >> defaultLayout [
 ]
 
 { #category : 'as yet unclassified' }
+BasePresenter >> generateAndApplyStyle [
+
+	| styleName |
+	^ styleName := StyleManager
+		             installGeneratedStyleFrom: self styleProperties
+		             in: self application
+]
+
+{ #category : 'as yet unclassified' }
 BasePresenter >> initializePresenters [
     "Стандартне місце для створення вкладених демонстраторів"
 ]
@@ -33,4 +38,18 @@ BasePresenter >> mainPresenter [
     "Повертає головний внутрішній демонстратор, якщо є.
     За замовчуванням повертаємо self. Класи-нащадки можуть перевизначити."
     ^ self
+]
+
+{ #category : 'initialization' }
+BasePresenter >> setGeneratedStyleProperty: key value: val [
+
+	self styleProperties at: key put: val
+]
+
+{ #category : 'accessing' }
+BasePresenter >> styleProperties [
+	"Гарантовано повертає словник (навіть якщо ще не створений)"
+
+	styleProperties ifNil: [ styleProperties := Dictionary new ].
+	^ styleProperties
 ]

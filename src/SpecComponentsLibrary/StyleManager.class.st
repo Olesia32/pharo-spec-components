@@ -22,7 +22,6 @@ StyleManager class >> installGeneratedStyleFrom: dict in: app [
 	parsed := SpStyleVariableSTONReader fromString: '
 .application [ .' , styleName , ' [ ' , stonString , ' ] ]'.
 	self generatedStyles add: parsed.
-
 	sheet := self generatedStyles first.
 	self generatedStyles allButFirst do: [ :each |
 		sheet := sheet mergeWith: each ].
@@ -48,12 +47,20 @@ StyleManager class >> stonFromProperties: dict [
 		(k = #borderColor or: [ k = #borderWidth ]) ifTrue: [
 			container add: k -> v ].
 
-		(k = #fontSize or: [ k = #bold ]) ifTrue: [
+		(k = #fontSize or: [
+			 k = #bold or: [ k = #italic or: [ k = #name ] ] ]) ifTrue: [
 			| targetKey |
 			targetKey := k = #fontSize
 				             ifTrue: [ #size ]
-				             ifFalse: [ #bold ].
+				             ifFalse: [
+					             k = #bold
+						             ifTrue: [ #bold ]
+						             ifFalse: [
+							             k = #italic
+								             ifTrue: [ #italic ]
+								             ifFalse: [ #name ] ] ].
 			font add: targetKey -> v ].
+	
 
 		(k = #color or: [ k = #backgroundColor ]) ifTrue: [
 			draw add: k -> v ] ].
@@ -73,12 +80,22 @@ StyleManager class >> stonFromProperties: dict [
 
 { #category : 'as yet unclassified' }
 StyleManager class >> stonMap: assocCollection [
-    | strings stream |
-    strings := assocCollection collect: [:each | each key storeString , ': ', each value storeString ].
-    stream := String streamContents: [ :s |
-        strings doWithIndex: [ :str :i |
-            s nextPutAll: str.
-            i < strings size ifTrue: [ s nextPutAll: ', ' ] ] ].
-    ^ stream
+	| strings |
+	strings := assocCollection collect: [ :each |
+		| keyStr valStr |
+		keyStr := each key storeString.
+		valStr := each value storeString.
+		
+		"Якщо value — символ у лапках (наприклад: '#''red'''), то прибираємо зовнішні лапки"
+		(valStr beginsWith: '''') & (valStr endsWith: '''') ifTrue: [
+			valStr := valStr copyFrom: 2 to: valStr size - 1 ].
+
+		keyStr , ': ' , valStr
+	].
+
+	^ String streamContents: [ :s |
+		strings doWithIndex: [ :str :i |
+			s nextPutAll: str.
+			i < strings size ifTrue: [ s nextPutAll: ', ' ] ] ]
 
 ]
