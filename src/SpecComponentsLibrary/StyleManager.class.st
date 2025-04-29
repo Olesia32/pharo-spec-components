@@ -1,9 +1,6 @@
 Class {
 	#name : 'StyleManager',
 	#superclass : 'Object',
-	#classInstVars : [
-		'Default'
-	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
@@ -36,46 +33,53 @@ StyleManager class >> resetGeneratedStyles [
 ]
 
 { #category : 'as yet unclassified' }
-StyleManager class >> stonFromProperties: dict [
+StyleManager class >> stonFromProperties: dict [ 
 
-	| container font draw sections |
-	container := OrderedCollection new.
-	font := OrderedCollection new.
-	draw := OrderedCollection new.
-	sections := OrderedCollection new.
-	dict keysAndValuesDo: [ :k :v |
-		(k = #borderColor or: [ k = #borderWidth ]) ifTrue: [
-			container add: k -> v ].
+    | container font draw geometry text sections |
+    container := OrderedCollection new.
+    font := OrderedCollection new.
+    draw := OrderedCollection new.
+    geometry := OrderedCollection new.
+    text := OrderedCollection new.
+    sections := OrderedCollection new.
 
-		(k = #fontSize or: [
-			 k = #bold or: [ k = #italic or: [ k = #name ] ] ]) ifTrue: [
-			| targetKey |
-			targetKey := k = #fontSize
-				             ifTrue: [ #size ]
-				             ifFalse: [
-					             k = #bold
-						             ifTrue: [ #bold ]
-						             ifFalse: [
-							             k = #italic
-								             ifTrue: [ #italic ]
-								             ifFalse: [ #name ] ] ].
-			font add: targetKey -> v ].
-	
+    dict keysAndValuesDo: [ :k :v |
+        (k = #borderColor or: [ k = #borderWidth or: [ k = #padding ] ]) ifTrue: [
+            container add: k -> v ].
 
-		(k = #color or: [ k = #backgroundColor ]) ifTrue: [
-			draw add: k -> v ] ].
+        (k = #fontSize or: [ k = #bold or: [ k = #italic or: [ k = #name ] ] ]) ifTrue: [
+            | targetKey |
+            targetKey := k = #fontSize
+                         ifTrue: [ #size ]
+                         ifFalse: [ k ].
+            font add: targetKey -> v ].
 
-	container isEmpty ifFalse: [
-		sections add: 'Container { ' , (self stonMap: container) , ' }' ].
-	font isEmpty ifFalse: [
-		sections add: 'Font { ' , (self stonMap: font) , ' }' ].
-	draw isEmpty ifFalse: [
-		sections add: 'Draw { ' , (self stonMap: draw) , ' }' ].
+        (k = #color or: [ k = #backgroundColor ]) ifTrue: [
+            draw add: k -> v ].
 
-	^ String streamContents: [ :stream |
-		  sections doWithIndex: [ :part :i |
-			  stream nextPutAll: part.
-			  i < sections size ifTrue: [ stream nextPutAll: ', ' ] ] ]
+        ( #(height width minHeight maxHeight hResizing vResizing) includes: k ) ifTrue: [
+            geometry add: k -> v ].
+
+        ( #(alignment textColor readOnly textWrapping) includes: k ) ifTrue: [
+            text add: k -> v ].
+    ].
+
+    container isEmpty ifFalse: [
+        sections add: 'Container { ' , (self stonMap: container) , ' }' ].
+    font isEmpty ifFalse: [
+        sections add: 'Font { ' , (self stonMap: font) , ' }' ].
+    draw isEmpty ifFalse: [
+        sections add: 'Draw { ' , (self stonMap: draw) , ' }' ].
+    geometry isEmpty ifFalse: [
+        sections add: 'Geometry { ' , (self stonMap: geometry) , ' }' ].
+    text isEmpty ifFalse: [
+        sections add: 'Text { ' , (self stonMap: text) , ' }' ].
+
+    ^ String streamContents: [ :stream |
+        sections doWithIndex: [ :part :i |
+            stream nextPutAll: part.
+            i < sections size ifTrue: [ stream nextPutAll: ', ' ] ] ]
+
 ]
 
 { #category : 'as yet unclassified' }
