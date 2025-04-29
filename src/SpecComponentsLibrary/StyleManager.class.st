@@ -9,51 +9,66 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-StyleManager class >> installGeneratedStyleFrom: dict in: app [
-    | stonString styleName parsed |
-    styleName := 'generatedStyle_', UUID new asString first: 6.
-    stonString := self stonFromProperties: dict.
-    parsed := SpStyleVariableSTONReader fromString: '
-.application [ .' , styleName , ' [ ', stonString, ' ] ]'.
-    app styleSheet mergeWith: parsed.
-    ^ styleName
+StyleManager class >> generatedStyles [
+    ^ Smalltalk at: #StyleManager_GeneratedStyles ifAbsentPut: [ OrderedCollection new ]
 ]
 
 { #category : 'as yet unclassified' }
-StyleManager class >> parsedDefaultStyleSheet [
-    ^ SpStyleVariableSTONReader fromString: self stonStyles
+StyleManager class >> installGeneratedStyleFrom: dict in: app [
+
+	| stonString styleName parsed sheet |
+	styleName := 'generatedStyle_' , UUID new asString first: 6.
+	stonString := self stonFromProperties: dict.
+	parsed := SpStyleVariableSTONReader fromString: '
+.application [ .' , styleName , ' [ ' , stonString , ' ] ]'.
+	self generatedStyles add: parsed.
+
+	sheet := self generatedStyles first.
+	self generatedStyles allButFirst do: [ :each |
+		sheet := sheet mergeWith: each ].
+
+	sheet styles do: [ :style | app styleSheet addStyle: style ].
+	^ styleName
+]
+
+{ #category : 'initialization' }
+StyleManager class >> resetGeneratedStyles [
+    Smalltalk at: #StyleManager_GeneratedStyles put: OrderedCollection new
 ]
 
 { #category : 'as yet unclassified' }
 StyleManager class >> stonFromProperties: dict [
-    | container font draw |
-    container := OrderedCollection new.
-    font := OrderedCollection new.
-    draw := OrderedCollection new.
 
-    dict keysAndValuesDo: [ :k :v |
-        (k = #borderColor or: [k = #borderWidth]) ifTrue: [
-            container add: k -> v.
-        ].
-        (k = #fontSize or: [k = #bold]) ifTrue: [
-            font add: k -> v.
-        ].
-        (k = #color or: [k = #backgroundColor]) ifTrue: [
-            draw add: k -> v.
-        ].
-    ].
+	| container font draw sections |
+	container := OrderedCollection new.
+	font := OrderedCollection new.
+	draw := OrderedCollection new.
+	sections := OrderedCollection new.
+	dict keysAndValuesDo: [ :k :v |
+		(k = #borderColor or: [ k = #borderWidth ]) ifTrue: [
+			container add: k -> v ].
 
-    ^ String streamContents: [ :s |
-        (container isEmpty not) ifTrue: [
-            s nextPutAll: 'Container { ', (self stonMap: container), ' }. '
-        ].
-        (font isEmpty not) ifTrue: [
-            s nextPutAll: 'Font { ', (self stonMap: font), ' }. '
-        ].
-        (draw isEmpty not) ifTrue: [
-            s nextPutAll: 'Draw { ', (self stonMap: draw), ' }. '
-        ].
-    ]
+		(k = #fontSize or: [ k = #bold ]) ifTrue: [
+			| targetKey |
+			targetKey := k = #fontSize
+				             ifTrue: [ #size ]
+				             ifFalse: [ #bold ].
+			font add: targetKey -> v ].
+
+		(k = #color or: [ k = #backgroundColor ]) ifTrue: [
+			draw add: k -> v ] ].
+
+	container isEmpty ifFalse: [
+		sections add: 'Container { ' , (self stonMap: container) , ' }' ].
+	font isEmpty ifFalse: [
+		sections add: 'Font { ' , (self stonMap: font) , ' }' ].
+	draw isEmpty ifFalse: [
+		sections add: 'Draw { ' , (self stonMap: draw) , ' }' ].
+
+	^ String streamContents: [ :stream |
+		  sections doWithIndex: [ :part :i |
+			  stream nextPutAll: part.
+			  i < sections size ifTrue: [ stream nextPutAll: ', ' ] ] ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -66,15 +81,4 @@ StyleManager class >> stonMap: assocCollection [
             i < strings size ifTrue: [ s nextPutAll: ', ' ] ] ].
     ^ stream
 
-]
-
-{ #category : 'as yet unclassified' }
-StyleManager class >> stonStyles [
-
-	^ '
-.application [
-    .errorField [ Container { #borderWidth: 1, #borderColor: #red} ],
-    .validField [ Container { #borderWidth: 1, #borderColor: #green} ],
-    .customTitle [ Font { #size: 20 } ]
-]'
 ]

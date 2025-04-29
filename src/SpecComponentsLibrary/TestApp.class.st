@@ -11,10 +11,10 @@ Class {
 { #category : 'initialization' }
 TestApp >> initialize [
 
-	super initialize.
+	super initialize
 ]
 
-{ #category : 'running' }
+{ #category : 'initialization' }
 TestApp >> start [ 
 | window |
 	window := (self newPresenter: TestPresenter ) open.
@@ -23,9 +23,5 @@ TestApp >> start [
 		removeExpandBox;
 		removeCollapseBox;
 		removeMenuBox
-]
 
-{ #category : 'styling' }
-TestApp >> styleSheet [
-    ^ super styleSheet , (StyleManager parsedDefaultStyleSheet)
 ]

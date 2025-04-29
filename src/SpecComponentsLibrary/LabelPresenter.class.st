@@ -3,16 +3,12 @@ Class {
 	#superclass : 'BasePresenter',
 	#instVars : [
 		'label',
-		'styleProperties'
+		'styleProperties',
+		'styleApplied'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
-
-{ #category : 'accessing' }
-LabelPresenter >> addStyle: aStyle [
-    label addStyle: aStyle.
-]
 
 { #category : 'accessing' }
 LabelPresenter >> bold [
@@ -21,19 +17,23 @@ LabelPresenter >> bold [
 
 { #category : 'accessing' }
 LabelPresenter >> color: aColor [
-    self setGeneratedStyleProperty: #color value: aColor.
+
+	self setGeneratedStyleProperty: #color value: aColor.
+	
 ]
 
 { #category : 'as yet unclassified' }
 LabelPresenter >> defaultLayout [
-    ^ SpBoxLayout newTopToBottom
-        add: label;
-        yourself.
+   self generateAndApplyStyle.
+	^ SpBoxLayout newTopToBottom
+		  add: label;
+		  yourself
 ]
 
 { #category : 'accessing' }
 LabelPresenter >> fontSize: aNumber [
-    self setGeneratedStyleProperty: #fontSize value: aNumber.
+
+	self setGeneratedStyleProperty: #fontSize value: aNumber
 ]
 
 { #category : 'as yet unclassified' }
@@ -47,11 +47,22 @@ LabelPresenter >> generateAndApplyStyle [
 ]
 
 { #category : 'initialization' }
+LabelPresenter >> initialize [
+
+	super initialize.
+	styleProperties := Dictionary new.
+]
+
+{ #category : 'initialization' }
 LabelPresenter >> initializePresenters [
 
 	label := SpLabelPresenter new.
-	self focusOrder add: label.
-	self generateAndApplyStyle.
+	self focusOrder add: label
+]
+
+{ #category : 'accessing' }
+LabelPresenter >> italic [
+self setGeneratedStyleProperty: #italic value: true
 ]
 
 { #category : 'initialization' }
@@ -75,9 +86,4 @@ LabelPresenter >> text [
 { #category : 'accessing' }
 LabelPresenter >> text: aString [
     label label: aString.
-]
-
-{ #category : 'as yet unclassified' }
-LabelPresenter >> useStyle: styleName [
-    label addStyle: styleName.
 ]

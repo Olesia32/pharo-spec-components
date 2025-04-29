@@ -16,12 +16,11 @@ TestPresenter >> defaultLayout [
 
 { #category : 'initialization' }
 TestPresenter >> initialize [
-    super initialize.
-    mainPresenter := LabelPresenter new.
-    mainPresenter
-        text: 'Hello from Spec 2!';
-        color: Color red;
-        fontSize: 24;
-        bold.
 
+	super initialize.
+	mainPresenter := LabelPresenter new.
+	mainPresenter
+		text: 'Hello from Spec 2!';
+		fontSize: 24;
+		bold
 ]
