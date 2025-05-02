@@ -2,65 +2,75 @@ Class {
 	#name : 'ComboBoxPresenter',
 	#superclass : 'BasePresenter',
 	#instVars : [
-		'inputPresenter',
-		'listPresenter',
-		'items',
-		'filteredItems',
-		'selectedItem'
+		'textInput',
+		'list',
+		'listWrapper',
+		'allItems',
+		'isOpen'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
 
-{ #category : 'api' }
-ComboBoxPresenter >> applyFilter: filterText [
-
-	filteredItems := items select: [ :each |
-		                 each asString
-			                 includesSubstring: filterText
-			                 caseSensitive: false ].
-	listPresenter mainPresenter items: filteredItems
+{ #category : 'as yet unclassified' }
+ComboBoxPresenter >> closeList [
+    list visibleIf: false.
+    isOpen := false.
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> connectPresenters [
-
-	inputPresenter mainPresenter whenTextChangedDo: [ :text |
-		self applyFilter: text ].
-	listPresenter mainPresenter whenSelectionChangedDo: [ :selection |
-		selectedItem := selection selectedItem ]
+    textInput whenTextChangedDo: [ self filterAndShowList ].
+    list whenSelectedItemChangedDo: [ :item |
+        textInput text: item asString.
+        self closeList]
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> defaultLayout [
 
 	^ SpBoxLayout newTopToBottom
-		  spacing: 0;
-		  add: inputPresenter;
-		  add: listPresenter;
+		  add: textInput expand: false;
+		  add: list expand: false;
 		  yourself
+]
+
+{ #category : 'as yet unclassified' }
+ComboBoxPresenter >> filterAndShowList [
+    | query filtered |
+    query := textInput text asLowercase.
+    filtered := allItems select: [ :each | 
+        each asString asLowercase includesSubstring: query ].
+
+    list items: filtered.
+    self openList.
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> initializePresenters [
 
-	super initializePresenters.
-	inputPresenter := TextInputPresenter new.
-	listPresenter := ListPresenter new.
-	self focusOrder
-		add: inputPresenter;
-		add: listPresenter
+    textInput := SpTextInputFieldPresenter new.
+    list := SpListPresenter new.
+    list visibleIf: false.
+
+    allItems := #().
+    isOpen := false.
 ]
 
 { #category : 'accessing' }
-ComboBoxPresenter >> items: aCollection [ 
-    items := aCollection.
-    self applyFilter: (inputPresenter text ifNil: ['']).
+ComboBoxPresenter >> items: aCollection [
+    allItems := aCollection.
+    self closeList.
+]
 
+{ #category : 'as yet unclassified' }
+ComboBoxPresenter >> openList [
 
+	list visibleIf: true.
+	isOpen := true
 ]
 
 { #category : 'accessing' }
-ComboBoxPresenter >> selectedItem [ 
-    ^ selectedItem
+ComboBoxPresenter >> selectedItem [
+    ^ list selectedItem.
 ]
