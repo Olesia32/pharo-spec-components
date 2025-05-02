@@ -5,9 +5,10 @@ Class {
 		'textInput',
 		'list',
 		'toggleButton',
-		'selectedItem',
 		'allItems',
-		'isOpen'
+		'isOpen',
+		'isFiltering',
+		'selectedItem'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -16,20 +17,25 @@ Class {
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> closeList [
 
+	isFiltering ifTrue: [ ^ self ].
 	list visibleIf: false.
 	isOpen := false.
-	self updateToggleButtonLabel.
+	self updateToggleButtonIcon 
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> connectPresenters [
 
+	toggleButton action: [
+			self toggleList].
 	textInput whenTextChangedDo: [ self filterAndShowList ].
+	textInput whenSubmitDo: [ :_ | self validateTextInput ].
+
 	list whenSelectedItemChangedDo: [ :item |
 			selectedItem := item.
 			textInput text: (item ifNotNil: [ item asString ] ifNil: [ '' ]).
 			self closeList.
-			announcer announce: (ComboBoxItemSelected new item: item). ]
+			announcer announce: (ComboBoxItemSelected new item: item) ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -48,19 +54,34 @@ ComboBoxPresenter >> defaultLayout [
 ]
 
 { #category : 'as yet unclassified' }
-ComboBoxPresenter >> filterAndShowList [ 
-    | query filtered |
-    query := textInput text asLowercase.
-    filtered := allItems
-        select: [ :each |
-            each notNil and: [
-                each asString asLowercase includesSubstring: query ] ].
+ComboBoxPresenter >> filterAndShowList [
 
-    list items: filtered.
-    list visibleIf: true.
-    isOpen := true.
-    self updateToggleButtonLabel.
+	| query filtered previousText matchedItem |
+	isFiltering := true.
 
+	query := textInput text asLowercase.
+
+	filtered := allItems select: [ :each |
+		            each notNil and: [
+			            each asString asLowercase includesSubstring: query ] ].
+
+	previousText := textInput text.
+
+	list selectItem: nil.
+	list items: filtered.
+
+	matchedItem := filtered
+		               detect: [ :each | each asString = previousText ]
+		               ifNone: [ nil ].
+
+	list selectItem: matchedItem.
+	selectedItem := matchedItem.
+
+	isOpen ifTrue: [
+			list visibleIf: true.
+			self updateToggleButtonIcon ].
+
+	isFiltering := false
 ]
 
 { #category : 'as yet unclassified' }
@@ -70,10 +91,6 @@ ComboBoxPresenter >> initializePresenters [
 	list := SpListPresenter new.
 	list visibleIf: false.
 	toggleButton := SpButtonPresenter new.
-
-	toggleButton
-		icon: (self iconNamed: #dropDownIcon);
-		action: [ self toggleList ].
 
 	allItems := #(  ).
 	selectedItem := nil.
@@ -93,11 +110,10 @@ ComboBoxPresenter >> items: aCollection [
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> openList [
 
-	 textInput text: (selectedItem ifNotNil: [ selectedItem asString ] ifNil: [ '' ]).
-    self filterAndShowList.
-    list visibleIf: true.
-    isOpen := true.
-    self updateToggleButtonLabel.
+	isOpen := true.
+	self updateToggleButtonIcon.
+	self filterAndShowList.
+	list visibleIf: true
 ]
 
 { #category : 'accessing' }
@@ -112,11 +128,32 @@ ComboBoxPresenter >> toggleList [
 ]
 
 { #category : 'as yet unclassified' }
-ComboBoxPresenter >> updateToggleButtonLabel [
+ComboBoxPresenter >> updateToggleButtonIcon [
 
 	isOpen
-		ifTrue: [ toggleButton icon: (self iconNamed: #dropDownIcon) ]
-		ifFalse: [ toggleButton icon: (self iconNamed: #dropDownIcon) ]
+		ifTrue: [ toggleButton icon: (self iconNamed: #arrowUp) ]
+		ifFalse: [ toggleButton icon: (self iconNamed: #arrowDown) ]
+]
+
+{ #category : 'as yet unclassified' }
+ComboBoxPresenter >> validateTextInput [
+
+	| input match |
+	input := textInput text.
+	match := allItems
+		         detect: [ :each | each asString = input ]
+		         ifNone: [ nil ].
+
+	match
+		ifNil: [
+				selectedItem := nil.
+				textInput text: '' ]
+		ifNotNil: [
+				selectedItem := match.
+				textInput text: match asString.
+				announcer announce: (ComboBoxItemSelected new item: match) ].
+
+	self closeList
 ]
 
 { #category : 'enumerating' }
