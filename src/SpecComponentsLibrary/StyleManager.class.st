@@ -13,19 +13,14 @@ StyleManager class >> applyStyleNamed: styleName to: app [
 ]
 
 { #category : 'as yet unclassified' }
-StyleManager class >> generatedStyles [
-    ^ Smalltalk at: #StyleManager_GeneratedStyles ifAbsentPut: [ OrderedCollection new ]
-]
+StyleManager class >> installGeneratedStyleFrom: dict in: app [
 
-{ #category : 'as yet unclassified' }
-StyleManager class >> installGeneratedStyleFrom: dict in: app [ 
-	| styleName stonString parsed sheet |
-	styleName := 'generatedStyle_' , UUID new asString first: 6.
+	| styleName stonString parsed |
+	styleName := '' , UUID new asString first: 8.
 	stonString := self stonFromProperties: dict.
 	parsed := SpStyleVariableSTONReader fromString: '
 .application [ .' , styleName , ' [ ' , stonString , ' ] ]'.
-	sheet := parsed.
-	sheet styles do: [ :style | app styleSheet addStyle: style ].
+	parsed styles do: [ :style | app styleSheet addStyle: style ].
 	^ styleName
 ]
 
@@ -47,11 +42,6 @@ StyleManager class >> registerNamedStyle: styleDict as: styleName in: app [
 { #category : 'as yet unclassified' }
 StyleManager class >> removeStyleNamed: styleName [ 
 	self namedStyles removeKey: styleName ifAbsent: [ "Do nothing" ]
-]
-
-{ #category : 'initialization' }
-StyleManager class >> resetGeneratedStyles [
-    Smalltalk at: #StyleManager_GeneratedStyles put: OrderedCollection new
 ]
 
 { #category : 'as yet unclassified' }

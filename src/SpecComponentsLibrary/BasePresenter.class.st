@@ -3,7 +3,8 @@ Class {
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'styleProperties',
-		'mainPresenter'
+		'mainPresenter',
+		'appliedStyleName'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -17,13 +18,29 @@ BasePresenter >> applyNamedStyle: aStyleName [
 { #category : 'accessing' }
 BasePresenter >> backgroundColor: aColor [
 
-	self setGeneratedStyleProperty: #backgroundColor value: aColor
+	self setGeneratedStyleProperty: #backgroundColor value: aColor.
+	self generateAndApplyStyle
 ]
 
 { #category : 'accessing' }
 BasePresenter >> bold [
 
-	self setGeneratedStyleProperty: #bold value: true
+	self setGeneratedStyleProperty: #bold value: true.
+	self generateAndApplyStyle
+]
+
+{ #category : 'accessing' }
+BasePresenter >> borderColor: aValue [
+
+	self setGeneratedStyleProperty: #borderColor value: aValue.
+	self generateAndApplyStyle
+]
+
+{ #category : 'accessing' }
+BasePresenter >> borderWidth: aValue [
+
+	self setGeneratedStyleProperty: #borderWidth value: aValue.
+	self generateAndApplyStyle
 ]
 
 { #category : 'accessing' }
@@ -40,7 +57,8 @@ BasePresenter >> connectPresenters [
 { #category : 'as yet unclassified' }
 BasePresenter >> defaultLayout [
 	"Стандартний макет. За замовчуванням пустий контейнер"
-self generateAndApplyStyle.
+
+	self generateAndApplyStyle.
 	^ SpBoxLayout newTopToBottom
 		  add: mainPresenter;
 		  yourself
@@ -49,29 +67,40 @@ self generateAndApplyStyle.
 { #category : 'font description' }
 BasePresenter >> fontFamily: aFontFamily [
 
-	self setGeneratedStyleProperty: #name value: aFontFamily
+	self setGeneratedStyleProperty: #name value: aFontFamily.
+	self generateAndApplyStyle
 ]
 
 { #category : 'accessing' }
 BasePresenter >> fontSize: aNumber [
 
-	self setGeneratedStyleProperty: #fontSize value: aNumber
+	self setGeneratedStyleProperty: #fontSize value: aNumber.
+	self generateAndApplyStyle
 ]
 
 { #category : 'as yet unclassified' }
-BasePresenter >> generateAndApplyStyle [ 
-	| styleName |
-	self application ifNil: [ ^self ]. 
-	styleName := StyleManager
-		installGeneratedStyleFrom: self styleProperties copy
-		in: self application.
-	mainPresenter addStyle: styleName.
+BasePresenter >> generateAndApplyStyle [
+
+	appliedStyleName ifNotNil: [
+        mainPresenter removeStyle: appliedStyleName
+    ].
+
+    appliedStyleName := StyleManager installGeneratedStyleFrom: self styleProperties in: self application.
+    mainPresenter addStyle: appliedStyleName.
+]
+
+{ #category : 'accessing' }
+BasePresenter >> hResizing: aValue [
+
+	self setGeneratedStyleProperty: #hResizing value: aValue.
+	self generateAndApplyStyle
 ]
 
 { #category : 'accessing' }
 BasePresenter >> height: aHeight [
 
-	self setGeneratedStyleProperty: #height value: aHeight
+	self setGeneratedStyleProperty: #height value: aHeight.
+	self generateAndApplyStyle
 ]
 
 { #category : 'as yet unclassified' }
@@ -82,7 +111,8 @@ BasePresenter >> initializePresenters [
 { #category : 'accessing' }
 BasePresenter >> italic [
 
-	self setGeneratedStyleProperty: #italic value: true
+	self setGeneratedStyleProperty: #italic value: true.
+	self generateAndApplyStyle
 ]
 
 { #category : 'as yet unclassified' }
@@ -113,7 +143,15 @@ BasePresenter >> styleProperties [
 ]
 
 { #category : 'accessing' }
+BasePresenter >> vResizing: aValue [
+
+	self setGeneratedStyleProperty: #vResizing value: aValue.
+	self generateAndApplyStyle
+]
+
+{ #category : 'accessing' }
 BasePresenter >> width: aWidth [
 
-	self setGeneratedStyleProperty: #width value: aWidth
+	self setGeneratedStyleProperty: #width value: aWidth.
+	self generateAndApplyStyle
 ]

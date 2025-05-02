@@ -11,17 +11,20 @@ Class {
 { #category : 'initialization' }
 TestApp >> initialize [
 
-	super initialize
+	super initialize.
+	
 ]
 
 { #category : 'initialization' }
-TestApp >> start [ 
-| window |
-	window := (self newPresenter: TestPresenter ) open.
+TestApp >> start [
+
+	| window p |
+	p := TestPresenter new.
+	p application: self.
+	window :=  p open.
 	window window
 		beUnresizeable;
 		removeExpandBox;
 		removeCollapseBox;
 		removeMenuBox
-
 ]

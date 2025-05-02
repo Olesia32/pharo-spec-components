@@ -20,7 +20,13 @@ TextInputPresenter >> addValidationRule: arg1 message: arg2 [
 { #category : 'as yet unclassified' }
 TextInputPresenter >> connectPresenters [
 
-	mainPresenter whenTextChangedDo: [ self validate ]
+	mainPresenter whenTextChangedDo: [ self validate ].
+	self onValidationChangedDo: [ :valid |
+			valid
+				ifTrue: [
+						self borderColor: '#green']
+				ifFalse: [ self borderColor: '#red' ].
+			self borderWidth: 1 ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -39,9 +45,7 @@ TextInputPresenter >> defaultLayout [
 TextInputPresenter >> initialize [
 
 	super initialize.
-	isValid := true.
-	validationRules := Dictionary new.
-	validationStatusModel := Announcer new.
+	
 ]
 
 { #category : 'as yet unclassified' }
@@ -54,7 +58,12 @@ TextInputPresenter >> initializePresenters [
 		color: '#red';
 		fontSize: 10.
 	errorLabel mainPresenter visibleIf: false.
-	self focusOrder add: self mainPresenter
+	self focusOrder add: self mainPresenter.
+	validationStatusModel := ValueHolder new.
+   validationStatusModel contents: true.
+   announcer := Announcer new.
+	isValid := true.
+	validationRules := Dictionary new
 ]
 
 { #category : 'initialization' }
@@ -64,8 +73,12 @@ TextInputPresenter >> isValid [
 ]
 
 { #category : 'enumerating' }
-TextInputPresenter >> onValidationChangedDo: aBlock [ 
-    validationStatusModel when: Boolean send: #value to: aBlock.
+TextInputPresenter >> onValidationChangedDo: aBlock [
+
+	announcer
+		when: ValidationStatusChanged
+		do: [ :evt | aBlock value: evt newValue ]
+		for: self
 ]
 
 { #category : 'accessing' }
@@ -88,23 +101,21 @@ TextInputPresenter >> text: arg1 [
 
 { #category : 'initialization' }
 TextInputPresenter >> validate [
-| text previousState |
-    text := self text.
-    previousState := isValid.
 
-    validationRules keysAndValuesDo: [ :rule :message |
-        (rule value: text) ifFalse: [
-            isValid := false.
-            errorLabel text: message.
-            errorLabel mainPresenter visibleIf: true.
-            previousState ~= isValid ifTrue: [ validationStatusModel announce: isValid ].
-            ^ false.
-        ].
-    ].
-
-    isValid := true.
-    errorLabel text: ''.
-    errorLabel mainPresenter visibleIf: false.
-    previousState ~= isValid ifTrue: [ validationStatusModel announce: isValid ].
-    ^ true.
+	| text |
+	text := self text.
+	validationRules keysAndValuesDo: [ :rule :message |
+			(rule value: text) ifFalse: [
+					isValid := false.
+					validationStatusModel contents: false.
+					announcer announce: (ValidationStatusChanged new newValue: isValid).
+					errorLabel text: message.
+					errorLabel mainPresenter visibleIf: true.
+					^ false ] ].
+	isValid := true.
+	validationStatusModel contents: true.
+	announcer announce: (ValidationStatusChanged new newValue: isValid ).
+	errorLabel text: ''.
+	errorLabel mainPresenter visibleIf: false.
+	^ true
 ]

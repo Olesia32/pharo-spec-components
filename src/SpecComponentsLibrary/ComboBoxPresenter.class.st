@@ -18,20 +18,19 @@ Class {
 ComboBoxPresenter >> closeList [
 
 	isFiltering ifTrue: [ ^ self ].
-	list visibleIf: false.
+	list mainPresenter visibleIf: false.
 	isOpen := false.
-	self updateToggleButtonIcon 
+	self updateToggleButtonIcon
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> connectPresenters [
 
-	toggleButton action: [
-			self toggleList].
-	textInput whenTextChangedDo: [ self filterAndShowList ].
-	textInput whenSubmitDo: [ :_ | self validateTextInput ].
+	toggleButton action: [ self toggleList ].
+	textInput mainPresenter whenTextChangedDo: [ self filterAndShowList ].
+	textInput mainPresenter whenSubmitDo: [ :_ | self validateTextInput ].
 
-	list whenSelectedItemChangedDo: [ :item |
+	list mainPresenter whenSelectedItemChangedDo: [ :item |
 			selectedItem := item.
 			textInput text: (item ifNotNil: [ item asString ] ifNil: [ '' ]).
 			self closeList.
@@ -43,13 +42,19 @@ ComboBoxPresenter >> defaultLayout [
 
 	| inputRow |
 	inputRow := SpBoxLayout newLeftToRight
-		            add: textInput;
-		            add: toggleButton expand: false;
+		            add: textInput mainPresenter;
+		            add: toggleButton withConstraints: [ :c |
+				            c
+					            width: 20;
+					            expand: false ];
 		            yourself.
 
 	^ SpBoxLayout newTopToBottom
 		  add: inputRow expand: false;
-		  add: list expand: false;
+		  add: list mainPresenter withConstraints: [ :c |
+				  c
+					  height: 100;
+					  expand: false ];
 		  yourself
 ]
 
@@ -67,18 +72,18 @@ ComboBoxPresenter >> filterAndShowList [
 
 	previousText := textInput text.
 
-	list selectItem: nil.
-	list items: filtered.
+	list mainPresenter selectItem: nil.
+	list mainPresenter items: filtered.
 
 	matchedItem := filtered
 		               detect: [ :each | each asString = previousText ]
 		               ifNone: [ nil ].
 
-	list selectItem: matchedItem.
+	list mainPresenter selectItem: matchedItem.
 	selectedItem := matchedItem.
 
 	isOpen ifTrue: [
-			list visibleIf: true.
+			list mainPresenter visibleIf: true.
 			self updateToggleButtonIcon ].
 
 	isFiltering := false
@@ -87,9 +92,10 @@ ComboBoxPresenter >> filterAndShowList [
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> initializePresenters [
 
-	textInput := SpTextInputFieldPresenter new.
-	list := SpListPresenter new.
-	list visibleIf: false.
+	textInput := TextInputPresenter new.
+	textInput width: 100.
+	list := ListPresenter new.
+	list mainPresenter visibleIf: false.
 	toggleButton := SpButtonPresenter new.
 
 	allItems := #(  ).
@@ -113,7 +119,7 @@ ComboBoxPresenter >> openList [
 	isOpen := true.
 	self updateToggleButtonIcon.
 	self filterAndShowList.
-	list visibleIf: true
+	list mainPresenter visibleIf: true
 ]
 
 { #category : 'accessing' }
@@ -131,8 +137,10 @@ ComboBoxPresenter >> toggleList [
 ComboBoxPresenter >> updateToggleButtonIcon [
 
 	isOpen
-		ifTrue: [ toggleButton icon: (self iconNamed: #arrowUp) ]
-		ifFalse: [ toggleButton icon: (self iconNamed: #arrowDown) ]
+		ifTrue: [
+		toggleButton icon: (self iconNamed: #arrowUp) ]
+		ifFalse: [
+		toggleButton icon: (self iconNamed: #arrowDown) ]
 ]
 
 { #category : 'as yet unclassified' }
