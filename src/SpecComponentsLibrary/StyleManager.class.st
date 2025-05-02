@@ -6,30 +6,61 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+StyleManager class >> applyStyleNamed: styleName to: app [ 
+	| sheet |
+	sheet := self namedStyles at: styleName ifAbsent: [ ^self error: 'Style not found' ].
+	sheet styles do: [ :style | app styleSheet addStyle: style ].
+]
+
+{ #category : 'as yet unclassified' }
 StyleManager class >> generatedStyles [
     ^ Smalltalk at: #StyleManager_GeneratedStyles ifAbsentPut: [ OrderedCollection new ]
 ]
 
 { #category : 'as yet unclassified' }
-StyleManager class >> installGeneratedStyleFrom: dict in: app [
-
-	| stonString styleName parsed sheet |
+StyleManager class >> installGeneratedStyleFrom: dict in: app [ 
+	| styleName stonString parsed sheet |
 	styleName := 'generatedStyle_' , UUID new asString first: 6.
 	stonString := self stonFromProperties: dict.
 	parsed := SpStyleVariableSTONReader fromString: '
 .application [ .' , styleName , ' [ ' , stonString , ' ] ]'.
-	self generatedStyles add: parsed.
-	sheet := self generatedStyles first.
-	self generatedStyles allButFirst do: [ :each |
-		sheet := sheet mergeWith: each ].
-
+	sheet := parsed.
 	sheet styles do: [ :style | app styleSheet addStyle: style ].
 	^ styleName
+]
+
+{ #category : 'as yet unclassified' }
+StyleManager class >> namedStyles [ 
+	^ Smalltalk at: #StyleManager_NamedStyles ifAbsentPut: [ Dictionary new ]
+]
+
+{ #category : 'as yet unclassified' }
+StyleManager class >> registerNamedStyle: styleDict as: styleName in: app [
+
+	| stonString parsed |
+	stonString := self stonFromProperties: styleDict.
+	parsed := SpStyleVariableSTONReader fromString: '
+.application [ .' , styleName , ' [ ' , stonString , ' ] ]'.
+	app styleSheet addStyle: parsed styles first
+]
+
+{ #category : 'as yet unclassified' }
+StyleManager class >> removeStyleNamed: styleName [ 
+	self namedStyles removeKey: styleName ifAbsent: [ "Do nothing" ]
 ]
 
 { #category : 'initialization' }
 StyleManager class >> resetGeneratedStyles [
     Smalltalk at: #StyleManager_GeneratedStyles put: OrderedCollection new
+]
+
+{ #category : 'as yet unclassified' }
+StyleManager class >> saveStyle: dict as: styleName [ 
+	| stonString parsed |
+	stonString := self stonFromProperties: dict.
+	parsed := SpStyleVariableSTONReader fromString: '
+.application [ .' , styleName , ' [ ' , stonString , ' ] ]'.
+	self namedStyles at: styleName put: parsed.
 ]
 
 { #category : 'as yet unclassified' }

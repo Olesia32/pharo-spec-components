@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'errorLabel',
 		'validationRules',
-		'isValid'
+		'isValid',
+		'validationStatusModel'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -36,9 +37,11 @@ TextInputPresenter >> defaultLayout [
 
 { #category : 'initialization' }
 TextInputPresenter >> initialize [
+
 	super initialize.
 	isValid := true.
-	validationRules := Dictionary new
+	validationRules := Dictionary new.
+	validationStatusModel := Announcer new.
 ]
 
 { #category : 'as yet unclassified' }
@@ -57,7 +60,12 @@ TextInputPresenter >> initializePresenters [
 { #category : 'initialization' }
 TextInputPresenter >> isValid [
 
-	^ isValid 
+	^ isValid
+]
+
+{ #category : 'enumerating' }
+TextInputPresenter >> onValidationChangedDo: aBlock [ 
+    validationStatusModel when: Boolean send: #value to: aBlock.
 ]
 
 { #category : 'accessing' }
@@ -80,19 +88,23 @@ TextInputPresenter >> text: arg1 [
 
 { #category : 'initialization' }
 TextInputPresenter >> validate [
-
-	| text |
+| text previousState |
     text := self text.
+    previousState := isValid.
+
     validationRules keysAndValuesDo: [ :rule :message |
         (rule value: text) ifFalse: [
             isValid := false.
             errorLabel text: message.
             errorLabel mainPresenter visibleIf: true.
+            previousState ~= isValid ifTrue: [ validationStatusModel announce: isValid ].
             ^ false.
         ].
     ].
+
     isValid := true.
     errorLabel text: ''.
     errorLabel mainPresenter visibleIf: false.
+    previousState ~= isValid ifTrue: [ validationStatusModel announce: isValid ].
     ^ true.
 ]

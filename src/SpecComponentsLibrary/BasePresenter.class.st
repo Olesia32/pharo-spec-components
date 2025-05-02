@@ -9,6 +9,11 @@ Class {
 	#package : 'SpecComponentsLibrary'
 }
 
+{ #category : 'as yet unclassified' }
+BasePresenter >> applyNamedStyle: aStyleName [ 
+	self mainPresenter addStyle: aStyleName
+]
+
 { #category : 'accessing' }
 BasePresenter >> backgroundColor: aColor [
 
@@ -54,13 +59,13 @@ BasePresenter >> fontSize: aNumber [
 ]
 
 { #category : 'as yet unclassified' }
-BasePresenter >> generateAndApplyStyle [
-
+BasePresenter >> generateAndApplyStyle [ 
 	| styleName |
+	self application ifNil: [ ^self ]. 
 	styleName := StyleManager
-		               installGeneratedStyleFrom: self styleProperties
-		               in: self application.
-	mainPresenter addStyle: styleName
+		installGeneratedStyleFrom: self styleProperties copy
+		in: self application.
+	mainPresenter addStyle: styleName.
 ]
 
 { #category : 'accessing' }
