@@ -25,5 +25,7 @@ TestPresenter >> initializePresenters [
 
 	comboboxPresenter := ComboBoxPresenter new.
 	comboboxPresenter items:
-		#( 'Kyiv' 'Lviv' 'Kharkiv' 'Odesa' 'Dnipro' 'Lutsk' )
+		#( 'Kyiv' 'Lviv' 'Kharkiv' 'Odesa' 'Dnipro' 'Lutsk' ).
+	comboboxPresenter whenSelectedItemChangedDo: [ :item | Transcript show: 'Обрано: ', item asString; cr ].
+
 ]

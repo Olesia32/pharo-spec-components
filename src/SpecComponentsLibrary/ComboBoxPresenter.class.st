@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'textInput',
 		'list',
-		'listWrapper',
+		'toggleButton',
+		'selectedItem',
 		'allItems',
 		'isOpen'
 	],
@@ -14,63 +15,116 @@ Class {
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> closeList [
-    list visibleIf: false.
-    isOpen := false.
+
+	list visibleIf: false.
+	isOpen := false.
+	self updateToggleButtonLabel.
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> connectPresenters [
-    textInput whenTextChangedDo: [ self filterAndShowList ].
-    list whenSelectedItemChangedDo: [ :item |
-        textInput text: item asString.
-        self closeList]
+
+	textInput whenTextChangedDo: [ self filterAndShowList ].
+	list whenSelectedItemChangedDo: [ :item |
+			selectedItem := item.
+			textInput text: (item ifNotNil: [ item asString ] ifNil: [ '' ]).
+			self closeList.
+			announcer announce: (ComboBoxItemSelected new item: item). ]
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> defaultLayout [
 
+	| inputRow |
+	inputRow := SpBoxLayout newLeftToRight
+		            add: textInput;
+		            add: toggleButton expand: false;
+		            yourself.
+
 	^ SpBoxLayout newTopToBottom
-		  add: textInput expand: false;
+		  add: inputRow expand: false;
 		  add: list expand: false;
 		  yourself
 ]
 
 { #category : 'as yet unclassified' }
-ComboBoxPresenter >> filterAndShowList [
+ComboBoxPresenter >> filterAndShowList [ 
     | query filtered |
     query := textInput text asLowercase.
-    filtered := allItems select: [ :each | 
-        each asString asLowercase includesSubstring: query ].
+    filtered := allItems
+        select: [ :each |
+            each notNil and: [
+                each asString asLowercase includesSubstring: query ] ].
 
     list items: filtered.
-    self openList.
+    list visibleIf: true.
+    isOpen := true.
+    self updateToggleButtonLabel.
+
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> initializePresenters [
 
-    textInput := SpTextInputFieldPresenter new.
-    list := SpListPresenter new.
-    list visibleIf: false.
+	textInput := SpTextInputFieldPresenter new.
+	list := SpListPresenter new.
+	list visibleIf: false.
+	toggleButton := SpButtonPresenter new.
 
-    allItems := #().
-    isOpen := false.
+	toggleButton
+		icon: (self iconNamed: #dropDownIcon);
+		action: [ self toggleList ].
+
+	allItems := #(  ).
+	selectedItem := nil.
+	isOpen := false.
+	announcer := Announcer new
 ]
 
 { #category : 'accessing' }
 ComboBoxPresenter >> items: aCollection [
-    allItems := aCollection.
-    self closeList.
+
+	allItems := aCollection reject: [ :each | each isNil ].
+	 selectedItem := nil.
+    textInput text: ''.
+	self closeList
 ]
 
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> openList [
 
-	list visibleIf: true.
-	isOpen := true
+	 textInput text: (selectedItem ifNotNil: [ selectedItem asString ] ifNil: [ '' ]).
+    self filterAndShowList.
+    list visibleIf: true.
+    isOpen := true.
+    self updateToggleButtonLabel.
 ]
 
 { #category : 'accessing' }
 ComboBoxPresenter >> selectedItem [
-    ^ list selectedItem.
+
+	^ list selectedItem
+]
+
+{ #category : 'as yet unclassified' }
+ComboBoxPresenter >> toggleList [ 
+    isOpen ifTrue: [ self closeList ] ifFalse: [ self openList ].
+]
+
+{ #category : 'as yet unclassified' }
+ComboBoxPresenter >> updateToggleButtonLabel [
+
+	isOpen
+		ifTrue: [ toggleButton icon: (self iconNamed: #dropDownIcon) ]
+		ifFalse: [ toggleButton icon: (self iconNamed: #dropDownIcon) ]
+]
+
+{ #category : 'enumerating' }
+ComboBoxPresenter >> whenSelectedItemChangedDo: aBlock [ 
+    announcer
+        when: ComboBoxItemSelected
+        do: [ :event | 
+            (allItems includes: event item) ifTrue: [
+                aBlock value: event item ] ]
+        for: self.
 ]
