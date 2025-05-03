@@ -1,6 +1,6 @@
 Class {
 	#name : 'ComboBoxItemSelected',
-	#superclass : 'Object',
+	#superclass : 'Announcement',
 	#instVars : [
 		'item'
 	],

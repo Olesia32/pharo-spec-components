@@ -2,6 +2,7 @@ Class {
 	#name : 'TextInputPresenter',
 	#superclass : 'BasePresenter',
 	#instVars : [
+		'isValidationField',
 		'errorLabel',
 		'validationRules',
 		'isValid',
@@ -17,14 +18,20 @@ TextInputPresenter >> addValidationRule: arg1 message: arg2 [
 	validationRules at: arg1 put: arg2
 ]
 
+{ #category : 'adding' }
+TextInputPresenter >> addValidationRules: aValidationRules [ 
+    aValidationRules all do: [ :pair |
+        self addValidationRule: pair key message: pair value
+    ].
+]
+
 { #category : 'as yet unclassified' }
 TextInputPresenter >> connectPresenters [
 
 	mainPresenter whenTextChangedDo: [ self validate ].
 	self onValidationChangedDo: [ :valid |
 			valid
-				ifTrue: [
-						self borderColor: '#green']
+				ifTrue: [ self borderColor: '#green' ]
 				ifFalse: [ self borderColor: '#red' ].
 			self borderWidth: 1 ]
 ]
@@ -45,7 +52,6 @@ TextInputPresenter >> defaultLayout [
 TextInputPresenter >> initialize [
 
 	super initialize.
-	
 ]
 
 { #category : 'as yet unclassified' }
@@ -60,16 +66,28 @@ TextInputPresenter >> initializePresenters [
 	errorLabel mainPresenter visibleIf: false.
 	self focusOrder add: self mainPresenter.
 	validationStatusModel := ValueHolder new.
-   validationStatusModel contents: true.
-   announcer := Announcer new.
+	validationStatusModel contents: true.
+	announcer := Announcer new.
 	isValid := true.
-	validationRules := Dictionary new
+	validationRules := Dictionary new.
+	isValidationField := false
 ]
 
 { #category : 'initialization' }
 TextInputPresenter >> isValid [
 
 	^ isValid
+]
+
+{ #category : 'accessing' }
+TextInputPresenter >> isValidationField [
+
+	^ isValidationField
+]
+
+{ #category : 'accessing' }
+TextInputPresenter >> isValidationField: aValue [
+isValidationField := aValue 
 ]
 
 { #category : 'enumerating' }
@@ -108,13 +126,14 @@ TextInputPresenter >> validate [
 			(rule value: text) ifFalse: [
 					isValid := false.
 					validationStatusModel contents: false.
-					announcer announce: (ValidationStatusChanged new newValue: isValid).
+					announcer announce:
+						(ValidationStatusChanged new newValue: isValid).
 					errorLabel text: message.
 					errorLabel mainPresenter visibleIf: true.
 					^ false ] ].
 	isValid := true.
 	validationStatusModel contents: true.
-	announcer announce: (ValidationStatusChanged new newValue: isValid ).
+	announcer announce: (ValidationStatusChanged new newValue: isValid).
 	errorLabel text: ''.
 	errorLabel mainPresenter visibleIf: false.
 	^ true

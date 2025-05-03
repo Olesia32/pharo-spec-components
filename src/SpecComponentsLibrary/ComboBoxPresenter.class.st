@@ -136,11 +136,9 @@ ComboBoxPresenter >> toggleList [
 { #category : 'as yet unclassified' }
 ComboBoxPresenter >> updateToggleButtonIcon [
 
-	isOpen
-		ifTrue: [
-		toggleButton icon: (self iconNamed: #arrowUp) ]
-		ifFalse: [
-		toggleButton icon: (self iconNamed: #arrowDown) ]
+	toggleButton icon: (self iconNamed: (isOpen
+				  ifTrue: [ #arrowUp ]
+				  ifFalse: [ #arrowDown ]))
 ]
 
 { #category : 'as yet unclassified' }
