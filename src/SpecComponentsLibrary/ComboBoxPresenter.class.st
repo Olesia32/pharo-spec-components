@@ -1,6 +1,6 @@
 Class {
 	#name : 'ComboBoxPresenter',
-	#superclass : 'BasePresenter',
+	#superclass : 'SpPresenter',
 	#instVars : [
 		'textInput',
 		'list',

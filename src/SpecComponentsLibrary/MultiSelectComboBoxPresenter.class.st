@@ -1,6 +1,6 @@
 Class {
 	#name : 'MultiSelectComboBoxPresenter',
-	#superclass : 'BasePresenter',
+	#superclass : 'SpPresenter',
 	#instVars : [
 		'textInput',
 		'checkboxContainer',
