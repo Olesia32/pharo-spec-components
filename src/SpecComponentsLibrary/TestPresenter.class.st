@@ -99,15 +99,21 @@ TestPresenter >> initializePresenters [
 				Transcript
 					show: 'Успішно: ' , arg2 printString;
 					cr ].
-				
-			
-		
-	radioGroup := RadioGroupPresenter new.
-   radioGroup items: #( 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5' 'Option 6' );
-   title: 'Choose an option:';
-   setColumnCount: 3. 
 
-radioGroup whenIndexChangedDo: [ :selectedIndex |
-    Transcript show: 'Selected index: ', selectedIndex asString; cr.
-].
+
+
+	radioGroup := RadioGroupPresenter new.
+	radioGroup
+		items:
+			#( 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5' 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5'
+			   'Option 6' 'Option 6'  'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5' 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5'
+			   'Option 6' 'Option 6');
+		title: 'Choose an option:';
+		enableScrolling: true;
+		сolumnCount: 1.
+
+	radioGroup whenIndexChangedDo: [ :selectedIndex |
+			Transcript
+				show: 'Selected index: ' , selectedIndex asString;
+				cr ]
 ]

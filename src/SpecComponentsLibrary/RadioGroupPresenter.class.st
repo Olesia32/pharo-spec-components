@@ -9,7 +9,8 @@ Class {
 		'columnCount',
 		'index',
 		'whenIndexChangedDo',
-		'isEvenEvent'
+		'isEvenEvent',
+		'isScrollable'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -29,6 +30,27 @@ RadioGroupPresenter >> addItem: anObject [
 ]
 
 { #category : 'as yet unclassified' }
+RadioGroupPresenter >> buildColumnLayout: aColumnCount [
+
+	|singleLayout totalRows hLayout |
+	aColumnCount = 1 ifTrue: [
+			singleLayout := SpBoxLayout newTopToBottom.
+				  buttons do: [ :btn | singleLayout add: btn ].
+				  ^ singleLayout yourself ].
+
+	totalRows := buttons size + aColumnCount - 1 // aColumnCount.
+	hLayout := SpBoxLayout newLeftToRight.
+	1 to: aColumnCount do: [ :col |
+			| vLayout start end |
+			vLayout := SpBoxLayout newTopToBottom.
+			start := col - 1 * totalRows + 1.
+			end := start + totalRows - 1 min: buttons size.
+			start to: end do: [ :i | vLayout add: (buttons at: i) ].
+			hLayout add: vLayout ].
+	^ hLayout
+]
+
+{ #category : 'as yet unclassified' }
 RadioGroupPresenter >> buttonStateChanged [
 
 	buttons withIndexDo: [ :btn :ind |
@@ -41,18 +63,6 @@ RadioGroupPresenter >> buttonStateChanged [
 { #category : 'as yet unclassified' }
 RadioGroupPresenter >> columnCount [
    ^ columnCount.
-]
-
-{ #category : 'as yet unclassified' }
-RadioGroupPresenter >> conditionalLayout: aBlock [
-
-	| frame |
-	self title ifNil: [ ^ aBlock value ].
-
-	frame := SpFrameLayout new.
-	frame label: self title.
-	frame add: aBlock value.
-	^ frame
 ]
 
 { #category : 'as yet unclassified' }
@@ -69,24 +79,56 @@ RadioGroupPresenter >> correctIndexToFirst [
    whenIndexChangedDo ifNotNil: [ whenIndexChangedDo value: index ].
 ]
 
-{ #category : 'as yet unclassified' }
-RadioGroupPresenter >> defaultLayout [
+{ #category : 'accessing' }
+RadioGroupPresenter >> disableButtonAt: anIndex [
 
-	| frame content |
-	content := columnCount = 1
-		           ifTrue: [ self singleColumnLayout ]
-		           ifFalse: [ self multipleColumnLayout ].
-
-	frame := SpFrameLayout new.
-	frame label: title.
-	frame add: (SpPresenter new layout: content).
-	^ frame yourself
+	| button |
+	anIndex > 0 ifFalse: [ ^ self ].
+	button := buttons at: anIndex ifAbsent: [ ^ self ].
+	button mainPresenter enabled: false
 ]
 
 { #category : 'as yet unclassified' }
 RadioGroupPresenter >> display: aBlock [
    display := aBlock.
    self updateLabels.
+]
+
+{ #category : 'accessing' }
+RadioGroupPresenter >> enableButtonAt: anIndex [
+
+	| button |
+	anIndex > 0 ifFalse: [ ^ self ].
+	button := buttons at: anIndex ifAbsent: [ ^ self ].
+	button mainPresenter enabled: true
+]
+
+{ #category : 'as yet unclassified' }
+RadioGroupPresenter >> enableScrolling: aBoolean [ 
+	isScrollable := aBoolean.
+	self updateCurrentLayout.
+]
+
+{ #category : 'as yet unclassified' }
+RadioGroupPresenter >> generateLayout [
+
+	| layoutContent result |
+	layoutContent := columnCount = 1
+		                 ifTrue: [ self buildColumnLayout: 1 ]
+		                 ifFalse: [ self buildColumnLayout: columnCount ].
+
+	result := layoutContent.
+	isScrollable ifTrue: [
+			| scroll |
+			scroll := SpScrollableLayout new.
+			scroll child: layoutContent.
+			result := scroll ].
+
+	^ self title ifNil: [ result ] ifNotNil: [
+			  SpFrameLayout new
+				  label: self title;
+				  add: result;
+				  yourself ]
 ]
 
 { #category : 'accessing - deprecated' }
@@ -102,8 +144,10 @@ RadioGroupPresenter >> indexSelected [
 
 { #category : 'initialization' }
 RadioGroupPresenter >> initialize [
-   isEvenEvent := false.
+
+	isEvenEvent := false.
 	index := 1.
+	isScrollable := false.
 	items ifNil: [ items := self class defaultItems ].
 	display := [ :object | object asStringOrText ].
 	columnCount := 1.
@@ -116,7 +160,7 @@ RadioGroupPresenter >> initializePresenters [
 	title := LabelPresenter new.
 	title text: self class title.
 	self updateButtons.
-	self layout: self defaultLayout.
+	self updateCurrentLayout 
 ]
 
 { #category : 'as yet unclassified' }
@@ -135,26 +179,6 @@ RadioGroupPresenter >> items: aCollection [
                    updateCurrentLayout; correctIndexToFirst ].
 ]
 
-{ #category : 'as yet unclassified' }
-RadioGroupPresenter >> multipleColumnLayout [
-
-	| size hBoxLayout vBoxLayout high begin end |
-	hBoxLayout := SpBoxLayout newLeftToRight.
-	size := buttons size.
-	high := size + columnCount - 1 // columnCount.
-	begin := 1 - high.
-	end := 0.
-	columnCount timesRepeat: [
-			vBoxLayout := SpBoxLayout newTopToBottom.
-			begin := begin + high.
-			end := end + high.
-			begin to: (end min: size) do: [ :i |
-			vBoxLayout add: (buttons at: i) ].
-			hBoxLayout add: vBoxLayout ].
-	end - size timesRepeat: [ vBoxLayout add: LabelPresenter new ].
-	^ hBoxLayout
-]
-
 { #category : 'removing' }
 RadioGroupPresenter >> removeItem: anObject [
    | keepIndex |
@@ -167,23 +191,9 @@ RadioGroupPresenter >> removeItem: anObject [
          updateCurrentLayout; correctIndexToFirst ].
 ]
 
-{ #category : 'initialization' }
-RadioGroupPresenter >> setColumnCount: aNumber [
-   columnCount := aNumber max: 1.
-   self updateCurrentLayout.
-]
-
 { #category : 'accessing - model' }
 RadioGroupPresenter >> setModelBeforeInitialization: aCollection [
    items := aCollection asOrderedCollection.
-]
-
-{ #category : 'as yet unclassified' }
-RadioGroupPresenter >> singleColumnLayout [
-   | boxLayout |
-   boxLayout := SpBoxLayout newTopToBottom.
-   buttons do: [ :btn | boxLayout add: btn ].
-   ^ boxLayout.
 ]
 
 { #category : 'accessing - deprecated' }
@@ -216,9 +226,8 @@ RadioGroupPresenter >> updateButtons [
 
 { #category : 'as yet unclassified' }
 RadioGroupPresenter >> updateCurrentLayout [
-   columnCount = 1
-      ifTrue: [ self layout: (self conditionalLayout: [ self singleColumnLayout ]) ]
-      ifFalse: [ self layout: (self conditionalLayout: [ self multipleColumnLayout ]) ].
+
+	self layout: self generateLayout.
 ]
 
 { #category : 'as yet unclassified' }
@@ -231,4 +240,11 @@ RadioGroupPresenter >> updateLabels [
 { #category : 'accessing' }
 RadioGroupPresenter >> whenIndexChangedDo: aBlock [
    whenIndexChangedDo := aBlock.
+]
+
+{ #category : 'initialization' }
+RadioGroupPresenter >> сolumnCount: aNumber [
+
+	columnCount := aNumber max: 1.
+	self updateCurrentLayout
 ]
