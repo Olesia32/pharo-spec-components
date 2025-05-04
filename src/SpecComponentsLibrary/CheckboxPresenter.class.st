@@ -6,9 +6,10 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-CheckboxPresenter >> initializePresenters [ 
-| checkbox |
-	checkbox := SpRadioButtonPresenter new.
-	self focusOrder add: checkbox .
-	self mainPresenter: checkbox 
+CheckboxPresenter >> initializePresenters [
+
+	| checkbox |
+	checkbox := SpCheckBoxPresenter new.
+	self focusOrder add: checkbox.
+	self mainPresenter: checkbox
 ]

@@ -7,7 +7,9 @@ Class {
 		'buttons',
 		'display',
 		'columnCount',
-		'isScrollable'
+		'isScrollable',
+		'showFrame',
+		'showTitle'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -95,7 +97,7 @@ AbstractSelectableGroupPresenter >> enableScrolling: aBoolean [
 { #category : 'as yet unclassified' }
 AbstractSelectableGroupPresenter >> generateLayout [
 
-	| layoutContent result |
+	| layoutContent result finalLayout |
 	layoutContent := columnCount = 1
 		                 ifTrue: [ self buildColumnLayout: 1 ]
 		                 ifFalse: [ self buildColumnLayout: columnCount ].
@@ -104,11 +106,28 @@ AbstractSelectableGroupPresenter >> generateLayout [
 		          ifTrue: [ SpScrollableLayout new child: layoutContent ]
 		          ifFalse: [ layoutContent ].
 
-	^ title ifNil: [ result ] ifNotNil: [
-			  SpFrameLayout new
-				  label: self title;
-				  add: result;
-				  yourself ]
+	"2. Обгортка рамкою (з label, якщо заголовок увімкнено)"
+	finalLayout := (showFrame and: showTitle)
+		               ifTrue: [
+				               SpFrameLayout new
+					               label: self title;
+					               add: result;
+					               yourself ]
+		               ifFalse: (showFrame
+				                ifTrue: [
+						                SpFrameLayout new
+							                add: result;
+							                yourself ]
+				                ifFalse: (showTitle
+						                 ifTrue: [
+								                 SpBoxLayout newTopToBottom
+									                 spacing: 5;
+									                 add: title expand: false;
+									                 add: result;
+									                 yourself ]
+						                 ifFalse: [ result ])).
+
+	^ finalLayout
 ]
 
 { #category : 'accessing' }
@@ -122,7 +141,9 @@ AbstractSelectableGroupPresenter >> initialize [
 
 	isScrollable := false.
 	columnCount := 1.
-	items := self class defaultItems .
+	showFrame := true.
+	showTitle := true.
+	items := self class defaultItems.
 	display := [ :object | object asStringOrText ].
 	super initialize
 ]
@@ -133,6 +154,11 @@ AbstractSelectableGroupPresenter >> initializePresenters [
     title text: self class title.
     self updateButtons.
     self updateCurrentLayout
+]
+
+{ #category : 'accessing' }
+AbstractSelectableGroupPresenter >> itemAtIndex: anIndex [ 
+    ^ items at: anIndex ifAbsent: [ nil ]
 ]
 
 { #category : 'accessing' }
@@ -150,6 +176,18 @@ AbstractSelectableGroupPresenter >> removeItem: anObject [
     self updateButtons.
     self connectPresenters.
     self updateCurrentLayout.
+]
+
+{ #category : 'accessing' }
+AbstractSelectableGroupPresenter >> showFrame: aBoolean [ 
+    showFrame := aBoolean.
+    self updateCurrentLayout
+]
+
+{ #category : 'accessing' }
+AbstractSelectableGroupPresenter >> showTitle: aBoolean [ 
+    showTitle := aBoolean.
+    self updateCurrentLayout
 ]
 
 { #category : 'accessing - deprecated' }

@@ -20,7 +20,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: checkboxGroupPresenter .
+	tmp1 add: checkboxGroupPresenter.
 	^ tmp1 yourself
 ]
 
@@ -118,10 +118,16 @@ TestPresenter >> initializePresenters [
 			Transcript
 				show: 'Selected index: ' , selectedIndex asString;
 				cr ].
-			
+
 	checkboxGroupPresenter := CheckboxGroupPresenter new.
-    checkboxGroupPresenter
-        title: 'Улюблені фрукти';
-        items: #( 'Яблуко' 'Банан' 'Апельсин' 'Ківі' 'Груша' );
-        сolumnCount: 2.
+	checkboxGroupPresenter
+		title: 'Улюблені фрукти';
+		items: #( 'Яблуко' 'Банан' 'Апельсин' 'Ківі' 'Груша' );
+		showTitle: true;
+		showFrame: false;
+		сolumnCount: 2.
+	checkboxGroupPresenter whenSelectionChangedDo: [ :indexes |
+			Transcript
+				show: 'Вибрано індекси: ' , indexes printString;
+				cr ]
 ]

@@ -2,7 +2,8 @@ Class {
 	#name : 'CheckboxGroupPresenter',
 	#superclass : 'AbstractSelectableGroupPresenter',
 	#instVars : [
-		'selectedIndexes'
+		'selectedIndexes',
+		'whenSelectionChangedDo'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -50,7 +51,16 @@ CheckboxGroupPresenter >> selectedIndexes [
 CheckboxGroupPresenter >> toggleSelectionAt: index [ 
     | buttonState |
     buttonState := (buttons at: index ifAbsent: [ ^ self ]) mainPresenter state.
+
     buttonState
         ifTrue: [ selectedIndexes add: index ]
-        ifFalse: [ selectedIndexes remove: index ]
+        ifFalse: [ selectedIndexes remove: index ].
+
+    whenSelectionChangedDo ifNotNil: [
+        whenSelectionChangedDo value: self selectedIndexes ]
+]
+
+{ #category : 'accessing' }
+CheckboxGroupPresenter >> whenSelectionChangedDo: aBlock [ 
+    whenSelectionChangedDo := aBlock
 ]

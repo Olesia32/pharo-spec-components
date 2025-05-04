@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'styleProperties',
 		'mainPresenter',
-		'appliedStyleName'
+		'appliedStyleName',
+		'name'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'

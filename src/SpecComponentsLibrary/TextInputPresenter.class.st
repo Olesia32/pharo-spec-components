@@ -19,18 +19,18 @@ TextInputPresenter >> addValidationRule: arg1 message: arg2 [
 ]
 
 { #category : 'adding' }
-TextInputPresenter >> addValidationRules: aValidationRules [ 
-    aValidationRules all do: [ :pair |
-        self addValidationRule: pair key message: pair value
-    ].
+TextInputPresenter >> addValidationRules: arg1 [
+
+	arg1 all do: [ :arg2 |
+		self addValidationRule: arg2 key message: arg2 value ]
 ]
 
 { #category : 'as yet unclassified' }
 TextInputPresenter >> connectPresenters [
 
 	mainPresenter whenTextChangedDo: [ self validate ].
-	self onValidationChangedDo: [ :valid |
-			valid
+	self onValidationChangedDo: [ :arg1 |
+			arg1
 				ifTrue: [ self borderColor: '#green' ]
 				ifFalse: [ self borderColor: '#red' ].
 			self borderWidth: 1 ]
@@ -120,15 +120,15 @@ TextInputPresenter >> text: arg1 [
 { #category : 'initialization' }
 TextInputPresenter >> validate [
 
-	| text |
-	text := self text.
-	validationRules keysAndValuesDo: [ :rule :message |
-			(rule value: text) ifFalse: [
+	| tmp1 |
+	tmp1 := self text.
+	validationRules keysAndValuesDo: [ :arg1 :arg2 |
+			(arg1 value: tmp1) ifFalse: [
 					isValid := false.
 					validationStatusModel contents: false.
 					announcer announce:
 						(ValidationStatusChanged new newValue: isValid).
-					errorLabel text: message.
+					errorLabel text: arg2.
 					errorLabel mainPresenter visibleIf: true.
 					^ false ] ].
 	isValid := true.
