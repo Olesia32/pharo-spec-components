@@ -8,7 +8,8 @@ Class {
 		'comboboxPresenter',
 		'multComboboxPresenter',
 		'form',
-		'radioGroup'
+		'radioGroup',
+		'checkboxGroupPresenter'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -16,11 +17,10 @@ Class {
 
 { #category : 'layout' }
 TestPresenter >> defaultLayout [
-   
+
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1
-		add: radioGroup.
+	tmp1 add: checkboxGroupPresenter .
 	^ tmp1 yourself
 ]
 
@@ -105,9 +105,11 @@ TestPresenter >> initializePresenters [
 	radioGroup := RadioGroupPresenter new.
 	radioGroup
 		items:
-			#( 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5' 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5'
-			   'Option 6' 'Option 6'  'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5' 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5'
-			   'Option 6' 'Option 6');
+			#( 'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5'
+			   'Option 1' 'Option 2' 'Option 3' 'Option 4' 'Option 5'
+			   'Option 6' 'Option 6' 'Option 1' 'Option 2' 'Option 3'
+			   'Option 4' 'Option 5' 'Option 1' 'Option 2' 'Option 3'
+			   'Option 4' 'Option 5' 'Option 6' 'Option 6' );
 		title: 'Choose an option:';
 		enableScrolling: true;
 		сolumnCount: 1.
@@ -115,5 +117,11 @@ TestPresenter >> initializePresenters [
 	radioGroup whenIndexChangedDo: [ :selectedIndex |
 			Transcript
 				show: 'Selected index: ' , selectedIndex asString;
-				cr ]
+				cr ].
+			
+	checkboxGroupPresenter := CheckboxGroupPresenter new.
+    checkboxGroupPresenter
+        title: 'Улюблені фрукти';
+        items: #( 'Яблуко' 'Банан' 'Апельсин' 'Ківі' 'Груша' );
+        сolumnCount: 2.
 ]
