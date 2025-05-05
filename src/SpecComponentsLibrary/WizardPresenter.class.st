@@ -55,6 +55,21 @@ WizardPresenter >> onFinishDo: aBlock [
     
 ]
 
+{ #category : 'as yet unclassified' }
+WizardPresenter >> stepCircleRadius: aNumber [
+    stepHeaderPresenters isNil ifTrue: [ ^ self ].
+    aNumber isNil ifTrue: [ ^ self ].
+    stepHeaderPresenters radius: (aNumber max: 5).
+    self updateLayout 
+   
+]
+
+{ #category : 'as yet unclassified' }
+WizardPresenter >> stepCircleTitleColor: aColor [
+stepHeaderPresenters titleColor: aColor.
+    
+]
+
 { #category : 'accessing' }
 WizardPresenter >> steps: aCollection [ 
     |stepTitles|
@@ -81,7 +96,7 @@ WizardPresenter >> updateLayout [
 
     self layout: (SpBoxLayout newTopToBottom
         spacing: 10;
-        add: stepHeaderPresenters;
+        add: stepHeaderPresenters withConstraints: [:c | c height: stepHeaderPresenters headerHeight ];
         add: contentPresenter;
         add: buttonBar expand: false;
         yourself).

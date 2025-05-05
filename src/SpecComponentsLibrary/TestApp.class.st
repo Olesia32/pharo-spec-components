@@ -23,7 +23,7 @@ TestApp >> start [
 	p application: self.
 	window :=  p open.
 	window window
-		beUnresizeable;
+	   beUnresizeable ;
 		removeExpandBox;
 		removeCollapseBox;
 		removeMenuBox

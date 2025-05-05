@@ -148,5 +148,7 @@ step3 at: #title put: 'Confirmation';
 
 wizard := WizardPresenter new.
 wizard steps: { step1. step2. step3 }.
+wizard stepCircleRadius: 20.
+wizard stepCircleTitleColor: Color gray.
 wizard onFinishDo: [ UIManager inform: 'Done!' ].
 ]

@@ -10,9 +10,9 @@ Class {
 		'activeColor',
 		'defaultColor',
 		'borderColor',
-		'labelFontSize',
 		'titleFontSize',
-		'labelColor'
+		'titleColor',
+		'labelFontSize'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -31,8 +31,57 @@ StepHeaderPresenter >> activeIndex: anInteger [
 ]
 
 { #category : 'accessing' }
+StepHeaderPresenter >> buildOuterCircleAt: x y: y color: aColor [ 
+    ^ RSEllipse new
+        radius: radius + 4;
+        color: Color transparent;
+        borderColor: aColor darker;
+        borderWidth: 2;
+        position: x @ y;
+        yourself
+]
+
+{ #category : 'accessing' }
+StepHeaderPresenter >> buildStepCircleAt: x y: y color: fillColor borderColor: strokeColor [ 
+    ^ RSEllipse new
+        radius: radius;
+        color: fillColor;
+        borderColor: strokeColor;
+        borderWidth: 1;
+        position: x @ y;
+        yourself
+]
+
+{ #category : 'accessing' }
+StepHeaderPresenter >> buildStepLabelAt: x y: y text: aString fontSize: aSize color: aColor [ 
+    ^ RSLabel new
+        text: aString;
+        fontSize: aSize;
+        color: aColor;
+        position: x @ y;
+        yourself
+]
+
+{ #category : 'accessing' }
+StepHeaderPresenter >> buildStepTitleAt: x y: y text: aString [ 
+    ^ RSLabel new
+        text: aString;
+        fontSize: titleFontSize;
+        color: titleColor;
+        position: x @ y;
+        yourself
+]
+
+{ #category : 'accessing' }
 StepHeaderPresenter >> canvas [ 
   ^ roassalPresenter canvas
+]
+
+{ #category : 'as yet unclassified' }
+StepHeaderPresenter >> centerXOfStep: i plusRadius: aBool [ 
+    | x |
+    x := (i * stepSpacing).
+    ^ aBool ifTrue: [ x + radius ] ifFalse: [ x - radius ].
 ]
 
 { #category : 'layout' }
@@ -41,6 +90,12 @@ StepHeaderPresenter >> defaultLayout [
         spacing: 0;
         add: roassalPresenter;
         yourself
+]
+
+{ #category : 'accessing' }
+StepHeaderPresenter >> headerHeight [ 
+  ^ ((radius + 4) * 2) + 20 + titleFontSize.
+
 ]
 
 { #category : 'initialization' }
@@ -53,17 +108,11 @@ StepHeaderPresenter >> initializePresenters [
     borderColor := Color lightGray.
     labelFontSize := 12.
     titleFontSize := 10.
-    labelColor := Color black.
+    titleColor := Color black.
     stepTitles := #('Step 1' 'Step 2' 'Step 3').
 
     roassalPresenter := self newRoassal.
     roassalPresenter canvas background: Color transparent.
-    self render.
-]
-
-{ #category : 'accessing' }
-StepHeaderPresenter >> labelColor: aColor [ 
-    labelColor := aColor.
     self render.
 ]
 
@@ -75,76 +124,77 @@ StepHeaderPresenter >> labelFontSize: aNumber [
 
 { #category : 'accessing' }
 StepHeaderPresenter >> radius: aNumber [ 
+    |totalWidth|
     radius := aNumber.
+    stepSpacing := (radius * 2) + 100.
+    totalWidth := ((stepTitles size - 1) * stepSpacing).
+    roassalPresenter canvas camera translateBy: ((totalWidth / 2) @ (radius - 10)) negated.
     self render.
 ]
 
 { #category : 'rendering' }
-StepHeaderPresenter >> render [
-    | view startX startY |
+StepHeaderPresenter >> render [ 
+    | view |
     view := roassalPresenter canvas.
     view shapes do: [ :each | view removeShape: each ].
 
-    startX := 0. "відступ зліва"
-    startY := 0. "висота лінії кнопок"
+    self renderStepsOn: view.
+    self renderStepLinesOn: view.
+
+]
+
+{ #category : 'rendering' }
+StepHeaderPresenter >> renderStepLinesOn: view [ 
+
+    1 to: (stepTitles size - 1) do: [ :i |
+        | start end lineColor line |
+        start := self centerXOfStep: (i - 1) plusRadius: true.
+        end := self centerXOfStep: i plusRadius: false.
+
+        lineColor := (i < activeIndex ifTrue: [ activeColor ] ifFalse: [ borderColor ]).
+        line := RSLine newFrom: (start @ 0) to: (end @ 0).
+        line color: lineColor.
+        line width: 2.
+        view add: line.]
+]
+
+{ #category : 'rendering' }
+StepHeaderPresenter >> renderStepsOn: view [ 
+    | startX startY |
+    startX := 0.
+    startY := 0.
 
     (1 to: stepTitles size) do: [ :i |
-        | xPos circle label title stepColor outerCircle |
+        | xPos stepColor circle label title outerCircle textSize textColor |
 
         xPos := startX + ((i - 1) * stepSpacing).
         stepColor := (i <= activeIndex) ifTrue: [ activeColor ] ifFalse: [ defaultColor ].
 
+        textSize := (radius * 0.6) rounded.
+        textColor := (stepColor luminance < 0.7) ifTrue: [ Color white ] ifFalse: [ Color black ].
+
         (i = activeIndex) ifTrue: [
-            outerCircle := RSEllipse new.
-            outerCircle radius: radius + 4.
-            outerCircle color: Color transparent.
-            outerCircle borderColor: activeColor darker.
-            outerCircle borderWidth: 2.
-            outerCircle position: xPos @ startY.
+            outerCircle := self buildOuterCircleAt: xPos y: startY color: activeColor.
             view add: outerCircle
         ].
 
-        circle := RSEllipse new.
-        circle radius: radius.
-        circle color: stepColor.
-        circle borderColor: (i = activeIndex ifTrue: [ activeColor darker ] ifFalse: [ borderColor ]).
-        circle borderWidth: 1.
-        circle position: xPos @ startY.
-
-        label := RSLabel new.
-        label text: i asString.
-        label color: (i <= activeIndex ifTrue: [ Color white ] ifFalse: [ labelColor ]).
-        label fontSize: labelFontSize.
-        label position: xPos @ startY.
-
-        title := RSLabel new.
-        title text: (stepTitles at: i).
-        title color: Color black.
-        title fontSize: titleFontSize.
-        title position: xPos @ (startY + 35).
+        circle := self buildStepCircleAt: xPos y: startY color: stepColor borderColor: (i = activeIndex ifTrue: [ activeColor darker ] ifFalse: [ borderColor ]).
+        label := self buildStepLabelAt: xPos y: startY text: i asString fontSize: textSize color: textColor.
+        title := self buildStepTitleAt: xPos y: (startY + (radius + 4) + 15) text: (stepTitles at: i).
 
         view addAll: { circle. label. title }.
     ].
-
-    1 to: (stepTitles size - 1) do: [ :i |
-        | start end lineColor line |
-        start := startX + ((i - 1) * stepSpacing) + radius.
-        end := startX + (i * stepSpacing) - radius.
-
-        lineColor := (i < activeIndex ifTrue: [ activeColor ] ifFalse: [ borderColor ]).
-
-        line := RSLine newFrom: (start @ startY) to: (end @ startY).
-        line color: lineColor.
-        line width: 2.
-
-        view add: line.
-    ].
-
 ]
 
 { #category : 'accessing' }
 StepHeaderPresenter >> stepTitles: aCollection [ 
     stepTitles := aCollection.
+    self render.
+]
+
+{ #category : 'accessing' }
+StepHeaderPresenter >> titleColor: aColor [ 
+    titleColor := aColor.
     self render.
 ]
 
