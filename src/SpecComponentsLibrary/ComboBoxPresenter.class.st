@@ -93,7 +93,6 @@ ComboBoxPresenter >> filterAndShowList [
 ComboBoxPresenter >> initializePresenters [
 
 	textInput := TextInputPresenter new.
-	textInput width: 100.
 	list := ListPresenter new.
 	list mainPresenter visibleIf: false.
 	toggleButton := SpButtonPresenter new.

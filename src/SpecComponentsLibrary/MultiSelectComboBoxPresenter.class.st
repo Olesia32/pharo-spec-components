@@ -3,103 +3,93 @@ Class {
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'textInput',
-		'checkboxContainer',
 		'toggleButton',
+		'list',
 		'allItems',
-		'filteredItems',
 		'selectedItems',
-		'isOpen',
-		'checkboxes'
+		'checkboxes',
+		'isOpen'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
 
 { #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> defaultLayout [
-
-	^ SpBoxLayout newTopToBottom
-		  add: (SpBoxLayout newLeftToRight
-				   add: textInput;
-				   add: toggleButton withConstraints: [ :c |
-						   c
-							   width: 20;
-							   expand: false ]);
-		  add: checkboxContainer mainPresenter withConstraints: [ :c |
-			  c
-				  height: 150;
-				  expand: false ];
-		  yourself
+MultiSelectComboBoxPresenter >> defaultLayout [ 
+    ^ SpBoxLayout newTopToBottom
+        add: (SpBoxLayout newLeftToRight
+            add: textInput mainPresenter;
+            add: toggleButton withConstraints: [ :c |
+                c width: 25; expand: false ]);
+        add: list withConstraints: [ :c |
+            c height: 150; expand: false ];
+        yourself
 ]
 
 { #category : 'private' }
 MultiSelectComboBoxPresenter >> filterList [ 
-    | query |
+    | query filtered |
     query := textInput text asLowercase.
-    filteredItems := allItems select: [ :each |
+    filtered := allItems select: [ :each |
         each asString asLowercase includesSubstring: query ].
-    self updateCheckboxes
+    self updateListWith: filtered.
 ]
 
-{ #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> initializePresenters [
+{ #category : 'initialization' }
+MultiSelectComboBoxPresenter >> initialize [ 
+    super initialize.
+    allItems := #().
+    selectedItems := Set new.
+    checkboxes := Dictionary new.
+    isOpen := false.
+    announcer := Announcer new.
+]
 
-	textInput := TextInputPresenter new.
-	textInput placeholder: 'Пошук...'; height: 50.
-	textInput mainPresenter whenTextChangedDo: [ self filterList ].
+{ #category : 'initialization' }
+MultiSelectComboBoxPresenter >> initializePresenters [ 
+    textInput := TextInputPresenter new.
+    textInput mainPresenter placeholder: 'Фільтр...'.
+    textInput mainPresenter whenTextChangedDo: [ self filterList ].
 
-	toggleButton := SpButtonPresenter new.
-	toggleButton icon: (self iconNamed: #arrowDown).
-	toggleButton action: [ self toggleList ].
+    toggleButton := SpButtonPresenter new.
+    toggleButton label: '▼'.
+    toggleButton action: [ self toggleList ].
 
-	checkboxContainer := BasePresenter new.
-	checkboxContainer mainPresenter: SpPresenter new.
-	checkboxContainer mainPresenter layout: SpBoxLayout newTopToBottom.
-	checkboxContainer mainPresenter visibleIf: false.
-
-	allItems := #(  ).
-	filteredItems := #(  ).
-	selectedItems := Set new.
-	checkboxes := Dictionary new.
-	isOpen := false.
-	announcer := Announcer new
+    list := SpComponentListPresenter new.
+    list visibleIf: false.
 ]
 
 { #category : 'api' }
 MultiSelectComboBoxPresenter >> items: aCollection [ 
-    allItems := aCollection.
+    allItems := aCollection reject: [ :each | each isNil ].
+    selectedItems := Set new.
     self filterList
 ]
 
 { #category : 'as yet unclassified' }
 MultiSelectComboBoxPresenter >> toggleList [ 
     isOpen := isOpen not.
-    checkboxContainer visibleIf: isOpen.
-    self updateToggleButtonIcon
+    list visibleIf: isOpen.
 ]
 
 { #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> updateCheckboxes [
+MultiSelectComboBoxPresenter >> updateListWith: visibleItems [ 
+    list items: #().
+    checkboxes := Dictionary new.
 
-	| layout |
-	layout := checkboxContainer mainPresenter layout.
-	layout removeAll.
-
-	checkboxes := Dictionary new.
-
-	filteredItems do: [ :item |
-			| cb |
-			cb := self newCheckBox.
-			cb label: item asString.
-			cb state: (selectedItems includes: item).
-			cb whenChangedDo: [ :checked |
-					checked
-						ifTrue: [ selectedItems add: item ]
-						ifFalse: [ selectedItems remove: item ].
-					announcer announce:
-						(ComboBoxItemSelected new item: selectedItems) ].
-			checkboxes at: item put: cb.
-			layout add: cb]
+    visibleItems do: [ :item |
+        | cb |
+        cb := CheckboxPresenter new.
+        cb mainPresenter label: item asString.
+        cb mainPresenter state: (selectedItems includes: item).
+        cb mainPresenter whenChangedDo: [ :checked |
+            checked
+                ifTrue: [ selectedItems add: item ]
+                ifFalse: [ selectedItems remove: item ].
+            announcer announce: (ComboBoxItemSelected new item: selectedItems) ].
+        checkboxes at: item put: cb .
+        list addPresenter: cb.
+    ].
 ]
 
 { #category : 'as yet unclassified' }
@@ -111,6 +101,6 @@ MultiSelectComboBoxPresenter >> updateToggleButtonIcon [
 MultiSelectComboBoxPresenter >> whenSelectionChangedDo: aBlock [ 
     announcer
         when: ComboBoxItemSelected
-        do: [ :event | aBlock value: event item ]
-        for: self
+        do: [ :evt | aBlock value: evt item ]
+        for: self.
 ]

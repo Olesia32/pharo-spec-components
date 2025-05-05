@@ -21,7 +21,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: wizard.
+	tmp1 add: multComboboxPresenter expand: false.
 	^ tmp1 yourself
 ]
 
@@ -56,8 +56,13 @@ TestPresenter >> initializePresenters [
 	comboboxPresenter items:
 		#( 'Kyiv' 'Lviv' 'Kharkiv' 'Odesa' 'Dnipro' 'Lutsk' ).
 	multComboboxPresenter := MultiSelectComboBoxPresenter new.
-	multComboboxPresenter items:
-		#( 'Kyiv' 'Lviv' 'Kharkiv' 'Odesa' 'Dnipro' 'Lutsk' ).
+   multComboboxPresenter items: #( 'Apple' 'Banana' 'Kiwi' 'Mango' 'Orange' ).
+   multComboboxPresenter whenSelectionChangedDo: [ :selected |
+    Transcript show: 'Selected: ', selected printString; cr ].
+
+		
+		
+		
 	tmp2 := FormStyle new.
 	tmp2
 		labelColor: '#013220';
