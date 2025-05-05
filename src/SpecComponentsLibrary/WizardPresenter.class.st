@@ -5,7 +5,6 @@ Class {
 		'steps',
 		'currentStepIndex',
 		'stepHeaderPresenters',
-		'stepHeaderBar',
 		'contentPresenter',
 		'nextButton',
 		'backButton',
@@ -41,7 +40,7 @@ WizardPresenter >> initializePresenters [
     steps := OrderedCollection new.
     currentStepIndex := 1.
 
-    stepHeaderBar := SpBoxLayout newLeftToRight spacing: 20.
+    stepHeaderPresenters := StepHeaderPresenter new.
 
     contentPresenter := SpPresenter new.
 
@@ -58,7 +57,10 @@ WizardPresenter >> onFinishDo: aBlock [
 
 { #category : 'accessing' }
 WizardPresenter >> steps: aCollection [ 
+    |stepTitles|
     steps := aCollection asOrderedCollection.
+    stepTitles := steps collect: [ :step | step at: #title ].
+    stepHeaderPresenters stepTitles: stepTitles .
     self goToStep: 1.
 ]
 
@@ -79,7 +81,7 @@ WizardPresenter >> updateLayout [
 
     self layout: (SpBoxLayout newTopToBottom
         spacing: 10;
-        add: stepHeaderBar expand: false;
+        add: stepHeaderPresenters;
         add: contentPresenter;
         add: buttonBar expand: false;
         yourself).
@@ -89,25 +91,7 @@ WizardPresenter >> updateLayout [
 { #category : 'as yet unclassified' }
 WizardPresenter >> updateStepHeader [
 
-	| start end visibleSteps |
-	stepHeaderBar removeAll.
-
-	start := currentStepIndex - 1 max: 1.
-	end := currentStepIndex + 1 min: steps size.
-
-	visibleSteps := (start to: end) collect: [ :i |
-			                | labelPresenter |
-			                labelPresenter := LabelPresenter new.
-			                labelPresenter text:
-				                (i asString , '. ' , ((steps at: i) at: #title)).
-			                i = currentStepIndex
-				                ifTrue: [
-						                labelPresenter
-							                bold;
-							                color: '#red' ]
-				                ifFalse: [ labelPresenter color: '#gray' ].
-			                labelPresenter ].
-	visibleSteps do: [ :stepLabel | stepHeaderBar add: stepLabel ].
+	stepHeaderPresenters activeIndex: currentStepIndex 
 ]
 
 { #category : 'enumerating' }
