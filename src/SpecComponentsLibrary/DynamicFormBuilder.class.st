@@ -83,30 +83,46 @@ DynamicFormBuilder >> backButtonLabel: arg1 [
 ]
 
 { #category : 'accessing' }
-DynamicFormBuilder >> collectValues [
+DynamicFormBuilder >> collectValues [ 
 
-	| tmp1 |
-	tmp1 := Dictionary new.
-	fieldPresenters do: [ :arg1 |
-			| tmp2 tmp3 tmp4 |
-			tmp2 := arg1 key.
-			tmp3 := arg1 value.
-			tmp4 := (tmp3 isKindOf: TextInputPresenter)
-				        ifTrue: [ tmp3 text ]
-				        ifFalse: [
-						        (tmp3 isKindOf: SpDropListPresenter)
-							        ifTrue: [ tmp3 selectedItem ]
-							        ifFalse: [
-									        (tmp3 isKindOf: ComboBoxPresenter)
-										        ifTrue: [ tmp3 selectedItem ]
-										        ifFalse: [
-												        (tmp3 isKindOf: SpDatePresenter)
-													        ifTrue: [ tmp3 date ]
-													        ifFalse: [
-													        (tmp3 isKindOf: SpCheckBoxPresenter) ifTrue: [
-														        tmp3 state ] ] ] ] ].
-			tmp1 at: tmp2 put: tmp4 ].
-	^ tmp1
+    | result |
+    result := Dictionary new.
+
+    fieldPresenters do: [ :assoc |
+        | key presenter value |
+        key := assoc key.
+        presenter := assoc value.
+
+        value :=
+            (presenter isKindOf: TextInputPresenter)
+                ifTrue: [ presenter text ]
+            ifFalse: [
+                (presenter isKindOf: SpDropListPresenter)
+                    ifTrue: [ presenter selectedItem ]
+                ifFalse: [
+                    (presenter isKindOf: ComboBoxPresenter)
+                        ifTrue: [ presenter selectedItem ]
+                    ifFalse: [
+                        (presenter isKindOf: SpDatePresenter)
+                            ifTrue: [ presenter date ]
+                        ifFalse: [
+                            (presenter isKindOf: CheckboxPresenter)
+                                ifTrue: [ presenter mainPresenter state ]
+                            ifFalse: [
+                                (presenter isKindOf: RadioGroupPresenter)
+                                    ifTrue: [ presenter itemSelected ]
+                                ifFalse: [
+                                    (presenter isKindOf: CheckboxGroupPresenter)
+                                        ifTrue: [ presenter selectedIndexes ]
+                                    ifFalse: [ nil ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ].
+
+        result at: key put: value.]
 ]
 
 { #category : 'as yet unclassified' }
@@ -123,44 +139,63 @@ DynamicFormBuilder >> connectPresenters [
 ]
 
 { #category : 'as yet unclassified' }
-DynamicFormBuilder >> createPresenterFromSpec: arg1 [
+DynamicFormBuilder >> createPresenterFromSpec: arg1 [ 
 
-	| tmp1 tmp2 tmp3 |
-	tmp1 := arg1 at: #type.
-	tmp2 := arg1 at: #label ifAbsent: ''.
-	tmp3 := tmp1 = 'label'
-		        ifTrue: [ LabelPresenter new text: tmp2 ]
-		        ifFalse: [
-				        tmp1 = 'text'
-					        ifTrue: [ TextInputPresenter new ]
-					        ifFalse: [
-							        tmp1 = 'dropdown'
-								        ifTrue: [ SpDropListPresenter new ]
-								        ifFalse: [
-										        tmp1 = 'combobox'
-											        ifTrue: [ ComboBoxPresenter new ]
-											        ifFalse: [
-													        tmp1 = 'checkbox'
-														        ifTrue: [ SpCheckBoxPresenter new ]
-														        ifFalse: [
-																        tmp1 = 'radiobutton'
-																	        ifTrue: [ SpRadioButtonPresenter new ]
-																	        ifFalse: [
-																			        tmp1 = 'date'
-																				        ifTrue: [ SpDatePresenter new ]
-																				        ifFalse: [
-																				        LabelPresenter new text:
-																					        'Unsupported type: ' , tmp1 ] ] ] ] ] ] ].
-	(tmp3 respondsTo: #label:) ifTrue: [ tmp3 label: tmp2 ].
-	(arg1 includesKey: #placeholder) ifTrue: [
-			(tmp3 respondsTo: #placeholder:) ifTrue: [
-				tmp3 placeholder: (arg1 at: #placeholder) ] ].
-	(arg1 includesKey: #items) ifTrue: [
-		(tmp3 respondsTo: #items:) ifTrue: [ tmp3 items: (arg1 at: #items) ] ].
-	(arg1 includesKey: #validationRules) ifTrue: [
-			(tmp3 respondsTo: #addValidationRule:message:) ifTrue: [
-				(arg1 at: #validationRules) applyTo: tmp3 ] ].
-	^ tmp3
+    | type label presenter |
+    type := arg1 at: #type.
+    label := arg1 at: #label ifAbsent: ''.
+
+    presenter := 
+        type = 'label'
+            ifTrue: [ LabelPresenter new text: label ]
+        ifFalse: [
+            type = 'text'
+                ifTrue: [ TextInputPresenter new ]
+            ifFalse: [
+                type = 'dropdown'
+                    ifTrue: [ SpDropListPresenter new ]
+                ifFalse: [
+                    type = 'combobox'
+                        ifTrue: [ ComboBoxPresenter new ]
+                    ifFalse: [
+                        type = 'checkbox'
+                            ifTrue: [ CheckboxPresenter new ]
+                        ifFalse: [
+                            type = 'checkbox-group'
+                                ifTrue: [ CheckboxGroupPresenter new ]
+                            ifFalse: [
+                                type = 'radiogroup'
+                                    ifTrue: [ RadioGroupPresenter new ]
+                                ifFalse: [
+                                    LabelPresenter new text: 'Unsupported type: ', type
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ].
+
+    (presenter respondsTo: #label:) ifTrue: [ presenter label: label ].
+    (arg1 includesKey: #placeholder) ifTrue: [
+        (presenter respondsTo: #placeholder:) ifTrue: [
+            presenter placeholder: (arg1 at: #placeholder) ] ].
+    (arg1 includesKey: #items) ifTrue: [
+        (presenter respondsTo: #items:) ifTrue: [ presenter items: (arg1 at: #items) ] ].
+    (arg1 includesKey: #columns) ifTrue: [
+        (presenter respondsTo: #сolumnCount:) ifTrue: [
+            presenter сolumnCount: (arg1 at: #columns) ] ].
+    (arg1 includesKey: #frame) ifTrue: [
+        (presenter respondsTo: #showFrame:) ifTrue: [
+            presenter showFrame: (arg1 at: #frame) ] ].
+    (arg1 includesKey: #title) ifTrue: [
+        (presenter respondsTo: #title:) ifTrue: [
+            presenter title: (arg1 at: #title) ] ].
+    (arg1 includesKey: #validationRules) ifTrue: [
+        (presenter respondsTo: #addValidationRule:message:) ifTrue: [
+            (arg1 at: #validationRules) applyTo: presenter ] ].
+
+    ^ presenter
 ]
 
 { #category : 'as yet unclassified' }

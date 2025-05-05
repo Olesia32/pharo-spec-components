@@ -141,8 +141,8 @@ AbstractSelectableGroupPresenter >> initialize [
 
 	isScrollable := false.
 	columnCount := 1.
-	showFrame := true.
-	showTitle := true.
+	showFrame := false.
+	showTitle := false.
 	items := self class defaultItems.
 	display := [ :object | object asStringOrText ].
 	super initialize

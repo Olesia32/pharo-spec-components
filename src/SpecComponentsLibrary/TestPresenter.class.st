@@ -9,7 +9,8 @@ Class {
 		'multComboboxPresenter',
 		'form',
 		'radioGroup',
-		'checkboxGroupPresenter'
+		'checkboxGroupPresenter',
+		'wizard'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -20,14 +21,14 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: checkboxGroupPresenter.
+	tmp1 add: wizard.
 	^ tmp1 yourself
 ]
 
 { #category : 'initialization' }
 TestPresenter >> initializePresenters [
 
-	| tmp1 tmp2 |
+	| tmp1 tmp2 step1 step2 step3|
 	labelPresenter := LabelPresenter new.
 	labelPresenter
 		text: 'Привіт Pharo';
@@ -67,6 +68,7 @@ TestPresenter >> initializePresenters [
 	form := DynamicFormBuilder new.
 	form
 		style: tmp2;
+		header: 'Тестова форма';
 		fields: {
 				(Dictionary newFromPairs:
 						 { #type. 'label'. #key. #header. #label. 'Привіт Pharo' }).
@@ -83,8 +85,9 @@ TestPresenter >> initializePresenters [
 							 tmp1 }).
 				(Dictionary newFromPairs:
 						 { #type. 'checkbox'. #key. #agree. #label. 'Погоджуюсь з умовами' }).
+				(Dictionary newFromPairs: { #key. #favoriteFruits. #type. 'checkbox-group'. #title. 'Фрукти'. #label. 'Обрані фрукти'. #items. #( 'Яблуко' 'Груша' 'Ківі' 'Апельсин' ). #columns. 2}).
 				(Dictionary newFromPairs:
-						 { #type. 'radiobutton'. #key. #gender. #label. 'Стать' }).
+						 { #type. 'radiogroup'. #key. #gender. #label. 'Стать'. #items. #( 'Чоловік' 'Жінка' 'Інше' ). #columns. 3}).
 				(Dictionary newFromPairs: {
 							 #type.
 							 'dropdown'.
@@ -93,13 +96,13 @@ TestPresenter >> initializePresenters [
 							 #label.
 							 'Місто'.
 							 #items.
-							 #( 'Львів' 'Київ' 'Одеса' ) }) };
-		header: 'Тестова форма';
-		onSubmit: [ :arg2 |
-				Transcript
-					show: 'Успішно: ' , arg2 printString;
-					cr ].
-
+							 #( 'Львів' 'Київ' 'Одеса' ) }) }.
+form onSubmit: [ :values |
+    Transcript show: 'Отримані дані: '; cr.
+    values keysAndValuesDo: [ :k :v |
+        Transcript show: k asString , ' -> ' , v printString; cr ].
+].
+form onBack: [ Transcript show: 'Натиснуто "Скасувати"'; cr ].
 
 
 	radioGroup := RadioGroupPresenter new.
@@ -129,5 +132,21 @@ TestPresenter >> initializePresenters [
 	checkboxGroupPresenter whenSelectionChangedDo: [ :indexes |
 			Transcript
 				show: 'Вибрано індекси: ' , indexes printString;
-				cr ]
+				cr ].
+			
+step1 := Dictionary new.
+step1 at: #title put: 'Registration';
+       at: #content put: (SpPresenter new layout: (SpBoxLayout new add: form)).
+
+step2 := Dictionary new.
+step2 at: #title put: 'Personal Details';
+       at: #content put: (SpPresenter new layout: (SpBoxLayout new add: radioGroup )).
+
+step3 := Dictionary new.
+step3 at: #title put: 'Confirmation';
+       at: #content put: (SpPresenter new layout: (SpBoxLayout new add: checkboxGroupPresenter )).
+
+wizard := WizardPresenter new.
+wizard steps: { step1. step2. step3 }.
+wizard onFinishDo: [ UIManager inform: 'Done!' ].
 ]
