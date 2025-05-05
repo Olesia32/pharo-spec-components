@@ -21,7 +21,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: multComboboxPresenter expand: false.
+	tmp1 add: comboboxPresenter expand: false.
 	^ tmp1 yourself
 ]
 

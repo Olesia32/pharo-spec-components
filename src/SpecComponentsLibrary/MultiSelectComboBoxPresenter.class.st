@@ -1,29 +1,32 @@
 Class {
 	#name : 'MultiSelectComboBoxPresenter',
-	#superclass : 'SpPresenter',
+	#superclass : 'AbstractComboBoxPresenter',
 	#instVars : [
-		'textInput',
-		'toggleButton',
-		'list',
-		'allItems',
 		'selectedItems',
-		'checkboxes',
-		'isOpen'
+		'checkboxes'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
 
+{ #category : 'initialization' }
+MultiSelectComboBoxPresenter >> connectPresenters [ 
+    toggleButton onClick: [ self toggleList ].
+]
+
 { #category : 'as yet unclassified' }
+MultiSelectComboBoxPresenter >> createListPresenter [
+   ^ SpComponentListPresenter new
+]
+
+{ #category : 'layout' }
 MultiSelectComboBoxPresenter >> defaultLayout [ 
-    ^ SpBoxLayout newTopToBottom
-        add: (SpBoxLayout newLeftToRight
-            add: textInput mainPresenter;
-            add: toggleButton withConstraints: [ :c |
-                c width: 25; expand: false ]);
-        add: list withConstraints: [ :c |
-            c height: 150; expand: false ];
-        yourself
+	^ SpBoxLayout newTopToBottom
+		add: (SpBoxLayout newLeftToRight
+			add: textInput mainPresenter;
+			add: toggleButton withConstraints: [ :c | c width: 25; expand: false ]) expand: false;
+		   add: list withConstraints: [ :c | c  expand: false; height: 150];
+		yourself
 ]
 
 { #category : 'private' }
@@ -38,25 +41,16 @@ MultiSelectComboBoxPresenter >> filterList [
 { #category : 'initialization' }
 MultiSelectComboBoxPresenter >> initialize [ 
     super initialize.
-    allItems := #().
     selectedItems := Set new.
     checkboxes := Dictionary new.
-    isOpen := false.
-    announcer := Announcer new.
 ]
 
 { #category : 'initialization' }
 MultiSelectComboBoxPresenter >> initializePresenters [ 
-    textInput := TextInputPresenter new.
+    super initializePresenters.
+    list visibleIf: false.
     textInput mainPresenter placeholder: 'Фільтр...'.
     textInput mainPresenter whenTextChangedDo: [ self filterList ].
-
-    toggleButton := SpButtonPresenter new.
-    toggleButton label: '▼'.
-    toggleButton action: [ self toggleList ].
-
-    list := SpComponentListPresenter new.
-    list visibleIf: false.
 ]
 
 { #category : 'api' }
@@ -70,6 +64,7 @@ MultiSelectComboBoxPresenter >> items: aCollection [
 MultiSelectComboBoxPresenter >> toggleList [ 
     isOpen := isOpen not.
     list visibleIf: isOpen.
+    self updateToggleButtonIcon.
 ]
 
 { #category : 'as yet unclassified' }
@@ -88,13 +83,7 @@ MultiSelectComboBoxPresenter >> updateListWith: visibleItems [
                 ifFalse: [ selectedItems remove: item ].
             announcer announce: (ComboBoxItemSelected new item: selectedItems) ].
         checkboxes at: item put: cb .
-        list addPresenter: cb.
-    ].
-]
-
-{ #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> updateToggleButtonIcon [ 
-    toggleButton icon: (self iconNamed: (isOpen ifTrue: [#arrowUp] ifFalse: [#arrowDown]))
+        list addPresenter: cb.]
 ]
 
 { #category : 'enumerating' }
