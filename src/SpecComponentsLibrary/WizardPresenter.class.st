@@ -8,15 +8,33 @@ Class {
 		'contentPresenter',
 		'nextButton',
 		'backButton',
-		'onStepChanged'
+		'onStepChanged',
+		'onStepExit',
+		'onFinished'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
 
+{ #category : 'accessing' }
+WizardPresenter >> activeColor: aColor [
+  |color|
+  color := (Color fromHexString: aColor).
+  stepHeaderPresenters activeColor: color.
+  nextButton backgroundColor: aColor.
+  backButton backgroundColor: aColor.
+]
+
+{ #category : 'accessing' }
+WizardPresenter >> backButton [ 
+^ backButton 
+]
+
 { #category : 'as yet unclassified' }
 WizardPresenter >> goToNextStep [ 
-    self goToStep: currentStepIndex + 1.
+    (currentStepIndex = steps size)
+        ifTrue: [ onFinished ifNotNil: [ onFinished value ] ]
+        ifFalse: [ self goToStep: currentStepIndex + 1 ].
 ]
 
 { #category : 'as yet unclassified' }
@@ -28,6 +46,7 @@ WizardPresenter >> goToPreviousStep [
 WizardPresenter >> goToStep: aNumber [
 
 	(aNumber between: 1 and: steps size) ifFalse: [ ^ self ].
+	onStepExit ifNotNil: [ onStepExit value: currentStepIndex ].
 	currentStepIndex := aNumber.
 	contentPresenter layout: ((steps at: currentStepIndex) at: #content).
 	self updateButtonStates.
@@ -39,20 +58,26 @@ WizardPresenter >> goToStep: aNumber [
 WizardPresenter >> initializePresenters [ 
     steps := OrderedCollection new.
     currentStepIndex := 1.
-
+    onStepExit := nil.
+    onFinished := nil.
     stepHeaderPresenters := StepHeaderPresenter new.
 
     contentPresenter := SpPresenter new.
 
-    nextButton := ButtonPresenter new label: 'Вперед'; onClick: [ self goToNextStep ].
-    backButton := ButtonPresenter new label: 'Назад'; onClick: [ self goToPreviousStep ].
+    nextButton := ButtonPresenter new label: 'Далі'; onClick: [ self goToNextStep ]; height: 40.
+    backButton := ButtonPresenter new label: 'Повернутись'; onClick: [ self goToPreviousStep ]; height: 40.
 
     self updateLayout.
 ]
 
+{ #category : 'accessing' }
+WizardPresenter >> nextButton [
+^ nextButton 
+]
+
 { #category : 'enumerating' }
 WizardPresenter >> onFinishDo: aBlock [ 
-    
+    onFinished := aBlock.
 ]
 
 { #category : 'as yet unclassified' }
@@ -68,6 +93,11 @@ WizardPresenter >> stepCircleRadius: aNumber [
 WizardPresenter >> stepCircleTitleColor: aColor [
 stepHeaderPresenters titleColor: aColor.
     
+]
+
+{ #category : 'accessing' }
+WizardPresenter >> stepPresenterAt: index [ 
+    ^ (steps at: index ifAbsent: [ nil ]) ifNotNil: [ :step | step at: #content ifAbsent: [ nil ] ]
 ]
 
 { #category : 'accessing' }
@@ -95,7 +125,7 @@ WizardPresenter >> updateLayout [
         yourself.
 
     self layout: (SpBoxLayout newTopToBottom
-        spacing: 10;
+        spacing: 15;
         add: stepHeaderPresenters withConstraints: [:c | c height: stepHeaderPresenters headerHeight ];
         add: contentPresenter;
         add: buttonBar expand: false;
@@ -112,4 +142,9 @@ WizardPresenter >> updateStepHeader [
 { #category : 'enumerating' }
 WizardPresenter >> whenStepChangedDo: aBlock [ 
     onStepChanged := aBlock.
+]
+
+{ #category : 'enumerating' }
+WizardPresenter >> whenStepExitDo: aBlock [ 
+    onStepExit := aBlock.
 ]

@@ -150,5 +150,9 @@ wizard := WizardPresenter new.
 wizard steps: { step1. step2. step3 }.
 wizard stepCircleRadius: 20.
 wizard stepCircleTitleColor: Color gray.
-wizard onFinishDo: [ UIManager inform: 'Done!' ].
+wizard activeColor: '#99e699'.
+wizard whenStepChangedDo: [ :index | Transcript show: 'Новий крок: ', index printString; cr ].
+wizard whenStepExitDo: [ :index | Transcript show: 'Вихід із кроку: ', index printString; cr ].
+wizard onFinishDo: [ Transcript show: 'Виконано!'; cr ].
+
 ]
