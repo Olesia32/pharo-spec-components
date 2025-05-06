@@ -1,5 +1,5 @@
 Class {
-	#name : 'AbstractComboBoxPresenter',
+	#name : 'AbstractDropdownPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'textInput',
@@ -8,6 +8,7 @@ Class {
 		'allItems',
 		'isOpen',
 		'morphList',
+		'filteredItems',
 		'selectedIndex'
 	],
 	#category : 'SpecComponentsLibrary',
@@ -15,23 +16,24 @@ Class {
 }
 
 { #category : 'testing' }
-AbstractComboBoxPresenter class >> isAbstract [ 
+AbstractDropdownPresenter class >> isAbstract [ 
 ^ true
 ]
 
 { #category : 'accessing' }
-AbstractComboBoxPresenter >> allItems [
+AbstractDropdownPresenter >> allItems [
 
 	^ allItems
 ]
 
 { #category : 'as yet unclassified' }
-AbstractComboBoxPresenter >> announceSelectionWith: item [ 
-	announcer announce: (ComboBoxItemSelected new item: item)
+AbstractDropdownPresenter >> announceSelectionWith: arg1 [
+
+	announcer announce: (ComboBoxItemSelected new item: arg1)
 ]
 
 { #category : 'as yet unclassified' }
-AbstractComboBoxPresenter >> closeMorphList [
+AbstractDropdownPresenter >> closeMorphList [
 
 	morphList ifNotNil: [
 			morphList delete.
@@ -39,17 +41,23 @@ AbstractComboBoxPresenter >> closeMorphList [
 ]
 
 { #category : 'initialization' }
-AbstractComboBoxPresenter >> connectPresenters [ 
+AbstractDropdownPresenter >> connectPresenters [ 
  self subclassResponsibility 
 ]
 
 { #category : 'as yet unclassified' }
-AbstractComboBoxPresenter >> createListPresenter [ 
+AbstractDropdownPresenter >> createListPresenter [ 
     ^ SpPresenter new "Підклас може перевизначити на ListPresenter чи SpComponentListPresenter"
 ]
 
+{ #category : 'as yet unclassified' }
+AbstractDropdownPresenter >> createMorphList [
+
+	self subclassResponsibility
+]
+
 { #category : 'layout' }
-AbstractComboBoxPresenter >> defaultLayout [
+AbstractDropdownPresenter >> defaultLayout [
 
 	| tmp1 tmp2 |
 	tmp2 := SpBoxLayout newLeftToRight.
@@ -63,79 +71,77 @@ AbstractComboBoxPresenter >> defaultLayout [
 ]
 
 { #category : 'private' }
-AbstractComboBoxPresenter >> filterList [ 
+AbstractDropdownPresenter >> filterList [ 
  self subclassResponsibility 
 ]
 
-{ #category : 'initialization' }
-AbstractComboBoxPresenter >> initialize [ 
-	super initialize.
-	allItems := #().
-	announcer := Announcer new.
+{ #category : 'accessing' }
+AbstractDropdownPresenter >> filteredItems [
+
+	^ filteredItems
+]
+
+{ #category : 'accessing' }
+AbstractDropdownPresenter >> filteredItems: arg1 [
+
+	filteredItems := arg1
 ]
 
 { #category : 'initialization' }
-AbstractComboBoxPresenter >> initializePresenters [
+AbstractDropdownPresenter >> initialize [
+
+	super initialize.
+	allItems := #(  ).
+	filteredItems := #(  ).
+	announcer := Announcer new.
+	isOpen := false
+]
+
+{ #category : 'initialization' }
+AbstractDropdownPresenter >> initializePresenters [
 
 	textInput := TextInputPresenter new.
-	isOpen := false.
 	toggleButton := ButtonPresenter new.
-	toggleButton
-		onClick: [ self toggleList ];
-		backgroundColor: '#ffffff'.
-	list := self createListPresenter.
-	self
-		updateToggleButtonIcon;
-		connectPresenters
+	toggleButton onClick: [ self toggleList ].
+	isOpen := false.
+	self updateToggleButtonIcon
 ]
 
 { #category : 'api' }
-AbstractComboBoxPresenter >> items: aCollection [ 
-	allItems := aCollection reject: [ :each | each isNil ].
-	self filterList
+AbstractDropdownPresenter >> items: arg1 [
+
+	allItems := arg1 reject: [ :arg2 | arg2 isNil ]
 ]
 
 { #category : 'as yet unclassified' }
-AbstractComboBoxPresenter >> openMorphList [
+AbstractDropdownPresenter >> openMorphList [
 
-	| tmp1 width |
-	morphList := PluggableListMorph
-		             on: self
-		             list: #allItems
-		             selected: #selectedIndex
-		             changeSelected: #selectIndex:.
-	
-	width := textInput mainPresenter adapter widget width.
-	morphList width: width.
-	morphList
-		color: Color white.
+	| tmp1 tmp2 |
+	morphList := self createMorphList.
+	morphList color: Color white.
 	tmp1 := textInput mainPresenter adapter widget bounds bottomLeft.
-	morphList position: tmp1.
+	tmp2 := textInput mainPresenter adapter widget width.
+	morphList
+		width: tmp2;
+		position: tmp1.
 	World addMorph: morphList.
 	morphList comeToFront
 ]
 
-{ #category : 'api - selection' }
-AbstractComboBoxPresenter >> selectIndex: anIndex [ 
-	selectedIndex := anIndex.
-	anIndex > 0 ifTrue: [
-		| item |
-		item := allItems at: anIndex.
-		textInput text: item asString.
-		self announceSelectionWith: item
-	].
-	self closeMorphList.
-	isOpen := false.
-	self updateToggleButtonIcon.
-]
-
 { #category : 'accessing' }
-AbstractComboBoxPresenter >> selectedIndex [ 
+AbstractDropdownPresenter >> selectedIndex [
+
 	^ selectedIndex
 ]
 
+{ #category : 'accessing' }
+AbstractDropdownPresenter >> selectedIndex: anObject [
+
+	selectedIndex := anObject
+]
+
 { #category : 'as yet unclassified' }
-AbstractComboBoxPresenter >> toggleList [
+AbstractDropdownPresenter >> toggleList [
 
 	isOpen
 		ifTrue: [ self closeMorphList ]
@@ -145,12 +151,12 @@ AbstractComboBoxPresenter >> toggleList [
 ]
 
 { #category : 'as yet unclassified' }
-AbstractComboBoxPresenter >> updateToggleButtonIcon [ 
+AbstractDropdownPresenter >> updateToggleButtonIcon [ 
 	toggleButton mainPresenter icon: (self iconNamed: (isOpen ifTrue: [#arrowUp] ifFalse: [#arrowDown]))
 ]
 
 { #category : 'enumerating' }
-AbstractComboBoxPresenter >> whenSelectionChangedDo: aBlock [ 
+AbstractDropdownPresenter >> whenSelectionChangedDo: aBlock [ 
     announcer
         when: ComboBoxItemSelected
         do: [ :event | aBlock value: event item ]

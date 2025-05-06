@@ -1,10 +1,6 @@
 Class {
 	#name : 'ComboBoxPresenter',
-	#superclass : 'AbstractComboBoxPresenter',
-	#instVars : [
-		'isFiltering',
-		'selectedItem'
-	],
+	#superclass : 'AbstractDropdownPresenter',
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
@@ -12,79 +8,76 @@ Class {
 { #category : 'initialization' }
 ComboBoxPresenter >> connectPresenters [
 
-	textInput mainPresenter whenTextChangedDo: [ self filterList ].
-	list mainPresenter whenSelectedItemChangedDo: [ :arg1 |
-			selectedItem := arg1.
-			textInput text: (arg1 ifNil: [ '' ] ifNotNil: [ arg1 asString ]).
-			announcer announce: (ComboBoxItemSelected new item: arg1) ]
+	textInput mainPresenter whenTextChangedDo: [ self filterList ]
 ]
 
 { #category : 'as yet unclassified' }
-ComboBoxPresenter >> createListPresenter [
-   ^ ListPresenter new
+ComboBoxPresenter >> createMorphList [
+
+	^ PluggableListMorph
+		  on: self
+		  list: #filteredItems
+		  selected: #selectedIndex
+		  changeSelected: #selectIndex:
+]
+
+{ #category : 'private' }
+ComboBoxPresenter >> filterList [
+
+	| tmp1 tmp2 |
+	tmp1 := textInput text asLowercase.
+	filteredItems := allItems select: [ :arg1 |
+		                 arg1 asString asLowercase includesSubstring: tmp1 ].
+	tmp2 := filteredItems
+		        detect: [ :arg2 | arg2 asString = textInput text ]
+		        ifNone: [ ].
+	selectedIndex := tmp2
+		        ifNil: [ 0 ]
+		        ifNotNil: [ allItems indexOf: tmp2 ifAbsent: 0 ].
+	isOpen ifFalse: [ ^ self ].
+	self
+		closeMorphList;
+		openMorphList
 ]
 
 { #category : 'initialization' }
-ComboBoxPresenter >> filterList [ 
-    | query filtered previousText matchedItem |
-    isFiltering := true.
+ComboBoxPresenter >> initialize [
 
-    query := textInput text asLowercase.
+	super initialize.
+	selectedIndex := 0.
+]
 
-    filtered := allItems select: [ :each |
-        each notNil and: [ each asString asLowercase includesSubstring: query ] ].
+{ #category : 'initialization' }
+ComboBoxPresenter >> initializePresenters [
 
-    previousText := textInput text.
-    list mainPresenter resetListSelection.
-    list mainPresenter items: filtered.
-
-    list mainPresenter resetListSelection.
-
-    matchedItem := filtered
-        detect: [ :each | each asString = previousText ]
-        ifNone: [ nil ].
-
-    matchedItem ifNotNil: [
-        list mainPresenter selectItem: matchedItem.
-        selectedItem := matchedItem
-    ] ifNil: [
-        list mainPresenter selectItem: nil.
-        selectedItem := nil
-    ].
-
-    isFiltering := false.
+	super initializePresenters
 ]
 
 { #category : 'accessing' }
-ComboBoxPresenter >> items: aCollection [ 
-    allItems := aCollection reject: [ :each | each isNil ].
-    selectedItem := nil.
-    textInput text: ''.
-    list mainPresenter items: allItems.  
-    list mainPresenter selectItem: nil. 
+ComboBoxPresenter >> items: arg1 [
 
+	super items: arg1.
+	filteredItems := allItems.
+	self filterList
+]
+
+{ #category : 'api - selection' }
+ComboBoxPresenter >> selectIndex: anIndex [
+
+	selectedIndex := anIndex.
+
+	anIndex > 0 ifTrue: [
+			| item |
+			item := filteredItems at: anIndex.
+			textInput text: item asString.
+			announcer announce: (ComboBoxItemSelected new item: item) ].
+
+	self closeMorphList.
+	isOpen := false.
+	self updateToggleButtonIcon
 ]
 
 { #category : 'accessing' }
 ComboBoxPresenter >> selectedItem [ 
     ^ list selectedItem
-]
-
-{ #category : 'as yet unclassified' }
-ComboBoxPresenter >> validateTextInput [ 
-    | input match |
-    input := textInput text.
-    match := allItems detect: [ :each | each asString = input ] ifNone: [ nil ].
-
-    match
-        ifNil: [
-            selectedItem := nil.
-            textInput text: '' ]
-        ifNotNil: [
-            selectedItem := match.
-            textInput text: match asString.
-            announcer announce: (ComboBoxItemSelected new item: match) ].
-
-    list mainPresenter selectItem: nil.
-    self toggleList
 ]

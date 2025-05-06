@@ -1,6 +1,6 @@
 Class {
 	#name : 'MultiSelectComboBoxPresenter',
-	#superclass : 'AbstractComboBoxPresenter',
+	#superclass : 'AbstractDropdownPresenter',
 	#instVars : [
 		'selectedItems',
 		'checkboxes'
@@ -10,32 +10,32 @@ Class {
 }
 
 { #category : 'initialization' }
-MultiSelectComboBoxPresenter >> connectPresenters [ 
-    toggleButton onClick: [ self toggleList ].
+MultiSelectComboBoxPresenter >> connectPresenters [
+
+	textInput mainPresenter whenTextChangedDo: [ self filterList ].
+	toggleButton onClick: [ self toggleList ]
 ]
 
 { #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> createListPresenter [
-   ^ SpComponentListPresenter new
-]
+MultiSelectComboBoxPresenter >> createMorphList [
 
-{ #category : 'layout' }
-MultiSelectComboBoxPresenter >> defaultLayout [ 
-	^ SpBoxLayout newTopToBottom
-		add: (SpBoxLayout newLeftToRight
-			add: textInput mainPresenter;
-			add: toggleButton withConstraints: [ :c | c width: 25; expand: false ]) expand: false;
-		   add: list withConstraints: [ :c | c  expand: false; height: 150];
-		yourself
+	| tmp1 |
+	tmp1 := SpFTTableMorph new
+		        on: self
+		        list: #filteredItems
+		        selected: #selectedIndex
+		        changeSelected: #selectIndex:.
+	^ tmp1
 ]
 
 { #category : 'private' }
-MultiSelectComboBoxPresenter >> filterList [ 
-    | query filtered |
-    query := textInput text asLowercase.
-    filtered := allItems select: [ :each |
-        each asString asLowercase includesSubstring: query ].
-    self updateListWith: filtered.
+MultiSelectComboBoxPresenter >> filterList [
+
+	| tmp1 |
+	tmp1 := textInput text asLowercase.
+	filteredItems := allItems select: [ :arg1 |
+		                 arg1 asString asLowercase includesSubstring: tmp1 ].
+	self updateListWith: filteredItems
 ]
 
 { #category : 'initialization' }
@@ -46,44 +46,45 @@ MultiSelectComboBoxPresenter >> initialize [
 ]
 
 { #category : 'initialization' }
-MultiSelectComboBoxPresenter >> initializePresenters [ 
-    super initializePresenters.
-    list visibleIf: false.
-    textInput mainPresenter placeholder: 'Фільтр...'.
-    textInput mainPresenter whenTextChangedDo: [ self filterList ].
+MultiSelectComboBoxPresenter >> initializePresenters [
+
+	super initializePresenters.
+	textInput mainPresenter placeholder: 'Фільтр...'
 ]
 
 { #category : 'api' }
-MultiSelectComboBoxPresenter >> items: aCollection [ 
-    allItems := aCollection reject: [ :each | each isNil ].
-    selectedItems := Set new.
-    self filterList
+MultiSelectComboBoxPresenter >> items: arg1 [
+
+	super items: arg1.
+	selectedItems := Set new.
+	self filterList
+]
+
+{ #category : 'accessing' }
+MultiSelectComboBoxPresenter >> selectedItems [
+
+	^ selectedItems
 ]
 
 { #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> toggleList [ 
-    isOpen := isOpen not.
-    list visibleIf: isOpen.
-    self updateToggleButtonIcon.
-]
+MultiSelectComboBoxPresenter >> updateListWith: arg1 [
 
-{ #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> updateListWith: visibleItems [ 
-    list items: #().
-    checkboxes := Dictionary new.
-
-    visibleItems do: [ :item |
-        | cb |
-        cb := CheckboxPresenter new.
-        cb mainPresenter label: item asString.
-        cb mainPresenter state: (selectedItems includes: item).
-        cb mainPresenter whenChangedDo: [ :checked |
-            checked
-                ifTrue: [ selectedItems add: item ]
-                ifFalse: [ selectedItems remove: item ].
-            announcer announce: (ComboBoxItemSelected new item: selectedItems) ].
-        checkboxes at: item put: cb .
-        list addPresenter: cb.]
+	checkboxes := Dictionary new.
+	morphList ifNil: [ ^ self ] ifNotNil: [ morphList items: #(  ) ].
+	arg1 do: [ :arg2 |
+			| tmp1 |
+			tmp1 := CheckboxPresenter new.
+			tmp1 mainPresenter
+				label: arg2 asString;
+				state: (selectedItems includes: arg2);
+				whenChangedDo: [ :arg3 |
+						arg3
+							ifTrue: [ selectedItems add: arg2 ]
+							ifFalse: [ selectedItems remove: arg2 ].
+						announcer announce:
+								(ComboBoxItemSelected new item: selectedItems) ].
+			checkboxes at: arg2 put: tmp1.
+			morphList addPresenter: tmp1 ]
 ]
 
 { #category : 'enumerating' }

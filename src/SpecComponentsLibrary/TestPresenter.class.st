@@ -22,14 +22,14 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: comboboxPresenter expand: false.
+	tmp1 add: multComboboxPresenter expand: false.
 	^ tmp1 yourself
 ]
 
 { #category : 'initialization' }
 TestPresenter >> initializePresenters [
 
-	| tmp1 tmp2 step1 step2 step3|
+	| tmp1 tmp2 step1 step2 step3 |
 	labelPresenter := LabelPresenter new.
 	labelPresenter
 		text: 'Привіт Pharo';
@@ -46,24 +46,17 @@ TestPresenter >> initializePresenters [
 		addValidationRules: tmp1;
 		addValidationRule: [ :arg1 | arg1 includes: $@ ]
 		message: 'Невірний email'.
-	buttonPresenter := ButtonPresenter new.
-	buttonPresenter
-		backgroundColor: '#b3dcfd';
-		width: 100;
-		hResizing: false;
-		height: 60;
-		label: 'Вперед'.
 	comboboxPresenter := ComboBoxPresenter new.
 	comboboxPresenter items:
 		#( 'Kyiv' 'Lviv' 'Kharkiv' 'Odesa' 'Dnipro' 'Lutsk' ).
-	multComboboxPresenter := MultiSelectComboBoxPresenter new.
+
+multComboboxPresenter := MultiSelectComboBoxPresenter new.
    multComboboxPresenter items: #( 'Apple' 'Banana' 'Kiwi' 'Mango' 'Orange' ).
    multComboboxPresenter whenSelectionChangedDo: [ :selected |
     Transcript show: 'Selected: ', selected printString; cr ].
 
-		
-		
-		
+
+
 	tmp2 := FormStyle new.
 	tmp2
 		labelColor: '#013220';
@@ -91,9 +84,30 @@ TestPresenter >> initializePresenters [
 							 tmp1 }).
 				(Dictionary newFromPairs:
 						 { #type. 'checkbox'. #key. #agree. #label. 'Погоджуюсь з умовами' }).
-				(Dictionary newFromPairs: { #key. #favoriteFruits. #type. 'checkbox-group'. #title. 'Фрукти'. #label. 'Обрані фрукти'. #items. #( 'Яблуко' 'Груша' 'Ківі' 'Апельсин' ). #columns. 2}).
-				(Dictionary newFromPairs:
-						 { #type. 'radiogroup'. #key. #gender. #label. 'Стать'. #items. #( 'Чоловік' 'Жінка' 'Інше' ). #columns. 3}).
+				(Dictionary newFromPairs: {
+							 #key.
+							 #favoriteFruits.
+							 #type.
+							 'checkbox-group'.
+							 #title.
+							 'Фрукти'.
+							 #label.
+							 'Обрані фрукти'.
+							 #items.
+							 #( 'Яблуко' 'Груша' 'Ківі' 'Апельсин' ).
+							 #columns.
+							 2 }).
+				(Dictionary newFromPairs: {
+							 #type.
+							 'radiogroup'.
+							 #key.
+							 #gender.
+							 #label.
+							 'Стать'.
+							 #items.
+							 #( 'Чоловік' 'Жінка' 'Інше' ).
+							 #columns.
+							 3 }).
 				(Dictionary newFromPairs: {
 							 #type.
 							 'dropdown'.
@@ -103,12 +117,18 @@ TestPresenter >> initializePresenters [
 							 'Місто'.
 							 #items.
 							 #( 'Львів' 'Київ' 'Одеса' ) }) }.
-form onSubmit: [ :values |
-    Transcript show: 'Отримані дані: '; cr.
-    values keysAndValuesDo: [ :k :v |
-        Transcript show: k asString , ' -> ' , v printString; cr ].
-].
-form onBack: [ Transcript show: 'Натиснуто "Скасувати"'; cr ].
+	form onSubmit: [ :values |
+			Transcript
+				show: 'Отримані дані: ';
+				cr.
+			values keysAndValuesDo: [ :k :v |
+					Transcript
+						show: k asString , ' -> ' , v printString;
+						cr ] ].
+	form onBack: [
+			Transcript
+				show: 'Натиснуто "Скасувати"';
+				cr ].
 
 
 	radioGroup := RadioGroupPresenter new.
@@ -139,26 +159,45 @@ form onBack: [ Transcript show: 'Натиснуто "Скасувати"'; cr ].
 			Transcript
 				show: 'Вибрано індекси: ' , indexes printString;
 				cr ].
-			
-step1 := Dictionary new.
-step1 at: #title put: 'Registration';
-       at: #content put: (SpPresenter new layout: (SpBoxLayout new add: form)).
 
-step2 := Dictionary new.
-step2 at: #title put: 'Personal Details';
-       at: #content put: (SpPresenter new layout: (SpBoxLayout new add: radioGroup )).
+	step1 := Dictionary new.
+	step1
+		at: #title put: 'Registration';
+		at: #content
+		put: (SpPresenter new layout: (SpBoxLayout new add: form)).
 
-step3 := Dictionary new.
-step3 at: #title put: 'Confirmation';
-       at: #content put: (SpPresenter new layout: (SpBoxLayout new add: checkboxGroupPresenter )).
+	step2 := Dictionary new.
+	step2
+		at: #title put: 'Personal Details';
+		at: #content
+		put: (SpPresenter new layout: (SpBoxLayout new add: radioGroup)).
 
-wizard := WizardPresenter new.
-wizard steps: { step1. step2. step3 }.
-wizard stepCircleRadius: 20.
-wizard stepCircleTitleColor: Color gray.
-wizard activeColor: '#99e699'.
-wizard whenStepChangedDo: [ :index | Transcript show: 'Новий крок: ', index printString; cr ].
-wizard whenStepExitDo: [ :index | Transcript show: 'Вихід із кроку: ', index printString; cr ].
-wizard onFinishDo: [ Transcript show: 'Виконано!'; cr ].
+	step3 := Dictionary new.
+	step3
+		at: #title put: 'Confirmation';
+		at: #content
+		put:
+			(SpPresenter new layout:
+					 (SpBoxLayout new add: checkboxGroupPresenter)).
 
+	wizard := WizardPresenter new.
+	wizard steps: {
+			step1.
+			step2.
+			step3 }.
+	wizard stepCircleRadius: 20.
+	wizard stepCircleTitleColor: Color gray.
+	wizard activeColor: '#99e699'.
+	wizard whenStepChangedDo: [ :index |
+			Transcript
+				show: 'Новий крок: ' , index printString;
+				cr ].
+	wizard whenStepExitDo: [ :index |
+			Transcript
+				show: 'Вихід із кроку: ' , index printString;
+				cr ].
+	wizard onFinishDo: [
+			Transcript
+				show: 'Виконано!';
+				cr ]
 ]
