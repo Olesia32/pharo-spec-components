@@ -10,7 +10,8 @@ Class {
 		'form',
 		'radioGroup',
 		'checkboxGroupPresenter',
-		'wizard'
+		'wizard',
+		'searchTable'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'

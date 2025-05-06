@@ -10,14 +10,13 @@ Class {
 }
 
 { #category : 'initialization' }
-ComboBoxPresenter >> connectPresenters [ 
-    textInput mainPresenter whenTextChangedDo: [ self filterList ].
+ComboBoxPresenter >> connectPresenters [
 
-    list mainPresenter whenSelectedItemChangedDo: [ :item |
-        selectedItem := item.
-        textInput text: (item ifNotNil: [ item asString ] ifNil: [ '' ]).
-        self toggleList.
-        announcer announce: (ComboBoxItemSelected new item: item) ]
+	textInput mainPresenter whenTextChangedDo: [ self filterList ].
+	list mainPresenter whenSelectedItemChangedDo: [ :arg1 |
+			selectedItem := arg1.
+			textInput text: (arg1 ifNil: [ '' ] ifNotNil: [ arg1 asString ]).
+			announcer announce: (ComboBoxItemSelected new item: arg1) ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -29,34 +28,40 @@ ComboBoxPresenter >> createListPresenter [
 ComboBoxPresenter >> filterList [ 
     | query filtered previousText matchedItem |
     isFiltering := true.
+
     query := textInput text asLowercase.
 
     filtered := allItems select: [ :each |
         each notNil and: [ each asString asLowercase includesSubstring: query ] ].
 
     previousText := textInput text.
-    list mainPresenter selectItem: nil.
+    list mainPresenter resetListSelection.
     list mainPresenter items: filtered.
 
-    matchedItem := filtered detect: [ :each | each asString = previousText ] ifNone: [ nil ].
-    list mainPresenter selectItem: matchedItem.
-    selectedItem := matchedItem.
+    list mainPresenter resetListSelection.
+
+    matchedItem := filtered
+        detect: [ :each | each asString = previousText ]
+        ifNone: [ nil ].
+
+    matchedItem ifNotNil: [
+        list mainPresenter selectItem: matchedItem.
+        selectedItem := matchedItem
+    ] ifNil: [
+        list mainPresenter selectItem: nil.
+        selectedItem := nil
+    ].
+
     isFiltering := false.
 ]
 
-{ #category : 'as yet unclassified' }
-ComboBoxPresenter >> initializePresenters [
-
-	super initializePresenters.
-   list mainPresenter visibleIf: false.
-]
-
 { #category : 'accessing' }
-ComboBoxPresenter >> items: aCollection [
-
-	allItems := aCollection reject: [ :each | each isNil ].
-	 selectedItem := nil.
+ComboBoxPresenter >> items: aCollection [ 
+    allItems := aCollection reject: [ :each | each isNil ].
+    selectedItem := nil.
     textInput text: ''.
+    list mainPresenter items: allItems.  
+    list mainPresenter selectItem: nil. 
 
 ]
 
