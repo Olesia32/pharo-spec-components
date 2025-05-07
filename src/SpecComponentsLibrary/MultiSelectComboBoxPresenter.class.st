@@ -60,6 +60,23 @@ MultiSelectComboBoxPresenter >> items: arg1 [
 	self filterList
 ]
 
+{ #category : 'as yet unclassified' }
+MultiSelectComboBoxPresenter >> selectedIndexes: anIndexList [ 
+    selectedItems := Set new.
+
+    anIndexList do: [ :index |
+        (index between: 1 and: allItems size)
+            ifTrue: [
+                | item |
+                item := allItems at: index.
+                selectedItems add: item.
+            ].
+    ].
+
+    self updateListWith: filteredItems.
+    announcer announce: (ComboBoxItemSelected new item: selectedItems).
+]
+
 { #category : 'accessing' }
 MultiSelectComboBoxPresenter >> selectedItems [
 

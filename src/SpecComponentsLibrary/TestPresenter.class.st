@@ -22,7 +22,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: searchTable .
+	tmp1 add: searchTable.
 	^ tmp1 yourself
 ]
 
@@ -43,6 +43,7 @@ TestPresenter >> initializePresenters [
 	fieldPresenter
 		placeholder: 'E-mail';
 		backgroundColor: '#b3dcfd';
+		isValidationField: true;
 		addValidationRules: tmp1;
 		addValidationRule: [ :arg1 | arg1 includes: $@ ]
 		message: 'Невірний email'.
@@ -204,26 +205,44 @@ TestPresenter >> initializePresenters [
 			Transcript
 				show: 'Виконано!';
 				cr ].
-			
-		
-searchTable := SearchableTablePresenter new.
-searchTable columns: {
-    'Ім’я' -> #name.
-    'Email' -> #email.
-    'Місто' -> #city.
-    'Телефон' -> #phone
-}.
 
-searchTable items: {
-    Dictionary newFromPairs: { #name. 'Олег'. #email. 'oleh@example.com'. #city. 'Львів'. #phone. '123-456' }.
-    Dictionary newFromPairs: { #name. 'Марія'. #email. 'maria@example.com'. #city. 'Київ'. #phone. '234-567' }.
-    Dictionary newFromPairs: { #name. 'Іван'. #email. 'ivan@pharo.org'. #city. 'Одеса'. #phone. '345-678' }.
-    Dictionary newFromPairs: { #name. 'Олена'. #email. 'olena@edu.ua'. #city. 'Харків'. #phone. '456-789' }.
-    Dictionary newFromPairs: { #name. 'Петро'. #email. 'petro@abc.com'. #city. 'Луцьк'. #phone. '567-890' }.
-    Dictionary newFromPairs: { #name. 'Андрій'. #email. 'andriy@xyz.com'. #city. 'Ужгород'. #phone. '678-901' }.
-    Dictionary newFromPairs: { #name. 'Світлана'. #email. 'svitlana@org.ua'. #city. 'Запоріжжя'. #phone. '789-012' }.
-    Dictionary newFromPairs: { #name. 'Ірина'. #email. 'iryna@mail.com'. #city. 'Житомир'. #phone. '890-123' }.
-    Dictionary newFromPairs: { #name. 'Василь'. #email. 'vasyl@net.ua'. #city. 'Дніпро'. #phone. '901-234' }.
-    Dictionary newFromPairs: { #name. 'Тетяна'. #email. 'tania@ukr.net'. #city. 'Черкаси'. #phone. '012-345' }
-}.
+
+	searchTable := SearchableTablePresenter new.
+	searchTable columns: {
+			('Ім’я' -> #name).
+			('Email' -> #email).
+			('Місто' -> #city).
+			('Телефон' -> #phone) }.
+
+	searchTable items: {
+			(Dictionary newFromPairs:
+				 { #name. 'Олег'. #email. 'oleh@example.com'. #city. 'Львів'.
+				 #phone. '123-456' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Марія'. #email. 'maria@example.com'. #city. 'Київ'.
+				 #phone. '234-567' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Іван'. #email. 'ivan@pharo.org'. #city. 'Одеса'. #phone.
+				 '345-678' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Олена'. #email. 'olena@edu.ua'. #city. 'Харків'.
+				 #phone. '456-789' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Петро'. #email. 'petro@abc.com'. #city. 'Луцьк'. #phone.
+				 '567-890' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Андрій'. #email. 'andriy@xyz.com'. #city. 'Ужгород'.
+				 #phone. '678-901' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Світлана'. #email. 'svitlana@org.ua'. #city. 'Запоріжжя'.
+				 #phone. '789-012' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Ірина'. #email. 'iryna@mail.com'. #city. 'Житомир'.
+				 #phone. '890-123' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Василь'. #email. 'vasyl@net.ua'. #city. 'Дніпро'.
+				 #phone. '901-234' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Тетяна'. #email. 'tania@ukr.net'. #city. 'Черкаси'.
+				 #phone. '012-345' }) }
 ]

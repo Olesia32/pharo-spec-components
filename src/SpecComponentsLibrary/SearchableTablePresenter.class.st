@@ -6,34 +6,38 @@ Class {
 		'tablePresenter',
 		'allItems',
 		'displayBlock',
-		'columnSelector'
+		'columnSelector',
+		'labelToKey'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
 
 { #category : 'private' }
-SearchableTablePresenter >> applyFilter [
+SearchableTablePresenter >> applyFilter [ 
+    | query selectedKeys filtered |
 
-	| query selectedKeys filtered |
-	query := searchField text asLowercase.
-	selectedKeys := columnSelector selectedItems collect: [ :assoc |
-		                assoc key ].
+    query := searchField text asLowercase.
 
-	filtered := allItems select: [ :each |
-			            (selectedKeys isEmpty or: [
-				             selectedKeys includes: #__all__ ]) or: [
-					            selectedKeys anySatisfy: [ :key |
-							            (each at: key ifAbsent: '') asString asLowercase
-								            includesSubstring: query ] ] ].
+    selectedKeys := columnSelector selectedItems collect: [ :label |
+        labelToKey at: label ifAbsent: nil
+    ].
 
+    filtered := allItems select: [ :each |
+            selectedKeys anySatisfy: [ :key |
+                ((each at: key ifAbsent: '') asString asLowercase) includesSubstring: query
+        ]
+    ].
 
-	tablePresenter items: filtered
+    tablePresenter items: filtered.
 ]
 
-{ #category : 'layout' }
+{ #category : 'api' }
 SearchableTablePresenter >> columns: assocCollection [ 
-    | columns keyLabelPairs|
+    | columns |
+
+    labelToKey := Dictionary new.
+
     columns := assocCollection collect: [ :assoc |
         SpStringTableColumn new
             title: assoc key asString;
@@ -43,22 +47,29 @@ SearchableTablePresenter >> columns: assocCollection [
     ].
 
     tablePresenter columns: columns.
-    keyLabelPairs := assocCollection collect: [ :assoc | assoc value -> assoc key asString ].
-    columnSelector items: ( { #__all__ -> 'Усі колонки' } , keyLabelPairs ).
-    columnSelector display: [ :pair | pair value ].
-    columnSelector selectIndex: 1.
+
+    assocCollection do: [ :assoc |
+        labelToKey at: assoc key asString put: assoc value
+    ].
+
+    columnSelector items: labelToKey keys.
+    columnSelector selectedIndexes: (1 to: columnSelector allItems size).
+
+    self applyFilter.
 ]
 
 { #category : 'layout' }
-SearchableTablePresenter >> defaultLayout [ 
-    ^ SpBoxLayout newVertical
-        spacing: 10;
-        add: (SpBoxLayout newHorizontal
-                  spacing: 5;
-                  add: searchField;
-                  add: columnSelector expand: false) expand: false;
-        add: tablePresenter;
-        yourself
+SearchableTablePresenter >> defaultLayout [
+
+	^ SpBoxLayout newVertical
+		  spacing: 10;
+		  add: (SpBoxLayout newHorizontal
+				   spacing: 5;
+				   add: searchField;
+				   add: columnSelector)
+		  expand: false;
+		  add: tablePresenter;
+		  yourself
 ]
 
 { #category : 'layout' }
