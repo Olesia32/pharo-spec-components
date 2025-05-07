@@ -123,7 +123,8 @@ AbstractDropdownPresenter >> openMorphList [
 	tmp2 := textInput mainPresenter adapter widget width.
 	morphList
 		width: tmp2;
-		position: tmp1.
+		position: tmp1;
+		height: 150.
 	World addMorph: morphList.
 	morphList comeToFront
 ]

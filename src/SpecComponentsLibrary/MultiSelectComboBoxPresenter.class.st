@@ -3,7 +3,8 @@ Class {
 	#superclass : 'AbstractDropdownPresenter',
 	#instVars : [
 		'selectedItems',
-		'checkboxes'
+		'checkboxes',
+		'listPresenter'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -19,13 +20,11 @@ MultiSelectComboBoxPresenter >> connectPresenters [
 { #category : 'as yet unclassified' }
 MultiSelectComboBoxPresenter >> createMorphList [
 
-	| tmp1 |
-	tmp1 := SpFTTableMorph new
-		        on: self
-		        list: #filteredItems
-		        selected: #selectedIndex
-		        changeSelected: #selectIndex:.
-	^ tmp1
+	morphList ifNotNil: [ ^ morphList := listPresenter adapter widget ].
+	self updateListWith: filteredItems.
+	listPresenter build.
+	morphList := listPresenter adapter widget.
+	^ morphList
 ]
 
 { #category : 'private' }
@@ -49,6 +48,7 @@ MultiSelectComboBoxPresenter >> initialize [
 MultiSelectComboBoxPresenter >> initializePresenters [
 
 	super initializePresenters.
+	listPresenter := SpComponentListPresenter new.
 	textInput mainPresenter placeholder: 'Фільтр...'
 ]
 
@@ -70,11 +70,13 @@ MultiSelectComboBoxPresenter >> selectedItems [
 MultiSelectComboBoxPresenter >> updateListWith: arg1 [
 
 	checkboxes := Dictionary new.
-	morphList ifNil: [ ^ self ] ifNotNil: [ morphList items: #(  ) ].
+	listPresenter ifNil: [ ^ self ].
+	listPresenter items: #(  ).
 	arg1 do: [ :arg2 |
-			| tmp1 |
+			| tmp1 tmp3 |
 			tmp1 := CheckboxPresenter new.
-			tmp1 mainPresenter
+			tmp3 := tmp1 mainPresenter.
+			tmp3
 				label: arg2 asString;
 				state: (selectedItems includes: arg2);
 				whenChangedDo: [ :arg3 |
@@ -84,7 +86,13 @@ MultiSelectComboBoxPresenter >> updateListWith: arg1 [
 						announcer announce:
 								(ComboBoxItemSelected new item: selectedItems) ].
 			checkboxes at: arg2 put: tmp1.
-			morphList addPresenter: tmp1 ]
+			listPresenter addPresenter: tmp1 ].
+		listPresenter build.
+		morphList ifNotNil: [ 
+			self closeMorphList.
+			morphList := listPresenter adapter widget.
+			self openMorphList 
+			 ]
 ]
 
 { #category : 'enumerating' }

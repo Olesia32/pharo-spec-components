@@ -13,23 +13,22 @@ Class {
 }
 
 { #category : 'private' }
-SearchableTablePresenter >> applyFilter [ 
-    | query selectedKeys filtered |
-    query := searchField text asLowercase.
-    selectedKeys := columnSelector selectedItem collect: [ :assoc | assoc key ].
+SearchableTablePresenter >> applyFilter [
 
-    filtered := allItems select: [ :each |
-    (selectedKeys isEmpty
-        or: [ selectedKeys includes: #__all__ ])
-        or: [
-            selectedKeys anySatisfy: [ :key |
-                ((each at: key ifAbsent: '') asString asLowercase) includesSubstring: query
-            ]
-        ]
-].
+	| query selectedKeys filtered |
+	query := searchField text asLowercase.
+	selectedKeys := columnSelector selectedItems collect: [ :assoc |
+		                assoc key ].
+
+	filtered := allItems select: [ :each |
+			            (selectedKeys isEmpty or: [
+				             selectedKeys includes: #__all__ ]) or: [
+					            selectedKeys anySatisfy: [ :key |
+							            (each at: key ifAbsent: '') asString asLowercase
+								            includesSubstring: query ] ] ].
 
 
-    tablePresenter items: filtered
+	tablePresenter items: filtered
 ]
 
 { #category : 'layout' }
@@ -68,17 +67,20 @@ SearchableTablePresenter >> displayUsing: aBlock [
 ]
 
 { #category : 'initialization' }
-SearchableTablePresenter >> initializePresenters [ 
-    searchField := TextInputPresenter new.
-    tablePresenter := SpTablePresenter new.
-    columnSelector := SpDropListPresenter new.
-    allItems := #().
-    displayBlock := [ :item | item ].  "За замовчуванням — відображає як є"
+SearchableTablePresenter >> initializePresenters [
 
-    searchField mainPresenter whenTextChangedDo: [ self applyFilter ].
-    columnSelector whenSelectionChangedDo: [ :_ | self applyFilter ].
+	searchField := TextInputPresenter new.
+	tablePresenter := SpTablePresenter new.
+	columnSelector := MultiSelectComboBoxPresenter new.
+	allItems := #(  ).
+	displayBlock := [ :item | item ]. "За замовчуванням — відображає як є"
 
-    self focusOrder addAll: { searchField. tablePresenter }.
+	searchField mainPresenter whenTextChangedDo: [ self applyFilter ].
+	columnSelector whenSelectionChangedDo: [ :_ | self applyFilter ].
+
+	self focusOrder addAll: {
+			searchField.
+			tablePresenter }
 ]
 
 { #category : 'api' }
