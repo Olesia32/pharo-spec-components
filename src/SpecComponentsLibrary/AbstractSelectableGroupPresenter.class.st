@@ -97,37 +97,38 @@ AbstractSelectableGroupPresenter >> enableScrolling: aBoolean [
 { #category : 'as yet unclassified' }
 AbstractSelectableGroupPresenter >> generateLayout [
 
-	| layoutContent result finalLayout |
-	layoutContent := columnCount = 1
-		                 ifTrue: [ self buildColumnLayout: 1 ]
-		                 ifFalse: [ self buildColumnLayout: columnCount ].
-
-	result := isScrollable
-		          ifTrue: [ SpScrollableLayout new child: layoutContent ]
-		          ifFalse: [ layoutContent ].
-
-	"2. Обгортка рамкою (з label, якщо заголовок увімкнено)"
-	finalLayout := (showFrame and: showTitle)
-		               ifTrue: [
-				               SpFrameLayout new
-					               label: self title;
-					               add: result;
-					               yourself ]
-		               ifFalse: (showFrame
-				                ifTrue: [
-						                SpFrameLayout new
-							                add: result;
-							                yourself ]
-				                ifFalse: (showTitle
-						                 ifTrue: [
-								                 SpBoxLayout newTopToBottom
-									                 spacing: 5;
-									                 add: title expand: false;
-									                 add: result;
-									                 yourself ]
-						                 ifFalse: [ result ])).
-
-	^ finalLayout
+	| tmp1 tmp2 tmp3 tmp4 |
+	tmp1 := columnCount = 1
+		        ifTrue: [ self buildColumnLayout: 1 ]
+		        ifFalse: [ self buildColumnLayout: columnCount ].
+	tmp2 := isScrollable
+		        ifTrue: [ SpScrollableLayout new child: tmp1 ]
+		        ifFalse: [ tmp1 ].
+	tmp3 := (showFrame and: showTitle)
+		        ifTrue: [
+				        | tmp5 |
+				        tmp5 := SpFrameLayout new.
+				        tmp5
+					        label: self title;
+					        add: tmp2;
+					        yourself ]
+		        ifFalse: (showFrame
+				         ifTrue: [
+						         | tmp6 |
+						         tmp6 := SpFrameLayout new.
+						         tmp6
+							         add: tmp2;
+							         yourself ]
+				         ifFalse: (showTitle
+						          ifTrue: [
+								          tmp4 := SpBoxLayout newTopToBottom.
+								          tmp4
+									          spacing: 5;
+									          add: title expand: false;
+									          add: tmp2;
+									          yourself ]
+						          ifFalse: [ tmp2 ])).
+	^ tmp3
 ]
 
 { #category : 'accessing' }

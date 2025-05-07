@@ -7,74 +7,105 @@ Class {
 		'allItems',
 		'displayBlock',
 		'columnSelector',
-		'labelToKey'
+		'labelToKey',
+		'filteredItems',
+		'isSearchable'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
 
 { #category : 'private' }
-SearchableTablePresenter >> applyFilter [ 
-    | query selectedKeys filtered |
+SearchableTablePresenter >> applyFilter [
 
-    query := searchField text asLowercase.
-
-    selectedKeys := columnSelector selectedItems collect: [ :label |
-        labelToKey at: label ifAbsent: nil
-    ].
-
-    filtered := allItems select: [ :each |
-            selectedKeys anySatisfy: [ :key |
-                ((each at: key ifAbsent: '') asString asLowercase) includesSubstring: query
-        ]
-    ].
-
-    tablePresenter items: filtered.
+	| tmp1 tmp2 |
+	tmp1 := searchField text asLowercase.
+	tmp2 := columnSelector selectedItems collect: [ :arg1 |
+		        labelToKey at: arg1 ifAbsent: nil ].
+	filteredItems := allItems select: [ :arg2 |
+			                 tmp2 anySatisfy: [ :arg3 |
+					                 (arg2 at: arg3 ifAbsent: '') asString
+						                 asLowercase includesSubstring: tmp1 ] ].
+	tablePresenter items: filteredItems
 ]
 
 { #category : 'api' }
-SearchableTablePresenter >> columns: assocCollection [ 
-    | columns |
+SearchableTablePresenter >> columns: arg1 [
 
-    labelToKey := Dictionary new.
+	| tmp1 |
+	labelToKey := Dictionary new.
+	tmp1 := arg1 collect: [ :arg2 |
+			        | tmp2 |
+			        tmp2 := SpStringTableColumn new.
+			        tmp2
+				        title: arg2 key asString;
+				        evaluated: [ :arg3 | arg3 at: arg2 value ifAbsent: '' ];
+				        beSortable;
+				        yourself ].
+	tablePresenter columns: tmp1.
+	arg1 do: [ :arg4 | labelToKey at: arg4 key asString put: arg4 value ].
+	columnSelector
+		items: labelToKey keys;
+		selectedIndexes: (1 to: columnSelector allItems size).
+	self applyFilter
+]
 
-    columns := assocCollection collect: [ :assoc |
-        SpStringTableColumn new
-            title: assoc key asString;
-            evaluated: [ :row | row at: assoc value ifAbsent: '' ];
-            beSortable;
-            yourself
-    ].
+{ #category : 'initialization' }
+SearchableTablePresenter >> connectPresenters [
 
-    tablePresenter columns: columns.
-
-    assocCollection do: [ :assoc |
-        labelToKey at: assoc key asString put: assoc value
-    ].
-
-    columnSelector items: labelToKey keys.
-    columnSelector selectedIndexes: (1 to: columnSelector allItems size).
-
-    self applyFilter.
+	searchField mainPresenter whenTextChangedDo: [ self applyFilter ].
+	columnSelector whenSelectionChangedDo: [ :arg1 | self applyFilter ]
 ]
 
 { #category : 'layout' }
 SearchableTablePresenter >> defaultLayout [
 
-	^ SpBoxLayout newVertical
-		  spacing: 10;
-		  add: (SpBoxLayout newHorizontal
-				   spacing: 5;
-				   add: searchField;
-				   add: columnSelector)
-		  expand: false;
-		  add: tablePresenter;
-		  yourself
+	| tmp1 tmp2 |
+	tmp1 := SpBoxLayout newVertical spacing: 10.
+	isSearchable ifTrue: [
+			tmp2 := SpBoxLayout newHorizontal.
+			tmp2
+				spacing: 5;
+				add: searchField.
+			tmp1 add: (tmp2 add: columnSelector) expand: false ].
+	tmp1 add: tablePresenter.
+	^ tmp1 yourself
 ]
 
 { #category : 'layout' }
 SearchableTablePresenter >> displayUsing: aBlock [ 
     displayBlock := aBlock
+]
+
+{ #category : 'as yet unclassified' }
+SearchableTablePresenter >> filterComboBox [
+   ^ columnSelector 
+]
+
+{ #category : 'accessing' }
+SearchableTablePresenter >> filterField [ 
+^ searchField 
+]
+
+{ #category : 'accessing' }
+SearchableTablePresenter >> filteredItems [
+
+	^ filteredItems
+]
+
+{ #category : 'as yet unclassified' }
+SearchableTablePresenter >> hideSearchContainer [
+
+	isSearchable := false.
+	self defaultLayout
+]
+
+{ #category : 'initialization' }
+SearchableTablePresenter >> initialize [
+super initialize.
+	allItems := #(  ).
+	filteredItems := #(  ).
+	isSearchable := true.
 ]
 
 { #category : 'initialization' }
@@ -83,12 +114,7 @@ SearchableTablePresenter >> initializePresenters [
 	searchField := TextInputPresenter new.
 	tablePresenter := SpTablePresenter new.
 	columnSelector := MultiSelectComboBoxPresenter new.
-	allItems := #(  ).
-	displayBlock := [ :item | item ]. "За замовчуванням — відображає як є"
-
-	searchField mainPresenter whenTextChangedDo: [ self applyFilter ].
-	columnSelector whenSelectionChangedDo: [ :_ | self applyFilter ].
-
+	displayBlock := [ :arg1 | arg1 ].
 	self focusOrder addAll: {
 			searchField.
 			tablePresenter }
@@ -103,6 +129,18 @@ SearchableTablePresenter >> items: aCollection [
 { #category : 'accessing' }
 SearchableTablePresenter >> selectedItem [ 
     ^ tablePresenter selectedItem
+]
+
+{ #category : 'as yet unclassified' }
+SearchableTablePresenter >> showSearchContainer [
+
+	isSearchable := true.
+	self defaultLayout
+]
+
+{ #category : 'accessing' }
+SearchableTablePresenter >> table [
+^ tablePresenter 
 ]
 
 { #category : 'enumerating' }

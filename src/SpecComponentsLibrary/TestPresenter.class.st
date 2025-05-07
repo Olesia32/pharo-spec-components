@@ -22,7 +22,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: searchTable.
+	tmp1 add: wizard.
 	^ tmp1 yourself
 ]
 
@@ -73,6 +73,8 @@ TestPresenter >> initializePresenters [
 	form
 		style: tmp2;
 		header: 'Тестова форма';
+		hideHeader;
+		hideButtons;
 		fields: {
 				(Dictionary newFromPairs:
 						 { #type. 'label'. #key. #header. #label. 'Привіт Pharo' }).
@@ -158,7 +160,7 @@ TestPresenter >> initializePresenters [
 		title: 'Улюблені фрукти';
 		items: #( 'Яблуко' 'Банан' 'Апельсин' 'Ківі' 'Груша' );
 		showTitle: true;
-		showFrame: false;
+		showFrame: true;
 		сolumnCount: 2.
 	checkboxGroupPresenter whenSelectionChangedDo: [ :indexes |
 			Transcript
@@ -213,7 +215,6 @@ TestPresenter >> initializePresenters [
 			('Email' -> #email).
 			('Місто' -> #city).
 			('Телефон' -> #phone) }.
-
 	searchTable items: {
 			(Dictionary newFromPairs:
 				 { #name. 'Олег'. #email. 'oleh@example.com'. #city. 'Львів'.

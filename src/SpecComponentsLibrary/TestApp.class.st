@@ -21,9 +21,9 @@ TestApp >> start [
 	| window p |
 	p := TestPresenter new.
 	p application: self.
-	window :=  p open.
+	window := p open.
 	window window
-	   beUnresizeable ;
+		
 		removeExpandBox;
 		removeCollapseBox;
 		removeMenuBox

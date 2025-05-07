@@ -61,26 +61,46 @@ MultiSelectComboBoxPresenter >> items: arg1 [
 ]
 
 { #category : 'as yet unclassified' }
-MultiSelectComboBoxPresenter >> selectedIndexes: anIndexList [ 
-    selectedItems := Set new.
+MultiSelectComboBoxPresenter >> selectedIndexes: anIndexList [
 
-    anIndexList do: [ :index |
-        (index between: 1 and: allItems size)
-            ifTrue: [
-                | item |
-                item := allItems at: index.
-                selectedItems add: item.
-            ].
-    ].
+	selectedItems := Set new.
 
-    self updateListWith: filteredItems.
-    announcer announce: (ComboBoxItemSelected new item: selectedItems).
+	anIndexList do: [ :index |
+			(index between: 1 and: allItems size) ifTrue: [
+					| item |
+					item := allItems at: index.
+					selectedItems add: item ] ].
+
+	self updateListWith: filteredItems.
+	announcer announce: (ComboBoxItemSelected new item: selectedItems).
+	self updateFieldContent 
 ]
 
 { #category : 'accessing' }
 MultiSelectComboBoxPresenter >> selectedItems [
 
 	^ selectedItems
+]
+
+{ #category : 'as yet unclassified' }
+MultiSelectComboBoxPresenter >> toggleList [
+
+	super toggleList.
+   self updateFieldContent 
+]
+
+{ #category : 'as yet unclassified' }
+MultiSelectComboBoxPresenter >> updateFieldContent [
+isOpen ifFalse: [
+			textInput text: (String streamContents: [ :stream |
+						 self selectedItems asArray sort doWithIndex: [ :each :i |
+								 stream nextPutAll: each.
+								 i < self selectedItems size ifTrue: [
+									 stream nextPutAll: ', ' ] ] ]) ]
+					ifTrue: 
+					[ 
+					textInput text: ''
+					 ]
 ]
 
 { #category : 'as yet unclassified' }

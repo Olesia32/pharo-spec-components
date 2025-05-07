@@ -11,7 +11,9 @@ Class {
 		'headerLabel',
 		'onSubmitAction',
 		'onBackAction',
-		'formStyle'
+		'formStyle',
+		'isHideHeader',
+		'isHideButtons'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -210,8 +212,8 @@ DynamicFormBuilder >> defaultLayout [
 		hAlignCenter;
 		spacing: 5.
 	customTopPresenter ifNotNil: [ tmp4 add: customTopPresenter ].
-	tmp4 add: headerLabel.
-	tmp1 add: tmp4.
+	isHideHeader ifFalse: [ tmp4 add: headerLabel expand: false].
+	tmp1 add: tmp4 expand: false.
 	tmp2 := SpGridLayout new.
 	tmp2 beColumnNotHomogeneous.
 	tmp7 := 1.
@@ -226,17 +228,16 @@ DynamicFormBuilder >> defaultLayout [
 				add: tmp9 atPoint: 2 @ tmp7 span: 2 @ 1.
 			tmp7 := tmp7 + 1 ].
 	tmp5 := fieldPresenters size.
-	tmp1 add: tmp2 withConstraints: [ :arg3 |
-			arg3
-				height: tmp5 * 40;
-				expand: false ].
+	tmp1 add: tmp2 withConstraints: [ :arg3 | arg3 height: tmp5 * 40 ].
+	isHideButtons ifFalse: [  
 	tmp3 := SpBoxLayout newLeftToRight.
 	tmp3
 		hAlignCenter;
 		spacing: 20;
-		add: submitButton yourself;
-		add: backButton yourself.
+		add: submitButton expand: false;
+		add: backButton expand: false.
 	tmp1 add: tmp3 expand: false.
+	].
 	^ tmp1 yourself
 ]
 
@@ -258,11 +259,26 @@ DynamicFormBuilder >> header: arg1 [
 ]
 
 { #category : 'as yet unclassified' }
-DynamicFormBuilder >> initializePresenters [
+DynamicFormBuilder >> hideButtons [
 
-	fields ifNil: [ fields := #(  ) ] ifNotNil: [ fields ].
+	isHideButtons := true.
+	self defaultLayout
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> hideHeader [
+
+	isHideHeader := true.
+	self defaultLayout
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> initializePresenters [
+   fields ifNil: [ fields := #(  ) ] ifNotNil: [ fields ].
 	fieldPresenters := OrderedCollection new.
 	formData := Dictionary new.
+	isHideHeader := false.
+	isHideButtons := false.
 	submitButton := ButtonPresenter new.
 	submitButton label: 'Продовжити'.
 	backButton := ButtonPresenter new.
@@ -286,6 +302,20 @@ DynamicFormBuilder >> onBack: arg1 [
 DynamicFormBuilder >> onSubmit: arg1 [
 
 	onSubmitAction := arg1
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> showButtons [
+
+	isHideButtons := false.
+	self defaultLayout
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> showHeader [
+
+	isHideHeader := false.
+	self defaultLayout
 ]
 
 { #category : 'accessing' }
