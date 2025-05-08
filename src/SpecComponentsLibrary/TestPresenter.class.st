@@ -11,7 +11,8 @@ Class {
 		'radioGroup',
 		'checkboxGroupPresenter',
 		'wizard',
-		'searchTable'
+		'searchTable',
+		'date'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -22,8 +23,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1
-		add: buttonPresenter expand: false.
+	tmp1 add: date expand: false.
 	^ tmp1 yourself
 ]
 
@@ -257,5 +257,7 @@ TestPresenter >> initializePresenters [
 				 #phone. '901-234' }).
 			(Dictionary newFromPairs:
 				 { #name. 'Тетяна'. #email. 'tania@ukr.net'. #city. 'Черкаси'.
-				 #phone. '012-345' }) }
+				 #phone. '012-345' }) }.
+
+	date := TimePickerPresenter new
 ]
