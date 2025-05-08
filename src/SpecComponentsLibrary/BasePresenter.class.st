@@ -83,11 +83,12 @@ BasePresenter >> fontSize: aNumber [
 BasePresenter >> generateAndApplyStyle [
 
 	appliedStyleName ifNotNil: [
-        mainPresenter removeStyle: appliedStyleName
-    ].
+		mainPresenter removeStyle: appliedStyleName ].
 
-    appliedStyleName := StyleManager installGeneratedStyleFrom: self styleProperties in: self application.
-    mainPresenter addStyle: appliedStyleName.
+	appliedStyleName := StyleManager
+		                    installGeneratedStyleFrom: self styleProperties
+		                    in: self application.
+	mainPresenter addStyle: appliedStyleName
 ]
 
 { #category : 'accessing' }
@@ -106,7 +107,9 @@ BasePresenter >> height: aHeight [
 
 { #category : 'as yet unclassified' }
 BasePresenter >> initializePresenters [
-    "Стандартне місце для створення вкладених демонстраторів"
+	"Стандартне місце для створення вкладених демонстраторів"
+
+	SpNullApplication reset.
 ]
 
 { #category : 'accessing' }
@@ -127,6 +130,18 @@ BasePresenter >> mainPresenter [
 { #category : 'accessing' }
 BasePresenter >> mainPresenter: aPresenter [
 mainPresenter := aPresenter 
+]
+
+{ #category : 'as yet unclassified' }
+BasePresenter >> propagateApplication [ 
+	| subs |
+	self application ifNil: [ ^self ].
+	
+	subs := (self instVarNamed: 'focusOrder') ifNil: [ ^self ].
+
+	subs do: [ :p |
+		(p respondsTo: #application:) ifTrue: [ p application: self application ].
+		(p respondsTo: #propagateApplication) ifTrue: [ p propagateApplication ] ].
 ]
 
 { #category : 'initialization' }

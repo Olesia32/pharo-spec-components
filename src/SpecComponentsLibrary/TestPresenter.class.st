@@ -22,7 +22,8 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: wizard.
+	tmp1
+		add: buttonPresenter expand: false.
 	^ tmp1 yourself
 ]
 
@@ -59,8 +60,19 @@ TestPresenter >> initializePresenters [
 				show: 'Selected: ' , selected printString;
 				cr ].
 
-	buttonPresenter := ButtonPresenter1 new.
-	buttonPresenter backgroundColor: Color red.
+	buttonPresenter := ButtonPresenter new.
+	buttonPresenter backgroundColor: '#red'.
+	buttonPresenter onClick: [
+			NotificationPresenter new
+				title: 'Помилка';
+				message: 'Неможливо підключитися до серверу';
+				type: #error;
+				position: #center;
+				duration: 3;
+				application: self application;
+				show ].
+
+
 
 	tmp2 := FormStyle new.
 	tmp2

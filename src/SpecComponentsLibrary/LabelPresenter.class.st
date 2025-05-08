@@ -9,9 +9,10 @@ Class {
 LabelPresenter >> initializePresenters [
 
 	| label |
+	super initializePresenters.
 	label := SpLabelPresenter new.
 	self focusOrder add: label.
-	self mainPresenter: label.
+	self mainPresenter: label
 ]
 
 { #category : 'accessing' }

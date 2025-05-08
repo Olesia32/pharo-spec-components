@@ -9,6 +9,7 @@ Class {
 ListPresenter >> initializePresenters [
 
 	| list |
+	super initializePresenters.
 	list := SpListPresenter new.
 	self focusOrder add: list.
 	self mainPresenter: list

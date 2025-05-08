@@ -14,9 +14,10 @@ self setGeneratedStyleProperty: #color value: aColor
 ButtonPresenter >> initializePresenters [
 
 	| button |
+	super initializePresenters.
 	button := SpButtonPresenter new.
 	self focusOrder add: button.
-	self mainPresenter: button 
+	self mainPresenter: button
 ]
 
 { #category : 'accessing' }

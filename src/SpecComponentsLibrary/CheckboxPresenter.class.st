@@ -9,6 +9,7 @@ Class {
 CheckboxPresenter >> initializePresenters [
 
 	| checkbox |
+	super initializePresenters.
 	checkbox := SpCheckBoxPresenter new.
 	self focusOrder add: checkbox.
 	self mainPresenter: checkbox

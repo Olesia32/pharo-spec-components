@@ -59,6 +59,7 @@ TextInputPresenter >> initialize [
 { #category : 'as yet unclassified' }
 TextInputPresenter >> initializePresenters [
 
+   super initializePresenters.
 	self mainPresenter: SpTextInputFieldPresenter new.
 	errorLabel := LabelPresenter new.
 	errorLabel
