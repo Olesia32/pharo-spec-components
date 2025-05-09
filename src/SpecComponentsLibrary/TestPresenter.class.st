@@ -23,14 +23,14 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: date expand: false.
+	tmp1 add: wizard.
 	^ tmp1 yourself
 ]
 
 { #category : 'initialization' }
 TestPresenter >> initializePresenters [
 
-	| tmp1 tmp2 step1 step2 step3 |
+	| tmp1 tmp2 step1 step2 step3 rules steps step4 step5 step6 step7 step8 dummyPresenter |
 	labelPresenter := LabelPresenter new.
 	labelPresenter
 		text: 'Привіт Pharo';
@@ -72,13 +72,16 @@ TestPresenter >> initializePresenters [
 				application: self application;
 				show ].
 
-
+	rules := Dictionary newFromPairs: {
+			         (#notEmpty -> 'Це поле обов’язкове').
+			         (#minLength -> 'Мінімум 3 символи') }.
 
 	tmp2 := FormStyle new.
 	tmp2
-		labelColor: '#013220';
+		labelColor: '#0000ff';
 		buttonWidth: 100;
 		buttonHeight: 60;
+		labelFontSize: 12;
 		inputBorderColor: '#gray';
 		headerFontSize: 16.
 	form := DynamicFormBuilder new.
@@ -86,64 +89,43 @@ TestPresenter >> initializePresenters [
 		style: tmp2;
 		header: 'Тестова форма';
 		hideHeader;
-		hideButtons;
-		fields: {
-				(Dictionary newFromPairs:
-						 { #type. 'label'. #key. #header. #label. 'Привіт Pharo' }).
-				(Dictionary newFromPairs: {
-							 #type.
-							 'text'.
-							 #key.
-							 #name.
-							 #label.
-							 'Ім’я'.
-							 #placeholder.
-							 'Введіть ім’я'.
-							 #validationRules.
-							 tmp1 }).
-				(Dictionary newFromPairs:
-						 { #type. 'checkbox'. #key. #agree. #label. 'Погоджуюсь з умовами' }).
-				(Dictionary newFromPairs: {
-							 #key.
-							 #favoriteFruits.
-							 #type.
-							 'checkbox-group'.
-							 #title.
-							 'Фрукти'.
-							 #label.
-							 'Обрані фрукти'.
-							 #items.
-							 #( 'Яблуко' 'Груша' 'Ківі' 'Апельсин' ).
-							 #columns.
-							 2 }).
-				(Dictionary newFromPairs: {
-							 #type.
-							 'radiogroup'.
-							 #key.
-							 #gender.
-							 #label.
-							 'Стать'.
-							 #items.
-							 #( 'Чоловік' 'Жінка' 'Інше' ).
-							 #columns.
-							 3 }).
-				(Dictionary newFromPairs: {
-							 #type.
-							 'dropdown'.
-							 #key.
-							 #city.
-							 #label.
-							 'Місто'.
-							 #items.
-							 #( 'Львів' 'Київ' 'Одеса' ) }) }.
+		textField: #name
+		label: 'Ім’я'
+		placeholder: 'Введіть ім’я'
+		rules: nil;
+		textField: #email
+		label: 'Електронна пошта'
+		placeholder: 'email@example.com'
+		rules: nil;
+		checkbox: #agree label: 'Погоджуюсь з умовами';
+		checkboxGroup: #fruits
+		label: 'Фрукти'
+		items: #( 'Яблуко' 'Апельсин' 'Ківі' 'Груша' )
+		columns: 2
+		frame: false;
+		radioGroup: #gender
+		label: 'Стать'
+		items: #( 'Чоловік' 'Жінка' )
+		columns: 1
+		frame: false;
+		dropList: #city label: 'Місто' items: #( 'Київ' 'Львів' 'Харків' );
+		comboBox: #country
+		label: 'Країна'
+		items: #( 'Україна' 'Польща' 'Німеччина' );
+		multiComboBox: #skills
+		label: 'Навички'
+		items: #( 'Smalltalk' 'Python' 'C#' 'SQL' );
+		datePicker: #birthdate label: 'Дата народження';
+		timePicker: #meeting label: 'Час зустрічі'.
+
+
 	form onSubmit: [ :values |
 			Transcript
 				show: 'Отримані дані: ';
 				cr.
-			values keysAndValuesDo: [ :k :v |
-					Transcript
-						show: k asString , ' -> ' , v printString;
-						cr ] ].
+			Transcript
+				show: form collectValues;
+				cr ].
 	form onBack: [
 			Transcript
 				show: 'Натиснуто "Скасувати"';
@@ -179,11 +161,15 @@ TestPresenter >> initializePresenters [
 				show: 'Вибрано індекси: ' , indexes printString;
 				cr ].
 
+
+
+
 	step1 := Dictionary new.
 	step1
 		at: #title put: 'Registration';
 		at: #content
-		put: (SpPresenter new layout: (SpBoxLayout new add: form)).
+		put:
+			(SpPresenter new layout: (SpBoxLayout new add: comboboxPresenter)).
 
 	step2 := Dictionary new.
 	step2
@@ -199,11 +185,54 @@ TestPresenter >> initializePresenters [
 			(SpPresenter new layout:
 					 (SpBoxLayout new add: checkboxGroupPresenter)).
 
+	step4 := Dictionary new.
+	step4
+		at: #title put: 'Preferences';
+		at: #content put: (SpPresenter new layout:
+					 (SpBoxLayout new add:
+							  (LabelPresenter new text: 'Preferences step'))).
+
+	step5 := Dictionary new.
+	step5
+		at: #title put: 'Security';
+		at: #content put: (SpPresenter new layout:
+					 (SpBoxLayout new add:
+							  (LabelPresenter new text: 'Preferences step'))).
+
+	step6 := Dictionary new.
+	step6
+		at: #title put: 'Summary';
+		at: #content put: (SpPresenter new layout:
+					 (SpBoxLayout new add:
+							  (LabelPresenter new text: 'Preferences step'))).
+
+	step7 := Dictionary new.
+	step7
+		at: #title put: 'Agreement';
+		at: #content put: (SpPresenter new layout:
+					 (SpBoxLayout new add:
+							  (LabelPresenter new text: 'Preferences step'))).
+
+	step8 := Dictionary new.
+	step8
+		at: #title put: 'Finish';
+		at: #content put: (SpPresenter new layout:
+					 (SpBoxLayout new add:
+							  (LabelPresenter new text: 'Preferences step'))).
+
+	steps := {
+		         step1.
+		         step2.
+		         step3.
+		         step4.
+		         step5.
+		         step6.
+		         step7.
+		         step8 }.
+
+
 	wizard := WizardPresenter new.
-	wizard steps: {
-			step1.
-			step2.
-			step3 }.
+	wizard steps: steps.
 	wizard stepCircleRadius: 20.
 	wizard stepCircleTitleColor: Color gray.
 	wizard activeColor: '#99e699'.
@@ -259,5 +288,6 @@ TestPresenter >> initializePresenters [
 				 { #name. 'Тетяна'. #email. 'tania@ukr.net'. #city. 'Черкаси'.
 				 #phone. '012-345' }) }.
 
-	date := TimePickerPresenter new
+	date := TimePickerPresenter new.
+	date color: Color blue
 ]

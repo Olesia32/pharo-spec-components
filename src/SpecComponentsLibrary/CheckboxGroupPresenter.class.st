@@ -48,6 +48,13 @@ CheckboxGroupPresenter >> selectedIndexes [
 ]
 
 { #category : 'accessing' }
+CheckboxGroupPresenter >> selectedItems [
+
+	^ selectedIndexes collect:
+		  [ :i | items at: i ifAbsent: nil ] 
+]
+
+{ #category : 'accessing' }
 CheckboxGroupPresenter >> toggleSelectionAt: index [ 
     | buttonState |
     buttonState := (buttons at: index ifAbsent: [ ^ self ]) mainPresenter state.

@@ -12,7 +12,8 @@ Class {
 		'borderColor',
 		'titleFontSize',
 		'titleColor',
-		'labelFontSize'
+		'labelFontSize',
+		'visibleStepCount'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -99,21 +100,23 @@ StepHeaderPresenter >> headerHeight [
 ]
 
 { #category : 'initialization' }
-StepHeaderPresenter >> initializePresenters [ 
-    radius := 20.
-    stepSpacing := 120.
-    activeIndex := 1.
-    activeColor := Color r: 0.95 g: 0.4 b: 0.4.
-    defaultColor := Color white.
-    borderColor := Color lightGray.
-    labelFontSize := 12.
-    titleFontSize := 10.
-    titleColor := Color black.
-    stepTitles := #('Step 1' 'Step 2' 'Step 3').
+StepHeaderPresenter >> initialize [
 
-    roassalPresenter := self newRoassal.
-    roassalPresenter canvas background: Color transparent.
-    self render.
+	super initialize.
+	radius := 20.
+	stepSpacing := 120.
+	activeIndex := 1.
+	activeColor := Color r: 0.95 g: 0.4 b: 0.4.
+	defaultColor := Color white.
+	borderColor := Color lightGray.
+	labelFontSize := 12.
+	titleFontSize := 10.
+	titleColor := Color black.
+	stepTitles := #( 'Step 1' 'Step 2' 'Step 3' ).
+	visibleStepCount := 5.
+	roassalPresenter := self newRoassal.
+	roassalPresenter canvas background: Color transparent .
+	self render
 ]
 
 { #category : 'accessing' }
@@ -123,13 +126,16 @@ StepHeaderPresenter >> labelFontSize: aNumber [
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> radius: aNumber [ 
-    |totalWidth|
-    radius := aNumber.
-    stepSpacing := (radius * 2) + 100.
-    totalWidth := ((stepTitles size - 1) * stepSpacing).
-    roassalPresenter canvas camera translateBy: ((totalWidth / 2) @ (radius - 10)) negated.
-    self render.
+StepHeaderPresenter >> radius: aNumber [
+
+	| totalWidth stepCount|
+	radius := aNumber.
+	stepSpacing := radius * 2 + 100.
+	stepCount := visibleStepCount min: stepTitles size.
+	totalWidth := (stepCount - 1) * stepSpacing.
+	roassalPresenter canvas camera translateBy:
+		(totalWidth / 2 @ (radius - 10)) negated.
+	self render
 ]
 
 { #category : 'rendering' }
@@ -143,47 +149,71 @@ StepHeaderPresenter >> render [
 
 ]
 
-{ #category : 'rendering' }
-StepHeaderPresenter >> renderStepLinesOn: view [ 
+{ #category : 'as yet unclassified' }
+StepHeaderPresenter >> renderStepLinesOn: view [
+	| indexes linesCount |
+	indexes := self visibleStepIndexes.
+	linesCount := indexes size.
 
-    1 to: (stepTitles size - 1) do: [ :i |
-        | start end lineColor line |
-        start := self centerXOfStep: (i - 1) plusRadius: true.
-        end := self centerXOfStep: i plusRadius: false.
+	1 to: linesCount - 1 do: [ :i |
+		| start end lineColor line globalLeftIndex |
+		globalLeftIndex := indexes at: i.
 
-        lineColor := (i < activeIndex ifTrue: [ activeColor ] ifFalse: [ borderColor ]).
-        line := RSLine newFrom: (start @ 0) to: (end @ 0).
-        line color: lineColor.
-        line width: 2.
-        view add: line.]
+		start := self centerXOfStep: i - 1 plusRadius: true.
+		end := self centerXOfStep: i plusRadius: false.
+
+		lineColor := globalLeftIndex < activeIndex
+			ifTrue: [ activeColor ]
+			ifFalse: [ borderColor ].
+
+		line := RSLine newFrom: (start @ 0) to: (end @ 0).
+		line color: lineColor.
+		line width: 2.
+		view add: line
+	].
+
 ]
 
 { #category : 'rendering' }
 StepHeaderPresenter >> renderStepsOn: view [ 
-    | startX startY |
-    startX := 0.
-    startY := 0.
+	| startX startY visibleIndexes i xPos stepColor circle label title outerCircle textSize textColor |
+	startX := 0.
+	startY := 0.
+	visibleIndexes := self visibleStepIndexes.
 
-    (1 to: stepTitles size) do: [ :i |
-        | xPos stepColor circle label title outerCircle textSize textColor |
+	i := 0.
+	visibleIndexes do: [ :idx |
+		xPos := startX + (i * stepSpacing).
+		i := i + 1.
 
-        xPos := startX + ((i - 1) * stepSpacing).
-        stepColor := (i <= activeIndex) ifTrue: [ activeColor ] ifFalse: [ defaultColor ].
+		(idx = #ellipsis)
+			ifTrue: [
+				title := self buildStepTitleAt: xPos y: (startY + (radius + 4) + 15) text: '…'.
+				view add: title
+			]
+			ifFalse: [
+				stepColor := (idx <= activeIndex) ifTrue: [ activeColor ] ifFalse: [ defaultColor ].
+				textSize := (radius * 0.6) rounded.
+				textColor := (stepColor luminance < 0.7) ifTrue: [ Color white ] ifFalse: [ Color black ].
 
-        textSize := (radius * 0.6) rounded.
-        textColor := (stepColor luminance < 0.7) ifTrue: [ Color white ] ifFalse: [ Color black ].
+				(idx = activeIndex) ifTrue: [
+					outerCircle := self buildOuterCircleAt: xPos y: startY color: activeColor.
+					view add: outerCircle
+				].
 
-        (i = activeIndex) ifTrue: [
-            outerCircle := self buildOuterCircleAt: xPos y: startY color: activeColor.
-            view add: outerCircle
-        ].
+				circle := self buildStepCircleAt: xPos y: startY color: stepColor borderColor: (idx = activeIndex ifTrue: [ activeColor darker ] ifFalse: [ borderColor ]).
+				label := self buildStepLabelAt: xPos y: startY text: idx asString fontSize: textSize color: textColor.
+				title := self buildStepTitleAt: xPos y: (startY + (radius + 4) + 15) text: (self stepTitleForIndex: idx).
 
-        circle := self buildStepCircleAt: xPos y: startY color: stepColor borderColor: (i = activeIndex ifTrue: [ activeColor darker ] ifFalse: [ borderColor ]).
-        label := self buildStepLabelAt: xPos y: startY text: i asString fontSize: textSize color: textColor.
-        title := self buildStepTitleAt: xPos y: (startY + (radius + 4) + 15) text: (stepTitles at: i).
+				view addAll: { circle. label. title }.
+			].
+	].
+]
 
-        view addAll: { circle. label. title }.
-    ].
+{ #category : 'initialization' }
+StepHeaderPresenter >> stepTitleForIndex: index [ 
+	index = #ellipsis ifTrue: [ ^ '…' ].
+	^ stepTitles at: index ifAbsent: [ '' ]
 ]
 
 { #category : 'accessing' }
@@ -202,4 +232,28 @@ StepHeaderPresenter >> titleColor: aColor [
 StepHeaderPresenter >> titleFontSize: aNumber [ 
     titleFontSize := aNumber.
     self render.
+]
+
+{ #category : 'accessing' }
+StepHeaderPresenter >> visibleStepCount: aNumber [
+
+	visibleStepCount := aNumber max: 1
+]
+
+{ #category : 'as yet unclassified' }
+StepHeaderPresenter >> visibleStepIndexes [
+
+	| totalSteps maxSteps halfWindow startIdx endIdx |
+	totalSteps := stepTitles size.
+	maxSteps := visibleStepCount .
+
+	totalSteps <= maxSteps ifTrue: [
+		^ (1 to: totalSteps) asOrderedCollection ].
+
+	halfWindow := maxSteps // 2.
+	startIdx := activeIndex - halfWindow max: 1.
+	endIdx := startIdx + maxSteps - 1 min: totalSteps.
+	startIdx := endIdx - maxSteps + 1 max: 1.
+
+	^ (startIdx to: endIdx) asOrderedCollection
 ]

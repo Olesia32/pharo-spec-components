@@ -10,7 +10,8 @@ Class {
 		'backButton',
 		'onStepChanged',
 		'onStepExit',
-		'onFinished'
+		'onFinished',
+		'visibleStepCount'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -44,14 +45,20 @@ WizardPresenter >> goToPreviousStep [
 
 { #category : 'as yet unclassified' }
 WizardPresenter >> goToStep: aNumber [
-
+   |windowMorph bounds|
 	(aNumber between: 1 and: steps size) ifFalse: [ ^ self ].
 	onStepExit ifNotNil: [ onStepExit value: currentStepIndex ].
 	currentStepIndex := aNumber.
 	contentPresenter layout: ((steps at: currentStepIndex) at: #content).
 	self updateButtonStates.
 	self updateStepHeader.
-	onStepChanged ifNotNil: [ onStepChanged value: currentStepIndex ]
+	onStepChanged ifNotNil: [ onStepChanged value: currentStepIndex ].
+   windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
+	windowMorph ifNotNil: [
+	bounds := windowMorph bounds.
+	windowMorph bounds: (bounds insetBy: 1).
+	windowMorph bounds: bounds ].
+	self owner ifNotNil: [ self owner ]
 ]
 
 { #category : 'initialization' }
@@ -139,6 +146,11 @@ WizardPresenter >> updateStepHeader [
 	stepHeaderPresenters activeIndex: currentStepIndex 
 ]
 
+{ #category : 'accessing' }
+WizardPresenter >> visibleStepCount: aCount [
+   stepHeaderPresenters visibleStepCount: aCount 
+]
+
 { #category : 'enumerating' }
 WizardPresenter >> whenStepChangedDo: aBlock [ 
     onStepChanged := aBlock.
@@ -147,4 +159,9 @@ WizardPresenter >> whenStepChangedDo: aBlock [
 { #category : 'enumerating' }
 WizardPresenter >> whenStepExitDo: aBlock [ 
     onStepExit := aBlock.
+]
+
+{ #category : 'accessing' }
+WizardPresenter >> width: aNumber [
+   width := stepHeaderPresenters width: (aNumber max: 1).
 ]

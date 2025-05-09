@@ -3,6 +3,7 @@ Class {
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'fields',
+		'fieldLabels',
 		'fieldPresenters',
 		'formData',
 		'customTopPresenter',
@@ -18,6 +19,22 @@ Class {
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> applyInputStyleTo: presenter [ 
+	formStyle inputFontSize ifNotNil: [ :f | presenter fontSize: f ].
+	formStyle inputBackground ifNotNil: [ :c |
+		(presenter respondsTo: #backgroundColor:) ifTrue: [
+			presenter backgroundColor: c ] ].
+	formStyle inputWidth ifNotNil: [ :f | presenter width: f ].
+	formStyle inputHeight ifNotNil: [ :c | presenter height: c ].
+	formStyle inputBorderWidth ifNotNil: [ :f |
+		(presenter respondsTo: #borderWidth:) ifTrue: [
+			presenter borderWidth: f ] ].
+	formStyle inputBorderColor ifNotNil: [ :c |
+		(presenter respondsTo: #borderColor:) ifTrue: [
+			presenter borderColor: c ] ].
+]
 
 { #category : 'as yet unclassified' }
 DynamicFormBuilder >> applyLabelStyle: arg1 [
@@ -43,30 +60,26 @@ DynamicFormBuilder >> applyStyleToAllPresenters [
 	formStyle ifNil: [ ^ self ].
 	allPresenters := fieldPresenters copy.
 
-	headerLabel ifNotNil: [ 
-		formStyle headerFontSize ifNotNil: [ :f | headerLabel fontSize: f ].
-					formStyle fontFamily ifNotNil: [ :f | headerLabel fontFamily: f ].
-					formStyle isHeaderBold ifNotNil: [ :f | headerLabel bold: f ].
-					formStyle isHeaderItalic ifNotNil: [ :f | headerLabel italic: f ].
-					formStyle headerColor ifNotNil: [ :c | headerLabel color: c ] ].
-				
+	headerLabel ifNotNil: [
+			formStyle headerFontSize ifNotNil: [ :f | headerLabel fontSize: f ].
+			formStyle fontFamily ifNotNil: [ :f | headerLabel fontFamily: f ].
+			formStyle isHeaderBold ifNotNil: [ :f | headerLabel bold: f ].
+			formStyle isHeaderItalic ifNotNil: [ :f | headerLabel italic: f ].
+			formStyle headerColor ifNotNil: [ :c | headerLabel color: c ] ].
+
 	submitButton ifNotNil: [
 		allPresenters add: #__submit__ -> submitButton ].
 	backButton ifNotNil: [ allPresenters add: #__back__ -> backButton ].
+
 	allPresenters do: [ :assoc |
 			| presenter |
 			presenter := assoc value.
+         	Transcript crShow: presenter class name, ' – ', (self isInputComponent: presenter) printString.
+
 			self applyLabelStyle: presenter.
-			(presenter isKindOf: TextInputPresenter) ifTrue: [
-					formStyle inputFontSize ifNotNil: [ :f | presenter fontSize: f ].
-					formStyle inputBackground ifNotNil: [ :c |
-						presenter backgroundColor: c ].
-					formStyle inputWidth ifNotNil: [ :f | presenter width: f ].
-					formStyle inputHeight ifNotNil: [ :c | presenter height: c ].
-					formStyle inputBorderWidth ifNotNil: [ :f |
-						presenter borderWidth: f ].
-					formStyle inputBorderColor ifNotNil: [ :c |
-						presenter borderColor: c ] ].
+
+			(self isInputComponent: presenter) ifTrue: [
+				self applyInputStyleTo: presenter ].
 
 			(presenter isKindOf: ButtonPresenter) ifTrue: [
 					formStyle labelFontSize ifNotNil: [ :f | presenter fontSize: f ].
@@ -84,47 +97,90 @@ DynamicFormBuilder >> backButtonLabel: arg1 [
 	backButton label: arg1
 ]
 
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> checkbox: aKey label: aLabel [
+
+	| presenter |
+	presenter := CheckboxPresenter new mainPresenter label: aLabel.
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> checkboxGroup: aKey label: aLabel items: itemsList columns: columnCount frame: aBoolean [
+
+	| presenter |
+	presenter := CheckboxGroupPresenter new.
+	presenter
+		items: itemsList;
+		сolumnCount: columnCount;
+		showTitle: false;
+		showFrame: aBoolean.
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
+]
+
 { #category : 'accessing' }
-DynamicFormBuilder >> collectValues [ 
+DynamicFormBuilder >> collectValues [
 
-    | result |
-    result := Dictionary new.
+	| result |
+	result := Dictionary new.
 
-    fieldPresenters do: [ :assoc |
-        | key presenter value |
-        key := assoc key.
-        presenter := assoc value.
+	fieldPresenters do: [ :assoc |
+			| key presenter value |
+			key := assoc key.
+			presenter := assoc value.
 
-        value :=
-            (presenter isKindOf: TextInputPresenter)
-                ifTrue: [ presenter text ]
-            ifFalse: [
-                (presenter isKindOf: SpDropListPresenter)
-                    ifTrue: [ presenter selectedItem ]
-                ifFalse: [
-                    (presenter isKindOf: ComboBoxPresenter)
-                        ifTrue: [ presenter selectedItem ]
-                    ifFalse: [
-                        (presenter isKindOf: SpDatePresenter)
-                            ifTrue: [ presenter date ]
-                        ifFalse: [
-                            (presenter isKindOf: CheckboxPresenter)
-                                ifTrue: [ presenter mainPresenter state ]
-                            ifFalse: [
-                                (presenter isKindOf: RadioGroupPresenter)
-                                    ifTrue: [ presenter itemSelected ]
-                                ifFalse: [
-                                    (presenter isKindOf: CheckboxGroupPresenter)
-                                        ifTrue: [ presenter selectedIndexes ]
-                                    ifFalse: [ nil ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ].
+			value := (presenter isKindOf: TextInputPresenter)
+				         ifTrue: [ presenter text ]
+				         ifFalse: [
+						         (presenter isKindOf: SpDropListPresenter)
+							         ifTrue: [ presenter selectedItem ]
+							         ifFalse: [
+									         (presenter isKindOf: ComboBoxPresenter)
+										         ifTrue: [ presenter selectedItem ]
+										         ifFalse: [
+												         (presenter isKindOf: MultiSelectComboBoxPresenter)
+													         ifTrue: [ presenter selectedItems ]
+													         ifFalse: [
+															         (presenter isKindOf: SpDatePresenter)
+																         ifTrue: [ presenter date ]
+																         ifFalse: [
+																		         (presenter isKindOf: TimePickerPresenter)
+																			         ifTrue: [
+																					         Dictionary new
+																						         at: #hour put: presenter hour;
+																						         at: #minute put: presenter minutes;
+																						         yourself ]
+																			         ifFalse: [
+																					         (presenter isKindOf: CheckboxPresenter)
+																						         ifTrue: [
+																						         presenter mainPresenter state ]
+																						         ifFalse: [
+																								         (presenter isKindOf:
+																									          RadioGroupPresenter)
+																									         ifTrue: [ presenter itemSelected ]
+																									         ifFalse: [
+																											         (presenter isKindOf:
+																												          CheckboxGroupPresenter)
+																												         ifTrue: [
+																												         presenter selectedItems ]
+																												         ifFalse: [ nil ] ] ] ] ] ] ] ] ].
 
-        result at: key put: value.]
+
+			result at: key put: value ].
+		^ result
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> comboBox: aKey label: aLabel items: itemsList [
+
+	| presenter |
+	presenter := ComboBoxPresenter new.
+	presenter
+		items: itemsList.
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
 ]
 
 { #category : 'as yet unclassified' }
@@ -141,115 +197,65 @@ DynamicFormBuilder >> connectPresenters [
 ]
 
 { #category : 'as yet unclassified' }
-DynamicFormBuilder >> createPresenterFromSpec: arg1 [ 
+DynamicFormBuilder >> datePicker: aKey label: aLabel [
 
-    | type label presenter |
-    type := arg1 at: #type.
-    label := arg1 at: #label ifAbsent: ''.
-
-    presenter := 
-        type = 'label'
-            ifTrue: [ LabelPresenter new text: label ]
-        ifFalse: [
-            type = 'text'
-                ifTrue: [ TextInputPresenter new ]
-            ifFalse: [
-                type = 'dropdown'
-                    ifTrue: [ SpDropListPresenter new ]
-                ifFalse: [
-                    type = 'combobox'
-                        ifTrue: [ ComboBoxPresenter new ]
-                    ifFalse: [
-                        type = 'checkbox'
-                            ifTrue: [ CheckboxPresenter new ]
-                        ifFalse: [
-                            type = 'checkbox-group'
-                                ifTrue: [ CheckboxGroupPresenter new ]
-                            ifFalse: [
-                                type = 'radiogroup'
-                                    ifTrue: [ RadioGroupPresenter new ]
-                                ifFalse: [
-                                    LabelPresenter new text: 'Unsupported type: ', type
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ].
-
-    (presenter respondsTo: #label:) ifTrue: [ presenter label: label ].
-    (arg1 includesKey: #placeholder) ifTrue: [
-        (presenter respondsTo: #placeholder:) ifTrue: [
-            presenter placeholder: (arg1 at: #placeholder) ] ].
-    (arg1 includesKey: #items) ifTrue: [
-        (presenter respondsTo: #items:) ifTrue: [ presenter items: (arg1 at: #items) ] ].
-    (arg1 includesKey: #columns) ifTrue: [
-        (presenter respondsTo: #сolumnCount:) ifTrue: [
-            presenter сolumnCount: (arg1 at: #columns) ] ].
-    (arg1 includesKey: #frame) ifTrue: [
-        (presenter respondsTo: #showFrame:) ifTrue: [
-            presenter showFrame: (arg1 at: #frame) ] ].
-    (arg1 includesKey: #title) ifTrue: [
-        (presenter respondsTo: #title:) ifTrue: [
-            presenter title: (arg1 at: #title) ] ].
-    (arg1 includesKey: #validationRules) ifTrue: [
-        (presenter respondsTo: #addValidationRule:message:) ifTrue: [
-            (arg1 at: #validationRules) applyTo: presenter ] ].
-
-    ^ presenter
+	| presenter |
+	presenter := SpDatePresenter new.
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
 ]
 
 { #category : 'as yet unclassified' }
 DynamicFormBuilder >> defaultLayout [
-
-	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp7 |
+	| layout headerArea formGrid buttonBar currentRow |
 	self applyStyleToAllPresenters.
-	tmp1 := SpBoxLayout newVertical.
-	tmp1 spacing: 0.
-	tmp4 := SpBoxLayout newVertical.
-	tmp4
+	layout := SpBoxLayout newVertical spacing: 0.
+	headerArea := SpBoxLayout newVertical.
+	headerArea
 		hAlignCenter;
 		spacing: 5.
-	customTopPresenter ifNotNil: [ tmp4 add: customTopPresenter ].
-	isHideHeader ifFalse: [ tmp4 add: headerLabel expand: false].
-	tmp1 add: tmp4 expand: false.
-	tmp2 := SpGridLayout new.
-	tmp2 beColumnNotHomogeneous.
-	tmp7 := 1.
-	fieldPresenters do: [ :arg1 |
-			| tmp8 tmp9 tmp10 |
-			tmp10 := fields detect: [ :arg2 | (arg2 at: #key) = arg1 key ].
-			tmp8 := LabelPresenter new text: (tmp10 at: #label ifAbsent: '').
-			self applyLabelStyle: tmp8.
-			tmp9 := arg1 value.
-			tmp2
-				add: tmp8 atPoint: 1 @ tmp7;
-				add: tmp9 atPoint: 2 @ tmp7 span: 2 @ 1.
-			tmp7 := tmp7 + 1 ].
-	tmp5 := fieldPresenters size.
-	tmp1 add: tmp2 withConstraints: [ :arg3 | arg3 height: tmp5 * 40 ].
-	isHideButtons ifFalse: [  
-	tmp3 := SpBoxLayout newLeftToRight.
-	tmp3
-		hAlignCenter;
-		spacing: 20;
-		add: submitButton expand: false;
-		add: backButton expand: false.
-	tmp1 add: tmp3 expand: false.
+	customTopPresenter ifNotNil: [ headerArea add: customTopPresenter ].
+	isHideHeader ifFalse: [ headerArea add: headerLabel expand: false ].
+	layout add: headerArea expand: false.
+
+	formGrid := SpGridLayout new.
+	formGrid beColumnNotHomogeneous.
+	currentRow := 1.
+	fieldPresenters do: [ :assoc |
+		| key presenter labelPresenter |
+		key := assoc key.
+		presenter := assoc value.
+		labelPresenter := LabelPresenter new text: (fieldLabels at: key ifAbsent: '').
+		self applyLabelStyle: labelPresenter.
+		formGrid
+			add: labelPresenter atPoint: 1 @ currentRow;
+			add: presenter atPoint: 2 @ currentRow span: 2 @ 1.
+		currentRow := currentRow + 1 ].
+	layout add: formGrid withConstraints: [ :c | c height: fieldPresenters size * 40 ].
+
+	isHideButtons ifFalse: [
+		buttonBar := SpBoxLayout newLeftToRight.
+		buttonBar
+			hAlignCenter;
+			spacing: 20;
+			add: submitButton expand: false;
+			add: backButton expand: false.
+		layout add: buttonBar expand: false
 	].
-	^ tmp1 yourself
+
+	^ layout yourself
+
 ]
 
-{ #category : 'accessing' }
-DynamicFormBuilder >> fields: arg1 [
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> dropList: aKey label: aLabel items: itemsList [
 
-	fields := arg1.
-	fieldPresenters addAll: (fields collect: [ :arg2 |
-				 | tmp1 tmp2 |
-				 tmp2 := arg2 at: #key.
-				 tmp1 := self createPresenterFromSpec: arg2.
-				 tmp2 -> tmp1 ])
+	| presenter |
+	presenter := SpDropListPresenter new.
+	presenter
+		items: itemsList.
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
 ]
 
 { #category : 'accessing' }
@@ -274,9 +280,11 @@ DynamicFormBuilder >> hideHeader [
 
 { #category : 'as yet unclassified' }
 DynamicFormBuilder >> initializePresenters [
-   fields ifNil: [ fields := #(  ) ] ifNotNil: [ fields ].
+
+	fields ifNil: [ fields := #(  ) ] ifNotNil: [ fields ].
 	fieldPresenters := OrderedCollection new.
 	formData := Dictionary new.
+	fieldLabels := Dictionary new.
 	isHideHeader := false.
 	isHideButtons := false.
 	submitButton := ButtonPresenter new.
@@ -292,6 +300,29 @@ DynamicFormBuilder >> initializePresenters [
 				 tmp2 -> tmp1 ])
 ]
 
+{ #category : 'testing' }
+DynamicFormBuilder >> isInputComponent: presenter [ 
+  ^ #(
+		TextInputPresenter
+		SpDropListPresenter
+		ComboBoxPresenter
+		MultiSelectComboBoxPresenter
+		SpDatePresenter
+		TimePickerPresenter
+	) anySatisfy: [ :cls | presenter isKindOf: (Smalltalk at: cls) ]
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> multiComboBox: aKey label: aLabel items: itemsList [
+
+	| presenter |
+	presenter := MultiSelectComboBoxPresenter new.
+	presenter
+		items: itemsList.
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
+]
+
 { #category : 'as yet unclassified' }
 DynamicFormBuilder >> onBack: arg1 [
 
@@ -302,6 +333,25 @@ DynamicFormBuilder >> onBack: arg1 [
 DynamicFormBuilder >> onSubmit: arg1 [
 
 	onSubmitAction := arg1
+]
+
+{ #category : 'accessing' }
+DynamicFormBuilder >> presenterAt: aKey [
+	^ (fieldPresenters detect: [ :assoc | assoc key = aKey ] ifNone: [ nil ]) ifNotNil: [ :assoc | assoc value ]
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> radioGroup: aKey label: aLabel items: itemsList columns: columnCount frame: aBoolean [
+
+	| presenter |
+	presenter := RadioGroupPresenter new.
+	presenter
+		items: itemsList;
+		сolumnCount: columnCount;
+		showTitle: false.
+	aBoolean ifTrue: [ presenter showFrame: true ].
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
 ]
 
 { #category : 'as yet unclassified' }
@@ -330,6 +380,26 @@ DynamicFormBuilder >> style: arg1 [
 DynamicFormBuilder >> submitButtonLabel: arg1 [
 
 	submitButton label: arg1
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> textField: aKey label: aLabel placeholder: aPlaceholder rules: validationRules [
+
+	| presenter |
+	presenter := TextInputPresenter new.
+	presenter placeholder: aPlaceholder.
+	validationRules ifNotNil: [ presenter addValidationRules: validationRules].
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
+]
+
+{ #category : 'as yet unclassified' }
+DynamicFormBuilder >> timePicker: aKey label: aLabel [
+
+	| presenter |
+	presenter := TimePickerPresenter new.
+	fieldPresenters add: aKey -> presenter.
+	fieldLabels at: aKey put: aLabel
 ]
 
 { #category : 'as yet unclassified' }
