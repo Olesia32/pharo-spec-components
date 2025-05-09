@@ -16,9 +16,13 @@ Class {
 		'minutesLabel',
 		'isHourMode',
 		'okButton',
+		'isPm',
+		'amButton',
+		'pmButton',
 		'cancelButton',
 		'onOkAction',
-		'onCancelAction'
+		'onCancelAction',
+		'onChanged'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -39,36 +43,26 @@ TimePickerDialogPresenter >> addSelectionMarker [
 ]
 
 { #category : 'as yet unclassified' }
-TimePickerDialogPresenter >> buildClockFace [
+TimePickerDialogPresenter >> buildClockFace [ 
+	| pointFor |
+	pointFor := [ :c :r :angle |
+		| rad |
+		rad := angle degreesToRadians.
+		c + (r * rad cos @ (r * rad sin)) ].
 
-	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 |
-	tmp1 := [ :arg1 :arg2 :arg3 |
-		        | tmp9 |
-		        tmp9 := arg3 degreesToRadians.
-		        arg1 + (arg2 * tmp9 cos @ (arg2 * tmp9 sin)) ].
-	tmp2 := radius - 20.
-	1 to: 12 do: [ :tmp8 |
-			tmp7 := nil.
-			tmp3 := nil.
-			tmp4 := nil.
-			tmp5 := nil.
-			tmp6 := nil.
-			tmp3 := tmp8 * 30 - 90.
-			tmp4 := tmp1 value: center value: tmp2 value: tmp3.
-			tmp7 := RSEllipse new.
-			tmp7 radius: 20.
-			tmp5 := tmp7 color: Color veryLightGray.
-			tmp5
-				translateTo: tmp4;
-				when: RSMouseClick do: [ isHourMode ifTrue: [ self selectedHour: tmp8. self isHourMode: false] ifFalse: [ self selectedMinute:tmp8 ]] for: self.
-			canvas add: tmp5.
-			tmp6 := RSLabel new text: tmp8 asString.
-			tmp6
-				fontSize: 12;
-				translateTo: tmp4.
-			canvas add: tmp6.
-			hourCircles at: tmp8 put: tmp5 ].
-	1
+	1 to: 12 do: [ :i |
+		| angle pos circle label |
+		angle := i * 30 - 90.
+		pos := pointFor value: center value: radius - 20 value: angle.
+		circle := RSEllipse new radius: 20; color: Color veryLightGray.
+		circle translateTo: pos.
+		canvas add: circle.
+		hourCircles at: i put: circle.
+
+		label := RSLabel new.
+		label fontSize: 12; translateTo: pos.
+		canvas add: label.]
+	
 ]
 
 { #category : 'initialization' }
@@ -81,10 +75,13 @@ TimePickerDialogPresenter >> connectPresenters [
 { #category : 'layout' }
 TimePickerDialogPresenter >> defaultLayout [
 
-	| tmp1 tmp2 tmp3 tmp4 |
+	| tmp1 tmp2 tmp3 tmp4 tmp5 |
 	tmp3 := SpBoxLayout newTopToBottom.
 	tmp3 spacing: 10.
 	tmp1 := tmp3 hAlignCenter.
+	tmp5 := SpBoxLayout newTopToBottom
+		        add: amButton;
+		        add: pmButton.
 	tmp2 := SpBoxLayout newLeftToRight.
 	tmp2
 		spacing: 5;
@@ -94,7 +91,8 @@ TimePickerDialogPresenter >> defaultLayout [
 	tmp4 fontSize: 16.
 	tmp2
 		add: (tmp4 text: ':') expand: false;
-		add: minutesLabel withConstraints: [ :arg2 | arg2 height: 50 ].
+		add: minutesLabel withConstraints: [ :arg2 | arg2 height: 50 ];
+		add: tmp5.
 	tmp1
 		add: tmp2 expand: true;
 		add: roassalPresenre withConstraints: [ :arg3 |
@@ -126,13 +124,17 @@ TimePickerDialogPresenter >> initializeDialogWindow: arg1 [
 				onCancelAction ifNotNil: [ onCancelAction value ].
 				arg1 close ];
 		addButton: 'Підтвердити' do: [
+				| tmp1 |
 				onOkAction ifNotNil: [
-							onOkAction value: (Dictionary new
-    at: #hour put: selectedHour;
-    at: #minute put: selectedMinute;
-    yourself). ].
-				arg1 beOk.
-				arg1 close ]
+							tmp1 := Dictionary new.
+							tmp1
+								at: #hour put: selectedHour;
+					at: #minute put: selectedMinute;
+					at: #pm put: isPm.
+							onOkAction value: tmp1 yourself ].
+				arg1
+					beOk;
+					close ]
 ]
 
 { #category : 'initialization' }
@@ -154,11 +156,20 @@ TimePickerDialogPresenter >> initializePresenters [
 		fontSize: 16;
 		label: '00';
 		bold.
+	amButton := ButtonPresenter new
+		            label: 'AM';
+		            onClick: [ self switchToAm ].
+	pmButton := ButtonPresenter new
+		            label: 'PM';
+		            onClick: [ self switchToPm ].
+	isPm := false.
 	self isHourMode: true.
-	selectedHour := 12.
+	selectedHour := 1.
 	self
+		isPm: false;
 		drawBackgroundCircle;
 		buildClockFace;
+		updateClockLabels;
 		addSelectionMarker;
 		updateSelectionMarker
 ]
@@ -172,28 +183,34 @@ TimePickerDialogPresenter >> initializeWindow: arg1 [
 ]
 
 { #category : 'accessing' }
-TimePickerDialogPresenter >> isHourMode: arg1 [
+TimePickerDialogPresenter >> isHourMode: aBool [ 
+	isHourMode := aBool.
+	self updateSelectionHighlight.
+	self updateClockLabels.
+]
 
-	isHourMode := arg1.
-	isHourMode
-		ifTrue: [
-				hourLabel backgroundColor: '#e5cfee'.
-				minutesLabel backgroundColor: '#veryLightGray' ]
-		ifFalse: [
-				minutesLabel backgroundColor: '#e5cfee'.
-				hourLabel backgroundColor: '#veryLightGray' ]
+{ #category : 'accessing' }
+TimePickerDialogPresenter >> isPm: aBool [ 
+	isPm := aBool.
+	self updateAmPmButtons.
+	self updateClockLabels.
 ]
 
 { #category : 'showing' }
 TimePickerDialogPresenter >> onCancel: arg1 [
 
-	onCancelAction := arg1 
+	onCancelAction := arg1
+]
+
+{ #category : 'accessing' }
+TimePickerDialogPresenter >> onChanged: aBlook [
+onChanged := aBlook 
 ]
 
 { #category : 'showing' }
 TimePickerDialogPresenter >> onOk: arg1 [
 
-	onOkAction := arg1 
+	onOkAction := arg1
 ]
 
 { #category : 'as yet unclassified' }
@@ -219,14 +236,98 @@ TimePickerDialogPresenter >> selectedMinute [
 TimePickerDialogPresenter >> selectedMinute: arg1 [
 
 	selectedMinute := arg1.
-   minutesLabel label: selectedMinute asString.
+	minutesLabel label: selectedMinute asString.
 	self updateSelectionMarker
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerDialogPresenter >> switchToAm [
+	self isPm: false
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerDialogPresenter >> switchToPm [
+	self isPm: true
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerDialogPresenter >> updateAmPmButtons [
+	amButton backgroundColor: (isPm ifTrue: ['#veryLightGray'] ifFalse: ['#e5cfee']).
+	pmButton backgroundColor: (isPm ifTrue: ['#e5cfee'] ifFalse: ['#veryLightGray']).
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerDialogPresenter >> updateClockLabels [
+
+	| startHour windowMorph bounds|
+	startHour := isHourMode
+		             ifTrue: [
+				             isPm
+					             ifTrue: [ 12 ]
+					             ifFalse: [ 0 ] ]
+		             ifFalse: [ 0 ].
+
+	hourCircles keysAndValuesDo: [ :i :circle |
+			| value label newLabel pos |
+			value := isHourMode
+				         ifTrue: [
+						         i = 12
+							         ifTrue: [ startHour ]
+							         ifFalse: [ startHour + i ] ]
+				         ifFalse: [
+						         i = 12
+							         ifTrue: [ 0 ]
+							         ifFalse: [ i * 5 ] ].
+
+			pos := circle position.
+			label := canvas shapes
+				         detect: [ :s |
+				         (s isKindOf: RSLabel) and: [ s position = pos ] ]
+				         ifNone: [ nil ].
+			label ifNotNil: [ canvas removeShape: label ].
+
+			newLabel := RSLabel new
+				            text: value asString;
+				            fontSize: 12;
+				            translateTo: pos.
+			canvas add: newLabel.
+
+			circle
+				when: RSMouseClick
+				do: [
+						isHourMode
+							ifTrue: [
+									self selectedHour: value.
+									self isHourMode: false ]
+							ifFalse: [ self selectedMinute: value ] ]
+				for: self ].
+		
+	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
+	windowMorph ifNotNil: [
+	bounds := windowMorph bounds.
+	windowMorph bounds: (bounds insetBy: 1).
+	windowMorph bounds: bounds
+].
+			self owner ifNotNil: [ self owner ]
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerDialogPresenter >> updateSelectionHighlight [
+
+	hourLabel backgroundColor: (isHourMode
+			 ifTrue: [ '#e5cfee' ]
+			 ifFalse: [ '#veryLightGray' ]).
+	minutesLabel backgroundColor: (isHourMode
+			 ifTrue: [ '#veryLightGray' ]
+			 ifFalse: [ '#e5cfee' ]).
+	isHourMode ifTrue: [ amButton mainPresenter enabled: true. pmButton mainPresenter enabled: true]
+	ifFalse: [ amButton mainPresenter enabled: false. pmButton mainPresenter enabled: false ]
 ]
 
 { #category : 'as yet unclassified' }
 TimePickerDialogPresenter >> updateSelectionMarker [
 
-	| tmp1 tmp2 tmp3 tmp4 |
+	| tmp1 tmp2 tmp3 tmp4 windowMorph bounds|
 	selectedHour isNil ifTrue: [ ^ self ].
 	nil.
 	tmp1 := [ :arg1 :arg2 :arg3 |
@@ -249,5 +350,12 @@ TimePickerDialogPresenter >> updateSelectionMarker [
 	hourCircles keysAndValuesDo: [ :arg4 :arg5 |
 			arg5 color: (arg4 = selectedHour
 					 ifTrue: [ Color purple ]
-					 ifFalse: [ Color veryLightGray ]) ]
+					 ifFalse: [ Color veryLightGray ]) ].
+	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
+	windowMorph ifNotNil: [
+	bounds := windowMorph bounds.
+	windowMorph bounds: (bounds insetBy: 1).
+	windowMorph bounds: bounds
+].
+			self owner ifNotNil: [ self owner ]
 ]
