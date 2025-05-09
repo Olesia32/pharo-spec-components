@@ -207,7 +207,8 @@ TimePickerDialogPresenter >> isPm: aBool [
 	selectionLine ifNotNil: [
 			canvas removeShape: selectionLine.
 			selectionLine := nil ].
-	self updateClockLabels
+	self updateClockLabels.
+	self updateSelectionMarker 
 ]
 
 { #category : 'accessing' }
@@ -275,6 +276,7 @@ TimePickerDialogPresenter >> switchToAm [
 	self isPm: false.
 	startHour := 0.
 	self updateAmPmButtons.
+	self updateSelectionMarker 
 ]
 
 { #category : 'as yet unclassified' }
@@ -282,7 +284,8 @@ TimePickerDialogPresenter >> switchToPm [
 
 	self isPm: true.
 	startHour := 12.
-	self updateAmPmButtons 
+	self updateAmPmButtons.
+	self updateSelectionMarker 
 ]
 
 { #category : 'as yet unclassified' }
@@ -296,17 +299,10 @@ TimePickerDialogPresenter >> updateAmPmButtons [
 			 ifFalse: [ '#veryLightGray' ])
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 TimePickerDialogPresenter >> updateClockLabels [
 
-	| startHour windowMorph bounds pointFor |
-	startHour := isHourMode
-		             ifTrue: [
-				             isPm
-					             ifTrue: [ 12 ]
-					             ifFalse: [ 0 ] ]
-		             ifFalse: [ 0 ].
-
+	| pointFor windowMorph bounds |
 	pointFor := [ :c :r :angle |
 		            | rad |
 		            rad := angle degreesToRadians.
@@ -316,53 +312,90 @@ TimePickerDialogPresenter >> updateClockLabels [
 	hourCircles valuesDo: [ :c | canvas removeShape: c ].
 	(canvas shapes select: [ :s | s isKindOf: RSLabel ]) do: [ :l |
 		canvas removeShape: l ].
-
+	(canvas shapes select: [ :s | s isKindOf: RSLine ]) do: [ :l |
+		canvas removeShape: l ].
 
 	hourCircles := Dictionary new.
-	1 to: 12 do: [ :i |
-			| value angle pos circle label |
-			value := isHourMode
-				         ifTrue: [
-						         i = 12
+
+	isHourMode
+		ifTrue: [ "=== ГОДИННИЙ РЕЖИМ ==="
+				1 to: 12 do: [ :i |
+						| value angle pos circle label |
+						value := i = 12
 							         ifTrue: [ startHour ]
-							         ifFalse: [ startHour + i ] ]
-				         ifFalse: [
-						         i = 12
-							         ifTrue: [ 0 ]
-							         ifFalse: [ i * 5 ] ].
+							         ifFalse: [ startHour + i ].
+						angle := i * 30 - 90.
+						pos := pointFor value: center value: radius - 20 value: angle.
 
-			angle := i * 30 - 90.
-			pos := pointFor value: center value: radius - 20 value: angle.
+						circle := RSEllipse new
+							          radius: 20;
+							          color: Color veryLightGray.
+						circle translateTo: pos.
+						canvas add: circle.
+						hourCircles at: i put: circle.
 
-			circle := RSEllipse new
-				          radius: 20;
-				          color: Color veryLightGray.
-			circle translateTo: pos.
-			canvas add: circle.
-			hourCircles at: i put: circle.
+						label := RSLabel new
+							         text: value asString;
+							         fontSize: 12;
+							         translateTo: pos.
+						canvas add: label.
 
-			label := RSLabel new
-				         text: value asString;
-				         fontSize: 12;
-				         translateTo: pos.
-			canvas add: label.
+						circle
+							when: RSMouseClick
+							do: [ self selectedHour: value ]
+							for: self ] ]
+					
+		ifFalse: [ "=== ХВИЛИННИЙ РЕЖИМ ==="
+				0 to: 59 do: [ :i |
+						| angle startPos endPos lineColor tickLength label pos invisibleHitbox |
+						angle := i * 6 - 90.
+						tickLength := i \\ 5 = 0
+							              ifTrue: [ 10 ]
+							              ifFalse: [ 5 ].
+						startPos := pointFor
+							            value: center
+							            value: radius - 8
+							            value: angle.
+						endPos := pointFor
+							          value: center
+							          value: radius - 8 - tickLength
+							          value: angle.
 
-			circle
-				when: RSMouseClick
-				do: [
-						isHourMode
-							ifTrue: [
-									self selectedHour: value.]
-							ifFalse: [
-									self selectedMinute: value. ] ]
-				for: self ].
+						lineColor := i \\ 5 = 0
+							             ifTrue: [ Color black ]
+							             ifFalse: [ Color gray ].
+						canvas add: (RSLine new
+								 from: startPos;
+								 to: endPos;
+								 color: lineColor;
+								 width: 1).
 
+						i \\ 5 = 0 ifTrue: [
+								pos := pointFor value: center value: radius - 30 value: angle.
+								label := RSLabel new
+									         text: i printString;
+									         fontSize: 10;
+									         translateTo: pos.
+								canvas add: label ].
+
+						"Додати невидимий клікабельний об'єкт"
+						invisibleHitbox := RSEllipse new
+							                   radius: 5;
+							                   color: Color transparent.
+						invisibleHitbox translateTo: startPos.
+						canvas add: invisibleHitbox.
+						hourCircles at: i put: invisibleHitbox.
+						invisibleHitbox
+							when: RSMouseClick
+							do: [ self selectedMinute: i ]
+							for: self ] ].
+
+	"Примусове оновлення вікна"
 	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
 	windowMorph ifNotNil: [
 			bounds := windowMorph bounds.
 			windowMorph bounds: (bounds insetBy: 1).
-			windowMorph bounds: bounds ].
-	self owner ifNotNil: [ self owner ]
+			windowMorph bounds: bounds ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -384,53 +417,46 @@ TimePickerDialogPresenter >> updateSelectionHighlight [
 ]
 
 { #category : 'as yet unclassified' }
-TimePickerDialogPresenter >> updateSelectionMarker [
+TimePickerDialogPresenter >> updateSelectionMarker [ 
 
-	| tmp1 tmp2 tmp4 windowMorph bounds |
+	| computeTarget endPoint windowMorph bounds |
+
 	selectedHour isNil ifTrue: [ ^ self ].
-	tmp1 := [ :arg1 :arg2 :arg3 |
-		        | tmp5 |
-		        tmp5 := arg3 degreesToRadians.
-		        arg1 + (arg2 * tmp5 cos @ (arg2 * tmp5 sin)) ].
-	tmp2 := tmp1 value: center value: radius - 40 value: (isHourMode
-			         ifTrue: [ selectedHour - startHour \\ 12 * 30 - 90 ]
-			         ifFalse: [ selectedMinute * 6 - 90 ]).
 
-	selectionDot translateTo: center.
-	selectionLine ifNotNil: [ canvas removeShape: selectionLine ].
-	tmp4 := RSLine new.
-	tmp4
-		color: mainColor ;
-		width: 2;
-		from: center.
-	selectionLine := tmp4 to: tmp2.
+	computeTarget := [ :center :r :angleDeg |
+		| rad |
+		rad := angleDeg degreesToRadians.
+		center + (r * rad cos @ (r * rad sin)) ].
+
+	endPoint := computeTarget value: center value: (radius - 40) value: (
+		isHourMode
+			ifTrue: [ (selectedHour - startHour \\ 12) * 30 - 90 ]
+			ifFalse: [ selectedMinute * 6 - 90 ]
+	).
+
+	(roassalPresenre canvas shapes includes: selectionLine) ifTrue: [
+		canvas removeShape: selectionLine
+	].
+	selectionLine := RSLine new from: center; to: endPoint; color: mainColor; width: 2.
 	canvas add: selectionLine.
-	hourCircles keysAndValuesDo: [ :i :circle |
+
+	isHourMode ifTrue: [
+		hourCircles keysAndValuesDo: [ :i :circle |
 			| labelHour |
-			labelHour := isHourMode
-				             ifTrue: [
-						             i = 12
-							             ifTrue: [ startHour ]
-							             ifFalse: [ startHour + i ] ]
-				             ifFalse: [
-						             i = 12
-							             ifTrue: [ 0 ]
-							             ifFalse: [ i * 5 ] ].
+			labelHour := i = 12
+				ifTrue: [ startHour ]
+				ifFalse: [ startHour + i ].
+			circle color: (
+				selectedHour = labelHour
+					ifTrue: [ mainColor ]
+					ifFalse: [ Color veryLightGray ])
+		] ].
 
-			circle color: (isHourMode
-					 ifTrue: [
-							 selectedHour = labelHour
-								 ifTrue: [ mainColor ]
-								 ifFalse: [ Color veryLightGray ] ]
-					 ifFalse: [
-							 selectedMinute = labelHour
-								 ifTrue: [ mainColor ]
-								 ifFalse: [ Color veryLightGray ] ]) ].
-
+	"Примусове оновлення"
 	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
 	windowMorph ifNotNil: [
-			bounds := windowMorph bounds.
-			windowMorph bounds: (bounds insetBy: 1).
-			windowMorph bounds: bounds ].
-	self owner ifNotNil: [ self owner ]
+		bounds := windowMorph bounds.
+		windowMorph bounds: (bounds insetBy: 1).
+		windowMorph bounds: bounds
+	].
 ]
