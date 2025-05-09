@@ -259,7 +259,7 @@ TimePickerDialogPresenter >> updateAmPmButtons [
 { #category : 'as yet unclassified' }
 TimePickerDialogPresenter >> updateClockLabels [
 
-	| startHour windowMorph bounds|
+	| startHour windowMorph bounds |
 	startHour := isHourMode
 		             ifTrue: [
 				             isPm
@@ -291,24 +291,24 @@ TimePickerDialogPresenter >> updateClockLabels [
 				            fontSize: 12;
 				            translateTo: pos.
 			canvas add: newLabel.
-
+         circle removeActionsForEvent: #mouseClick.
 			circle
 				when: RSMouseClick
 				do: [
 						isHourMode
 							ifTrue: [
 									self selectedHour: value.
+									Transcript show: value; cr. 
 									self isHourMode: false ]
-							ifFalse: [ self selectedMinute: value ] ]
+							ifFalse: [ self selectedMinute: value. Transcript show: value; cr. ] ]
 				for: self ].
-		
+
 	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
 	windowMorph ifNotNil: [
-	bounds := windowMorph bounds.
-	windowMorph bounds: (bounds insetBy: 1).
-	windowMorph bounds: bounds
-].
-			self owner ifNotNil: [ self owner ]
+			bounds := windowMorph bounds.
+			windowMorph bounds: (bounds insetBy: 1).
+			windowMorph bounds: bounds ].
+	self owner ifNotNil: [ self owner ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -327,17 +327,16 @@ TimePickerDialogPresenter >> updateSelectionHighlight [
 { #category : 'as yet unclassified' }
 TimePickerDialogPresenter >> updateSelectionMarker [
 
-	| tmp1 tmp2 tmp3 tmp4 windowMorph bounds|
+	| tmp1 tmp2 tmp4 windowMorph bounds |
 	selectedHour isNil ifTrue: [ ^ self ].
 	nil.
 	tmp1 := [ :arg1 :arg2 :arg3 |
 		        | tmp5 |
 		        tmp5 := arg3 degreesToRadians.
 		        arg1 + (arg2 * tmp5 cos @ (arg2 * tmp5 sin)) ].
-	tmp2 := tmp1
-		        value: center
-		        value: radius - 20
-		        value: selectedHour * 30 - 90.
+	tmp2 := tmp1 value: center value: radius - 20 value: (isHourMode
+			         ifTrue: [ selectedHour \\ 12 * 30 - 90 ]
+			         ifFalse: [ selectedMinute * 6 - 90 ]).
 	selectionDot translateTo: center.
 	selectionLine ifNotNil: [ canvas removeShape: selectionLine ].
 	tmp4 := RSLine new.
@@ -347,15 +346,15 @@ TimePickerDialogPresenter >> updateSelectionMarker [
 		from: center.
 	selectionLine := tmp4 to: tmp2.
 	canvas add: selectionLine.
-	hourCircles keysAndValuesDo: [ :arg4 :arg5 |
-			arg5 color: (arg4 = selectedHour
-					 ifTrue: [ Color purple ]
-					 ifFalse: [ Color veryLightGray ]) ].
+	hourCircles keysAndValuesDo: [ :i :circle |
+	circle color: (
+		isHourMode
+			ifTrue: [ i = (selectedHour \\ 12) ifTrue: [ Color purple ] ifFalse: [ Color veryLightGray ] ]
+			ifFalse: [ i = (selectedMinute // 5) ifTrue: [ Color purple ] ifFalse: [ Color veryLightGray ] ]) ].
 	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
 	windowMorph ifNotNil: [
-	bounds := windowMorph bounds.
-	windowMorph bounds: (bounds insetBy: 1).
-	windowMorph bounds: bounds
-].
-			self owner ifNotNil: [ self owner ]
+			bounds := windowMorph bounds.
+			windowMorph bounds: (bounds insetBy: 1).
+			windowMorph bounds: bounds ].
+	self owner ifNotNil: [ self owner ]
 ]
