@@ -124,7 +124,7 @@ AbstractDropdownPresenter >> openMorphList [
 	morphList
 		width: tmp2;
 		position: tmp1;
-		height: 150.
+		height: 100.
 	World addMorph: morphList.
 	morphList comeToFront
 ]

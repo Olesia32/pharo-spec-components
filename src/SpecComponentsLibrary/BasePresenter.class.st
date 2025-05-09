@@ -11,11 +11,6 @@ Class {
 	#package : 'SpecComponentsLibrary'
 }
 
-{ #category : 'as yet unclassified' }
-BasePresenter >> applyNamedStyle: aStyleName [ 
-	self mainPresenter addStyle: aStyleName
-]
-
 { #category : 'accessing' }
 BasePresenter >> backgroundColor: aColor [
 
@@ -130,18 +125,6 @@ BasePresenter >> mainPresenter [
 { #category : 'accessing' }
 BasePresenter >> mainPresenter: aPresenter [
 mainPresenter := aPresenter 
-]
-
-{ #category : 'as yet unclassified' }
-BasePresenter >> propagateApplication [ 
-	| subs |
-	self application ifNil: [ ^self ].
-	
-	subs := (self instVarNamed: 'focusOrder') ifNil: [ ^self ].
-
-	subs do: [ :p |
-		(p respondsTo: #application:) ifTrue: [ p application: self application ].
-		(p respondsTo: #propagateApplication) ifTrue: [ p propagateApplication ] ].
 ]
 
 { #category : 'initialization' }

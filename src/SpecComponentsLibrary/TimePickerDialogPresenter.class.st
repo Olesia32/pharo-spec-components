@@ -25,7 +25,8 @@ Class {
 		'onOkAction',
 		'onCancelAction',
 		'onChanged',
-		'accentColor'
+		'accentColor',
+		'additionColor'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
@@ -43,6 +44,11 @@ TimePickerDialogPresenter >> addSelectionMarker [
 	tmp2 color: mainColor.
 	selectionLine := tmp2 width: 2.
 	canvas add: selectionLine
+]
+
+{ #category : 'accessing' }
+TimePickerDialogPresenter >> additionColor: aColor [
+   additionColor := aColor 
 ]
 
 { #category : 'as yet unclassified' }
@@ -151,6 +157,7 @@ TimePickerDialogPresenter >> initializePresenters [
 	startHour := 0.
 	selectedMinute := 0.
 	mainColor := Color purple.
+	additionColor := #e6e0f8.
 	hourCircles := Dictionary new.
 	hourLabel := ButtonPresenter new.
 	hourLabel
@@ -162,15 +169,13 @@ TimePickerDialogPresenter >> initializePresenters [
 		fontSize: 16;
 		label: '00';
 		bold.
-	amButton := ButtonPresenter new
-		            label: 'AM'.
-	pmButton := ButtonPresenter new
-		            label: 'PM'.
+	amButton := ButtonPresenter new label: 'AM'.
+	pmButton := ButtonPresenter new label: 'PM'.
 	isPm := false.
 	self isHourMode: true.
 	selectedHour := 1.
 	self
-		isPm: false;
+		switchToAm ;
 		drawBackgroundCircle;
 		buildClockFace;
 		updateClockLabels;
@@ -283,12 +288,12 @@ TimePickerDialogPresenter >> switchToPm [
 { #category : 'as yet unclassified' }
 TimePickerDialogPresenter >> updateAmPmButtons [
 
-	amButton mainPresenter color: (isPm
-			 ifTrue: [ Color veryLightGray ]
-			 ifFalse: [ mainColor muchLighter ]).
-	pmButton mainPresenter color: (isPm
-			 ifTrue: [ mainColor muchLighter ]
-			 ifFalse: [ Color veryLightGray ])
+	amButton backgroundColor: (isPm
+			 ifTrue: [ '#veryLightGray' ]
+			 ifFalse: [ additionColor ]).
+	pmButton backgroundColor: (isPm
+			 ifTrue: [ additionColor ]
+			 ifFalse: [ '#veryLightGray' ])
 ]
 
 { #category : 'as yet unclassified' }
@@ -363,12 +368,12 @@ TimePickerDialogPresenter >> updateClockLabels [
 { #category : 'as yet unclassified' }
 TimePickerDialogPresenter >> updateSelectionHighlight [
 
-	hourLabel mainPresenter color: (isHourMode
-			 ifTrue: [ mainColor muchLighter ]
-			 ifFalse: [ Color veryLightGray ]).
-	minutesLabel mainPresenter color: (isHourMode
-			 ifTrue: [ Color veryLightGray ]
-			 ifFalse: [ mainColor muchLighter ]).
+	hourLabel backgroundColor: (isHourMode
+			 ifTrue: [ additionColor ]
+			 ifFalse: [ '#veryLightGray' ]).
+	minutesLabel backgroundColor: (isHourMode
+			 ifTrue: [ '#veryLightGray' ]
+			 ifFalse: [ additionColor ]).
 	isHourMode
 		ifTrue: [
 				amButton mainPresenter enabled: true.

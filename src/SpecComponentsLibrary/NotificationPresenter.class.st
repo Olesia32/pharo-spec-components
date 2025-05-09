@@ -6,7 +6,7 @@ Class {
 		'message',
 		'type',
 		'duration',
-		'application',
+		'window',
 		'position',
 		'font',
 		'backgroundColor',
@@ -17,18 +17,6 @@ Class {
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
-
-{ #category : 'accessing' }
-NotificationPresenter >> application [
-
-	^ application
-]
-
-{ #category : 'accessing' }
-NotificationPresenter >> application: anObject [
-
-	application := anObject
-]
 
 { #category : 'accessing' }
 NotificationPresenter >> backgroundColor [
@@ -180,41 +168,33 @@ NotificationPresenter >> resolveColorFromType [
 { #category : 'accessing' }
 NotificationPresenter >> show [
 
-	| container titleMorph messageMorph window delay offset |
-	titleMorph := StringMorph contents: title.
-	titleMorph
+	| tmp1 tmp2 tmp3 tmp5 tmp6 |
+	tmp2 := StringMorph contents: title.
+	tmp2
 		font: font;
 		color: textColor.
-
-	messageMorph := StringMorph contents: message.
-	messageMorph
+	tmp3 := StringMorph contents: message.
+	tmp3
 		font: font;
 		color: textColor.
-
-	container := Morph new.
-	container
+	tmp1 := Morph new.
+	tmp1
 		color: self resolveColorFromType;
 		borderWidth: 0;
 		cornerStyle: #rounded;
 		layoutPolicy: ProportionalLayout new;
-		extent: width @ height.
-
-	container addMorph: titleMorph.
-	titleMorph position: 10 @ 5.
-
-	container addMorph: messageMorph.
-	messageMorph position: 10 @ 35.
-
-	window := application topWindow.
-	World addMorph: container.
-
-	offset := self computePositionFor: container in: window.
-	container position: offset.
-
-	delay := Delay forSeconds: duration.
+		extent: width @ height;
+		addMorph: tmp2.
+	tmp2 position: 10 @ 5.
+	tmp1 addMorph: tmp3.
+	tmp3 position: 10 @ 35.
+	World addMorph: tmp1.
+	tmp6 := self computePositionFor: tmp1 in: window.
+	tmp1 position: tmp6.
+	tmp5 := Delay forSeconds: duration.
 	[
-		delay wait.
-		container ifNotNil: [ container delete ] ] fork
+		tmp5 wait.
+		tmp1 ifNotNil: [ tmp1 delete ] ] fork
 ]
 
 { #category : 'accessing' }
@@ -263,4 +243,10 @@ NotificationPresenter >> width [
 NotificationPresenter >> width: anObject [
 
 	width := anObject
+]
+
+{ #category : 'accessing' }
+NotificationPresenter >> window: anObject [
+
+	window := anObject
 ]

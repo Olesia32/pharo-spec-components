@@ -23,7 +23,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: wizard.
+	tmp1 add: date expand: false.
 	^ tmp1 yourself
 ]
 
@@ -289,5 +289,4 @@ TestPresenter >> initializePresenters [
 				 #phone. '012-345' }) }.
 
 	date := TimePickerPresenter new.
-	date color: Color blue
 ]

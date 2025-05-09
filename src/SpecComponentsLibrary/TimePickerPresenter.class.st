@@ -8,11 +8,17 @@ Class {
 		'selectedMinute',
 		'onTimeChanged',
 		'dialog',
-		'color'
+		'color',
+		'additionalColor'
 	],
 	#category : 'SpecComponentsLibrary',
 	#package : 'SpecComponentsLibrary'
 }
+
+{ #category : 'accessing' }
+TimePickerPresenter >> additionColor: aColor [
+ additionalColor := aColor 
+]
 
 { #category : 'accessing' }
 TimePickerPresenter >> color: aColor [
@@ -69,6 +75,7 @@ TimePickerPresenter >> openDialog [
 	| tmp2 |
 	dialog := TimePickerDialogPresenter new.
 	color ifNotNil: [ dialog mainColor: color ].
+	additionalColor ifNotNil: [ dialog additionColor: additionalColor ].
 	dialog
 		selectedHour: selectedHour;
 		selectedMinute: selectedMinute;
