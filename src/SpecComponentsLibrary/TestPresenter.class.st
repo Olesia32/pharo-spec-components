@@ -23,7 +23,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: date expand: false.
+	tmp1 add: form expand: false.
 	^ tmp1 yourself
 ]
 

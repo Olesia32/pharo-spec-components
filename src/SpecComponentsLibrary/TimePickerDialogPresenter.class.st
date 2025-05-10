@@ -138,8 +138,7 @@ TimePickerDialogPresenter >> initializeDialogWindow: arg1 [
 							tmp1 := Dictionary new.
 							tmp1
 								at: #hour put: selectedHour;
-					at: #minute put: selectedMinute;
-					at: #pm put: isPm.
+								at: #minute put: selectedMinute.
 							onOkAction value: tmp1 yourself ].
 				arg1
 					beOk;
@@ -204,11 +203,10 @@ TimePickerDialogPresenter >> isHourMode: aBool [
 TimePickerDialogPresenter >> isPm: aBool [
 
 	isPm := aBool.
-	selectionLine ifNotNil: [
-			canvas removeShape: selectionLine.
-			selectionLine := nil ].
+	(roassalPresenre canvas shapes includes: selectionLine) ifTrue: [
+		canvas removeShape: selectionLine ].
+	selectionLine := nil.
 	self updateClockLabels.
-	self updateSelectionMarker 
 ]
 
 { #category : 'accessing' }
@@ -273,19 +271,17 @@ TimePickerDialogPresenter >> selectedMinute: arg1 [
 { #category : 'as yet unclassified' }
 TimePickerDialogPresenter >> switchToAm [
 
-	self isPm: false.
 	startHour := 0.
-	self updateAmPmButtons.
-	self updateSelectionMarker 
+	self isPm: false.
+	self updateAmPmButtons
 ]
 
 { #category : 'as yet unclassified' }
 TimePickerDialogPresenter >> switchToPm [
 
-	self isPm: true.
 	startHour := 12.
-	self updateAmPmButtons.
-	self updateSelectionMarker 
+	self isPm: true.
+	self updateAmPmButtons
 ]
 
 { #category : 'as yet unclassified' }
@@ -309,11 +305,14 @@ TimePickerDialogPresenter >> updateClockLabels [
 		            c + (r * rad cos @ (r * rad sin)) ].
 
 	"Очистити старі кола та підписи"
-	hourCircles valuesDo: [ :c | canvas removeShape: c ].
-	(canvas shapes select: [ :s | s isKindOf: RSLabel ]) do: [ :l |
-		canvas removeShape: l ].
-	(canvas shapes select: [ :s | s isKindOf: RSLine ]) do: [ :l |
-		canvas removeShape: l ].
+	(canvas shapes select: [ :s |
+	(s isKindOf: RSLabel) or: [ 
+		(s isKindOf: RSLine) or: [ 
+			((s isKindOf: RSEllipse) and: [ s ~~ selectionDot and: [ s ~~ backgroundCircle ] ])
+		]
+	]
+]) do: [ :shape | canvas removeShape: shape ].
+
 
 	hourCircles := Dictionary new.
 
@@ -339,12 +338,11 @@ TimePickerDialogPresenter >> updateClockLabels [
 							         fontSize: 12;
 							         translateTo: pos.
 						canvas add: label.
-
+                  
 						circle
 							when: RSMouseClick
 							do: [ self selectedHour: value ]
 							for: self ] ]
-					
 		ifFalse: [ "=== ХВИЛИННИЙ РЕЖИМ ==="
 				0 to: 59 do: [ :i |
 						| angle startPos endPos lineColor tickLength label pos invisibleHitbox |
@@ -381,14 +379,12 @@ TimePickerDialogPresenter >> updateClockLabels [
 						"Додати невидимий клікабельний об'єкт"
 						invisibleHitbox := RSEllipse new
 							                   radius: 5;
-							                   color: Color transparent.
+							                   color: Color transparent .
 						invisibleHitbox translateTo: startPos.
 						canvas add: invisibleHitbox.
 						hourCircles at: i put: invisibleHitbox.
-						invisibleHitbox
-							when: RSMouseClick
-							do: [ self selectedMinute: i ]
-							for: self ] ].
+						invisibleHitbox when: RSMouseClick do: [
+							isHourMode ifFalse: [ self selectedMinute: i ] ] for: self.] ].
 
 	"Примусове оновлення вікна"
 	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
@@ -417,46 +413,46 @@ TimePickerDialogPresenter >> updateSelectionHighlight [
 ]
 
 { #category : 'as yet unclassified' }
-TimePickerDialogPresenter >> updateSelectionMarker [ 
+TimePickerDialogPresenter >> updateSelectionMarker [
 
 	| computeTarget endPoint windowMorph bounds |
-
-	selectedHour isNil ifTrue: [ ^ self ].
+	selectedHour ifNil: [ ^ self ].
 
 	computeTarget := [ :center :r :angleDeg |
-		| rad |
-		rad := angleDeg degreesToRadians.
-		center + (r * rad cos @ (r * rad sin)) ].
+		                 | rad |
+		                 rad := angleDeg degreesToRadians.
+		                 center + (r * rad cos @ (r * rad sin)) ].
 
-	endPoint := computeTarget value: center value: (radius - 40) value: (
-		isHourMode
-			ifTrue: [ (selectedHour - startHour \\ 12) * 30 - 90 ]
-			ifFalse: [ selectedMinute * 6 - 90 ]
-	).
+	endPoint := computeTarget
+		            value: center
+		            value: radius - 40
+		            value: (isHourMode
+				             ifTrue: [ selectedHour - startHour \\ 12 * 30 - 90 ]
+				             ifFalse: [ selectedMinute * 6 - 90 ]).
 
 	(roassalPresenre canvas shapes includes: selectionLine) ifTrue: [
-		canvas removeShape: selectionLine
-	].
-	selectionLine := RSLine new from: center; to: endPoint; color: mainColor; width: 2.
+		canvas removeShape: selectionLine ].
+	selectionLine := RSLine new
+		                 from: center;
+		                 to: endPoint;
+		                 color: mainColor;
+		                 width: 2.
 	canvas add: selectionLine.
 
 	isHourMode ifTrue: [
-		hourCircles keysAndValuesDo: [ :i :circle |
-			| labelHour |
-			labelHour := i = 12
-				ifTrue: [ startHour ]
-				ifFalse: [ startHour + i ].
-			circle color: (
-				selectedHour = labelHour
-					ifTrue: [ mainColor ]
-					ifFalse: [ Color veryLightGray ])
-		] ].
+			hourCircles keysAndValuesDo: [ :i :circle |
+					| labelHour |
+					labelHour := i = 12
+						             ifTrue: [ startHour ]
+						             ifFalse: [ startHour + i ].
+					circle color: (selectedHour = labelHour
+							 ifTrue: [ mainColor ]
+							 ifFalse: [ Color veryLightGray ]) ] ].
 
 	"Примусове оновлення"
 	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
 	windowMorph ifNotNil: [
-		bounds := windowMorph bounds.
-		windowMorph bounds: (bounds insetBy: 1).
-		windowMorph bounds: bounds
-	].
+			bounds := windowMorph bounds.
+			windowMorph bounds: (bounds insetBy: 1).
+			windowMorph bounds: bounds ]
 ]

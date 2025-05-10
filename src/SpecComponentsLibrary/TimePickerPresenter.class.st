@@ -32,7 +32,7 @@ TimePickerPresenter >> defaultLayout [
 	tmp1 := SpBoxLayout newLeftToRight.
 	tmp1
 		add: timeFieldPresenter;
-		add: openButton withConstraints: [ :arg1 | arg1 width: 50 ].
+		add: openButton withConstraints: [ :arg1 | arg1 width: 100 ].
 	^ tmp1 yourself
 ]
 
