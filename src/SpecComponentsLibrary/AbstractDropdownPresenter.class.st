@@ -1,3 +1,10 @@
+"
+Абстрактний базовий клас для випадаючих компонентів (ComboBox, MultiSelectComboBox).
+
+Містить логіку відкриття/закриття списку, фільтрації, взаємодії з кнопкою та полем введення.
+Підкласи повинні реалізувати методи #createMorphList та #filterList.
+
+"
 Class {
 	#name : 'AbstractDropdownPresenter',
 	#superclass : 'SpPresenter',
@@ -11,8 +18,9 @@ Class {
 		'filteredItems',
 		'selectedIndex'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Dropdown',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Dropdown'
 }
 
 { #category : 'testing' }
@@ -26,13 +34,13 @@ AbstractDropdownPresenter >> allItems [
 	^ allItems
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractDropdownPresenter >> announceSelectionWith: arg1 [
 
 	announcer announce: (ComboBoxItemSelected new item: arg1)
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractDropdownPresenter >> closeMorphList [
 
 	morphList ifNotNil: [
@@ -45,12 +53,12 @@ AbstractDropdownPresenter >> connectPresenters [
  self subclassResponsibility 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractDropdownPresenter >> createListPresenter [ 
     ^ SpPresenter new "Підклас може перевизначити на ListPresenter чи SpComponentListPresenter"
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractDropdownPresenter >> createMorphList [
 
 	self subclassResponsibility
@@ -113,7 +121,7 @@ AbstractDropdownPresenter >> items: arg1 [
 	allItems := arg1 reject: [ :arg2 | arg2 isNil ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractDropdownPresenter >> openMorphList [
 
 	| tmp1 tmp2 |
@@ -141,7 +149,7 @@ AbstractDropdownPresenter >> selectedIndex: anObject [
 	selectedIndex := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractDropdownPresenter >> toggleList [
 
 	isOpen
@@ -151,7 +159,7 @@ AbstractDropdownPresenter >> toggleList [
 	self updateToggleButtonIcon
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractDropdownPresenter >> updateToggleButtonIcon [ 
 	toggleButton mainPresenter icon: (self iconNamed: (isOpen ifTrue: [#arrowUp] ifFalse: [#arrowDown]))
 ]

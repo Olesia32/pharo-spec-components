@@ -1,3 +1,9 @@
+"
+Розширення SearchableTablePresenter з підтримкою розбиття на сторінки.
+
+Має навігацію між сторінками, відображає поточну/загальну кількість сторінок, поле переходу на конкретну сторінку. Підтримує фільтрацію з перезавантаженням.
+
+"
 Class {
 	#name : 'PaginatedTablePresenter',
 	#superclass : 'SearchableTablePresenter',
@@ -8,8 +14,9 @@ Class {
 		'gotoPageInput',
 		'gotoPageButton'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Tables',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Tables'
 }
 
 { #category : 'private' }

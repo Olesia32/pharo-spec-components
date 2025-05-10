@@ -1,3 +1,11 @@
+"
+Компонент для вибору часу у вигляді круглого годинника з підтримкою AM/PM.
+
+Використовує Roassal для візуального відображення годин і хвилин. 
+Має повноекранне представлення з кнопками підтвердження/скасування.
+Використовується у діалоговому вікні TimePickerPresenter
+
+"
 Class {
 	#name : 'TimePickerDialogPresenter',
 	#superclass : 'SpPresenter',
@@ -28,11 +36,12 @@ Class {
 		'accentColor',
 		'additionColor'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Time',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Time'
 }
 
-{ #category : 'adding' }
+{ #category : 'private' }
 TimePickerDialogPresenter >> addSelectionMarker [
 
 	| tmp1 tmp2 |
@@ -51,7 +60,7 @@ TimePickerDialogPresenter >> additionColor: aColor [
    additionColor := aColor 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'building' }
 TimePickerDialogPresenter >> buildClockFace [ 
 	| pointFor |
 	pointFor := [ :c :r :angle |
@@ -111,7 +120,7 @@ TimePickerDialogPresenter >> defaultLayout [
 	^ tmp1 yourself
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 TimePickerDialogPresenter >> drawBackgroundCircle [
 
 	| tmp1 |
@@ -218,24 +227,24 @@ TimePickerDialogPresenter >> mainColor: aColor [
 	self updateAmPmButtons.
 ]
 
-{ #category : 'showing' }
+{ #category : 'events' }
 TimePickerDialogPresenter >> onCancel: arg1 [
 
 	onCancelAction := arg1
 ]
 
-{ #category : 'accessing' }
+{ #category : 'events' }
 TimePickerDialogPresenter >> onChanged: aBlook [
 onChanged := aBlook 
 ]
 
-{ #category : 'showing' }
+{ #category : 'events' }
 TimePickerDialogPresenter >> onOk: arg1 [
 
 	onOkAction := arg1
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 TimePickerDialogPresenter >> selectedHour [
 
 	^ selectedHour
@@ -268,7 +277,7 @@ TimePickerDialogPresenter >> selectedMinute: arg1 [
 	self updateSelectionMarker
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 TimePickerDialogPresenter >> switchToAm [
 
 	startHour := 0.
@@ -276,7 +285,7 @@ TimePickerDialogPresenter >> switchToAm [
 	self updateAmPmButtons
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 TimePickerDialogPresenter >> switchToPm [
 
 	startHour := 12.
@@ -284,7 +293,7 @@ TimePickerDialogPresenter >> switchToPm [
 	self updateAmPmButtons
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'updating' }
 TimePickerDialogPresenter >> updateAmPmButtons [
 
 	amButton backgroundColor: (isPm
@@ -295,7 +304,7 @@ TimePickerDialogPresenter >> updateAmPmButtons [
 			 ifFalse: [ '#veryLightGray' ])
 ]
 
-{ #category : 'initialization' }
+{ #category : 'updating' }
 TimePickerDialogPresenter >> updateClockLabels [
 
 	| pointFor windowMorph bounds |
@@ -394,7 +403,7 @@ TimePickerDialogPresenter >> updateClockLabels [
 			windowMorph bounds: bounds ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'updating' }
 TimePickerDialogPresenter >> updateSelectionHighlight [
 
 	hourLabel backgroundColor: (isHourMode
@@ -412,7 +421,7 @@ TimePickerDialogPresenter >> updateSelectionHighlight [
 				pmButton mainPresenter enabled: false ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'updating' }
 TimePickerDialogPresenter >> updateSelectionMarker [
 
 	| computeTarget endPoint windowMorph bounds |

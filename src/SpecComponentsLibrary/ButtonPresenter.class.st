@@ -1,16 +1,21 @@
+"
+Обгортка над стандартним SpButtonPresenter.
+Підтримує візуальну стилізацію.
+"
 Class {
 	#name : 'ButtonPresenter',
 	#superclass : 'BasePresenter',
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-BaseComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'BaseComponents'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'style' }
 ButtonPresenter >> fontColor: aColor [
 self setGeneratedStyleProperty: #color value: aColor
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 ButtonPresenter >> initializePresenters [
 
 	| button |
@@ -30,7 +35,7 @@ ButtonPresenter >> label: aString [
     self mainPresenter label: aString
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'events' }
 ButtonPresenter >> onClick: aBlock [ 
     self mainPresenter action: aBlock
 ]

@@ -1,3 +1,9 @@
+"
+Клас для збереження налаштувань стилю форми — шрифтів, кольорів, розмірів елементів та кнопок.
+
+Застосовується до елементів DynamicFormBuilder.
+
+"
 Class {
 	#name : 'FormStyle',
 	#superclass : 'Object',
@@ -21,8 +27,9 @@ Class {
 		'buttonWidth',
 		'buttonHeight'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Style',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Style'
 }
 
 { #category : 'accessing' }

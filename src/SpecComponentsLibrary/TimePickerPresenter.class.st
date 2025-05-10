@@ -1,3 +1,9 @@
+"
+Презентер для вибору часу за допомогою інтерактивного годинника.
+
+Підтримує вибір годин та хвилин, перемикання між AM/PM та відображення обраного значення. Інтегрується у DynamicFormBuilder як спеціалізоване поле.
+
+"
 Class {
 	#name : 'TimePickerPresenter',
 	#superclass : 'SpPresenter',
@@ -11,8 +17,9 @@ Class {
 		'color',
 		'additionalColor'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Time',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Time'
 }
 
 { #category : 'accessing' }
@@ -41,7 +48,7 @@ TimePickerPresenter >> hour [
   ^ selectedHour 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 TimePickerPresenter >> hour: aHour [
   selectedHour := aHour 
 ]
@@ -64,7 +71,7 @@ TimePickerPresenter >> minutes [
   ^ selectedMinute 
 ]
 
-{ #category : 'instance creation simple' }
+{ #category : 'accessing' }
 TimePickerPresenter >> minutes: aMinutes [
   selectedMinute := aMinutes 
 ]
@@ -90,7 +97,7 @@ TimePickerPresenter >> openDialog [
 	tmp2 := dialog openModal
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'events' }
 TimePickerPresenter >> whenTimeChangedDo: aBlock [
   onTimeChanged := aBlock.
 ]

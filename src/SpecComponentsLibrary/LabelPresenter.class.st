@@ -1,8 +1,13 @@
+"
+Обгортка над стандартним SpLabelPresenter.
+Підтримує візуальну стилізацію.
+"
 Class {
 	#name : 'LabelPresenter',
 	#superclass : 'BasePresenter',
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-BaseComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'BaseComponents'
 }
 
 { #category : 'initialization' }

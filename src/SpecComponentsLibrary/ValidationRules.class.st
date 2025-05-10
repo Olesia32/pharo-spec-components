@@ -1,11 +1,18 @@
+"
+Клас, який містить набір статичних методів для створення правил валідації текстових полів.
+
+Повертає лямбда-функції з відповідними повідомленнями про помилки. Використовується у текстових полях для перевірки введених даних.
+
+"
 Class {
 	#name : 'ValidationRules',
 	#superclass : 'Object',
 	#instVars : [
 		'customRules'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-ValidatedInput',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'ValidatedInput'
 }
 
 { #category : 'accessing' }
@@ -35,7 +42,7 @@ ValidationRules class >> minLength: n [
 	  -> ('Мінімальна довжина — ' , n printString)
 ]
 
-{ #category : 'requirements' }
+{ #category : 'accessing' }
 ValidationRules class >> nonEmpty [
 
 	^ [ :text | text notNil and: [ text isNotEmpty ] ]

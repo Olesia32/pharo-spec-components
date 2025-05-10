@@ -1,11 +1,18 @@
+"
+Клас для генерації та встановлення стилів Spec-компонентів на основі словникових властивостей.
+
+Перетворює властивості стилю у STON-формат, генерує унікальну назву стилю, і додає його до стилів активного застосунку.
+
+"
 Class {
 	#name : 'StyleManager',
 	#superclass : 'Object',
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Style',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Style'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'adding' }
 StyleManager class >> installGeneratedStyleFrom: dict in: app [
 
 	| styleManager styleName stonString parsed |
@@ -18,7 +25,7 @@ StyleManager class >> installGeneratedStyleFrom: dict in: app [
 	^ styleName
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'style' }
 StyleManager >> stonFromProperties: dict [
 
 	| container font draw geometry text sections |
@@ -67,7 +74,7 @@ StyleManager >> stonFromProperties: dict [
 					  i < sections size ifTrue: [ stream nextPutAll: ', ' ] ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'style' }
 StyleManager >> stonMap: assocCollection [
 
 	| strings |

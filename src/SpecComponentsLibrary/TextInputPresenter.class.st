@@ -1,3 +1,9 @@
+"
+Презентер для текстового поля з підтримкою валідації та стилізації.
+
+Дозволяє задавати placeholder, правила валідації, а також змінює зовнішній вигляд залежно від валідності введення.
+
+"
 Class {
 	#name : 'TextInputPresenter',
 	#superclass : 'BasePresenter',
@@ -8,8 +14,9 @@ Class {
 		'isValid',
 		'validationStatusModel'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-ValidatedInput',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'ValidatedInput'
 }
 
 { #category : 'adding' }
@@ -25,7 +32,7 @@ TextInputPresenter >> addValidationRules: arg1 [
 		self addValidationRule: arg2 key message: arg2 value ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 TextInputPresenter >> connectPresenters [
 
 	mainPresenter whenTextChangedDo: [ self validate ].
@@ -38,7 +45,7 @@ TextInputPresenter >> connectPresenters [
 					self borderWidth: 1 ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'layout' }
 TextInputPresenter >> defaultLayout [
 
 	| tmp1 |
@@ -56,7 +63,7 @@ TextInputPresenter >> initialize [
 	super initialize.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 TextInputPresenter >> initializePresenters [
 
    super initializePresenters.
@@ -76,7 +83,7 @@ TextInputPresenter >> initializePresenters [
 	isValidationField := false
 ]
 
-{ #category : 'initialization' }
+{ #category : 'accessing' }
 TextInputPresenter >> isValid [
 
 	^ isValid
@@ -95,7 +102,7 @@ TextInputPresenter >> isValidationField: aValue [
 	self defaultLayout 
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'events' }
 TextInputPresenter >> onValidationChangedDo: aBlock [
 
 	announcer
@@ -122,7 +129,7 @@ TextInputPresenter >> text: arg1 [
 	mainPresenter text: arg1
 ]
 
-{ #category : 'initialization' }
+{ #category : 'validation' }
 TextInputPresenter >> validate [ 
 	| tmp1 |
 

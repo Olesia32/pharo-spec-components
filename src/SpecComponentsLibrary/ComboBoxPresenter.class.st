@@ -1,8 +1,15 @@
+"
+Компонент типу ComboBox з підтримкою фільтрації під час введення.
+
+Дозволяє вибирати один елемент зі списку, автоматично фільтруючи його при введенні тексту.
+
+"
 Class {
 	#name : 'ComboBoxPresenter',
 	#superclass : 'AbstractDropdownPresenter',
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Dropdown',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Dropdown'
 }
 
 { #category : 'initialization' }
@@ -11,7 +18,7 @@ ComboBoxPresenter >> connectPresenters [
 	textInput mainPresenter whenTextChangedDo: [ self filterList ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 ComboBoxPresenter >> createMorphList [
 
 	^ PluggableListMorph
@@ -61,7 +68,7 @@ ComboBoxPresenter >> items: arg1 [
 	self filterList
 ]
 
-{ #category : 'api - selection' }
+{ #category : 'accessing' }
 ComboBoxPresenter >> selectIndex: anIndex [
 
 	selectedIndex := anIndex.

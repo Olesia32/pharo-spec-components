@@ -1,3 +1,9 @@
+"
+Простий презентер для показу сповіщень у вікні Pharo.
+Підтримує позиціонування відносно заданого вікна
+Можна задати тип повідомлення (інформація, успіх, помилка, попередження), колір, шрифт, позицію на екрані і тривалість відображення.
+
+"
 Class {
 	#name : 'NotificationPresenter',
 	#superclass : 'Object',
@@ -14,8 +20,9 @@ Class {
 		'width',
 		'height'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-AdvancedComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'AdvancedComponents'
 }
 
 { #category : 'accessing' }
@@ -30,7 +37,7 @@ NotificationPresenter >> backgroundColor: anObject [
 	backgroundColor := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 NotificationPresenter >> computePositionFor: morph in: window [
 
 	| margin container containerBounds x y |
@@ -152,7 +159,7 @@ NotificationPresenter >> position: anObject [
 	position := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 NotificationPresenter >> resolveColorFromType [
     | colors |
     colors := Dictionary new.

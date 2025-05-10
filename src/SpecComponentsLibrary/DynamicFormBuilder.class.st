@@ -1,3 +1,12 @@
+"
+Компонент для динамічного створення форм.
+
+Підтримує побудову TextInputPresenter, CheckBoxPresenter, CheckBoxGroupPresenter, RadioGroupPresenter, SpDatePresenter, TimePickerPresenter, SpDropList, ComboBoxPresenter, MultiSelectComboBoxPresenter.
+Має заголовок та кнопки 'Продовжити/Скасувати', які можна приховати.
+Підтримує стилізацію через клас FormStyle.
+Має метод для збір значень всіх полів у словник.
+
+"
 Class {
 	#name : 'DynamicFormBuilder',
 	#superclass : 'SpPresenter',
@@ -16,11 +25,12 @@ Class {
 		'isHideHeader',
 		'isHideButtons'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-AdvancedComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'AdvancedComponents'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'style' }
 DynamicFormBuilder >> applyInputStyleTo: presenter [ 
 	formStyle inputFontSize ifNotNil: [ :f | presenter fontSize: f ].
 	formStyle inputBackground ifNotNil: [ :c |
@@ -36,7 +46,7 @@ DynamicFormBuilder >> applyInputStyleTo: presenter [
 			presenter borderColor: c ] ].
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'style' }
 DynamicFormBuilder >> applyLabelStyle: arg1 [
 
 	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 |
@@ -53,7 +63,7 @@ DynamicFormBuilder >> applyLabelStyle: arg1 [
 	tmp7 ifNotNil: [ arg1 color: tmp2 ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'style' }
 DynamicFormBuilder >> applyStyleToAllPresenters [
 
 	| allPresenters |
@@ -91,13 +101,13 @@ DynamicFormBuilder >> applyStyleToAllPresenters [
 					formStyle buttonHeight ifNotNil: [ :c | presenter height: c ] ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DynamicFormBuilder >> backButtonLabel: arg1 [
 
 	backButton label: arg1
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> checkbox: aKey label: aLabel [
 
 	| presenter |
@@ -106,7 +116,7 @@ DynamicFormBuilder >> checkbox: aKey label: aLabel [
 	fieldLabels at: aKey put: aLabel
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> checkboxGroup: aKey label: aLabel items: itemsList columns: columnCount frame: aBoolean [
 
 	| presenter |
@@ -172,7 +182,7 @@ DynamicFormBuilder >> collectValues [
 		^ result
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> comboBox: aKey label: aLabel items: itemsList [
 
 	| presenter |
@@ -183,7 +193,7 @@ DynamicFormBuilder >> comboBox: aKey label: aLabel items: itemsList [
 	fieldLabels at: aKey put: aLabel
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 DynamicFormBuilder >> connectPresenters [
 
 	submitButton onClick: [
@@ -196,7 +206,7 @@ DynamicFormBuilder >> connectPresenters [
 		onBackAction ifNotNil: [ onBackAction value: self ] ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> datePicker: aKey label: aLabel [
 
 	| presenter |
@@ -205,7 +215,7 @@ DynamicFormBuilder >> datePicker: aKey label: aLabel [
 	fieldLabels at: aKey put: aLabel
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'layout' }
 DynamicFormBuilder >> defaultLayout [
 	| layout headerArea formGrid buttonBar currentRow |
 	self applyStyleToAllPresenters.
@@ -247,7 +257,7 @@ DynamicFormBuilder >> defaultLayout [
 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> dropList: aKey label: aLabel items: itemsList [
 
 	| presenter |
@@ -264,21 +274,21 @@ DynamicFormBuilder >> header: arg1 [
 	headerLabel text: arg1
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DynamicFormBuilder >> hideButtons [
 
 	isHideButtons := true.
 	self defaultLayout
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DynamicFormBuilder >> hideHeader [
 
 	isHideHeader := true.
 	self defaultLayout
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 DynamicFormBuilder >> initializePresenters [
 
 	fields ifNil: [ fields := #(  ) ] ifNotNil: [ fields ].
@@ -312,7 +322,7 @@ DynamicFormBuilder >> isInputComponent: presenter [
 	) anySatisfy: [ :cls | presenter isKindOf: (Smalltalk at: cls) ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> multiComboBox: aKey label: aLabel items: itemsList [
 
 	| presenter |
@@ -323,13 +333,13 @@ DynamicFormBuilder >> multiComboBox: aKey label: aLabel items: itemsList [
 	fieldLabels at: aKey put: aLabel
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'events' }
 DynamicFormBuilder >> onBack: arg1 [
 
 	onBackAction := arg1
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'events' }
 DynamicFormBuilder >> onSubmit: arg1 [
 
 	onSubmitAction := arg1
@@ -340,7 +350,7 @@ DynamicFormBuilder >> presenterAt: aKey [
 	^ (fieldPresenters detect: [ :assoc | assoc key = aKey ] ifNone: [ nil ]) ifNotNil: [ :assoc | assoc value ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> radioGroup: aKey label: aLabel items: itemsList columns: columnCount frame: aBoolean [
 
 	| presenter |
@@ -354,14 +364,14 @@ DynamicFormBuilder >> radioGroup: aKey label: aLabel items: itemsList columns: c
 	fieldLabels at: aKey put: aLabel
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DynamicFormBuilder >> showButtons [
 
 	isHideButtons := false.
 	self defaultLayout
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DynamicFormBuilder >> showHeader [
 
 	isHideHeader := false.
@@ -376,13 +386,13 @@ DynamicFormBuilder >> style: arg1 [
 		self applyStyleToAllPresenters ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DynamicFormBuilder >> submitButtonLabel: arg1 [
 
 	submitButton label: arg1
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> textField: aKey label: aLabel placeholder: aPlaceholder rules: validationRules [
 
 	| presenter |
@@ -393,7 +403,7 @@ DynamicFormBuilder >> textField: aKey label: aLabel placeholder: aPlaceholder ru
 	fieldLabels at: aKey put: aLabel
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'creation' }
 DynamicFormBuilder >> timePicker: aKey label: aLabel [
 
 	| presenter |
@@ -402,13 +412,13 @@ DynamicFormBuilder >> timePicker: aKey label: aLabel [
 	fieldLabels at: aKey put: aLabel
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DynamicFormBuilder >> topPresenter: arg1 [
 
 	customTopPresenter := arg1
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'validation' }
 DynamicFormBuilder >> validateFields [
 
 	fieldPresenters do: [ :arg1 |

@@ -1,3 +1,11 @@
+"
+Базовий клас для всіх тих презентерів у SpecComponentsLibrary, до яких мають застосовуватися властивості стилізації.
+
+Надає підтримку стилізації компонентів, зберігає головний внутрішній презентер.
+Підкласи повинні реалізовувати метод #initializePresenters та за потреби перевизначати layout.
+Щоб отримати доступ до неперевизначених властивостей головного компонента треба прописати mainPresenter.
+
+"
 Class {
 	#name : 'BasePresenter',
 	#superclass : 'SpPresenter',
@@ -7,50 +15,51 @@ Class {
 		'appliedStyleName',
 		'name'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-BaseComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'BaseComponents'
 }
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> backgroundColor: aColor [
 
 	self setGeneratedStyleProperty: #backgroundColor value: aColor.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> bold [
 
 	self setGeneratedStyleProperty: #bold value: true.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> borderColor: aValue [
 
 	self setGeneratedStyleProperty: #borderColor value: aValue.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> borderWidth: aValue [
 
 	self setGeneratedStyleProperty: #borderWidth value: aValue.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> color: aColor [
 
 	self setGeneratedStyleProperty: #color value: aColor
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'events' }
 BasePresenter >> connectPresenters [
     "Стандартне місце для визначення взаємодії між демонстраторами"
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'layout' }
 BasePresenter >> defaultLayout [
 	"Стандартний макет. За замовчуванням пустий контейнер"
 
@@ -60,21 +69,21 @@ BasePresenter >> defaultLayout [
 		  yourself
 ]
 
-{ #category : 'font description' }
+{ #category : 'style' }
 BasePresenter >> fontFamily: aFontFamily [
 
 	self setGeneratedStyleProperty: #name value: aFontFamily.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> fontSize: aNumber [
 
 	self setGeneratedStyleProperty: #fontSize value: aNumber.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'style' }
 BasePresenter >> generateAndApplyStyle [
 
 	appliedStyleName ifNotNil: [
@@ -86,35 +95,35 @@ BasePresenter >> generateAndApplyStyle [
 	mainPresenter addStyle: appliedStyleName
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> hResizing: aValue [
 
 	self setGeneratedStyleProperty: #hResizing value: aValue.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> height: aHeight [
 
 	self setGeneratedStyleProperty: #height value: aHeight.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 BasePresenter >> initializePresenters [
 	"Стандартне місце для створення вкладених демонстраторів"
 
 	SpNullApplication reset.
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> italic [
 
 	self setGeneratedStyleProperty: #italic value: true.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 BasePresenter >> mainPresenter [
 	"Повертає головний внутрішній демонстратор, якщо є.
     За замовчуванням повертаємо self. Класи-нащадки можуть перевизначити."
@@ -127,7 +136,7 @@ BasePresenter >> mainPresenter: aPresenter [
 mainPresenter := aPresenter 
 ]
 
-{ #category : 'initialization' }
+{ #category : 'style' }
 BasePresenter >> setGeneratedStyleProperty: key value: val [
 
 	self styleProperties at: key put: val
@@ -141,14 +150,14 @@ BasePresenter >> styleProperties [
 	^ styleProperties
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> vResizing: aValue [
 
 	self setGeneratedStyleProperty: #vResizing value: aValue.
 	self generateAndApplyStyle
 ]
 
-{ #category : 'accessing' }
+{ #category : 'style' }
 BasePresenter >> width: aWidth [
 
 	self setGeneratedStyleProperty: #width value: aWidth.

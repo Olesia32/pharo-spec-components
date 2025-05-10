@@ -1,3 +1,9 @@
+"
+Презентер, що відображає групу чекбоксів у сітці.
+
+Підтримує багаторазовий вибір, прокручування, кількість колонок та зовнішнє оформлення (рамка, заголовок).
+
+"
 Class {
 	#name : 'CheckboxGroupPresenter',
 	#superclass : 'AbstractSelectableGroupPresenter',
@@ -5,8 +11,9 @@ Class {
 		'selectedIndexes',
 		'whenSelectionChangedDo'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Groups',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Groups'
 }
 
 { #category : 'building' }
@@ -54,7 +61,7 @@ CheckboxGroupPresenter >> selectedItems [
 		  [ :i | items at: i ifAbsent: nil ] 
 ]
 
-{ #category : 'accessing' }
+{ #category : 'private' }
 CheckboxGroupPresenter >> toggleSelectionAt: index [ 
     | buttonState |
     buttonState := (buttons at: index ifAbsent: [ ^ self ]) mainPresenter state.

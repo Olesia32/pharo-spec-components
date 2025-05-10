@@ -1,3 +1,11 @@
+"
+Абстрактний клас для побудови групи кнопок вибору (checkbox або radio).
+
+Забезпечує відображення в колонках, прокручування, заголовок і API для зміни вмісту.
+Підкласи реалізують метод #buildButton для створення окремих елементів.
+Доступні варіанти з рамкою і заголовком, лише рамкою або заголовком та взагалі без них обох.
+
+"
 Class {
 	#name : 'AbstractSelectableGroupPresenter',
 	#superclass : 'SpPresenter',
@@ -11,8 +19,9 @@ Class {
 		'showFrame',
 		'showTitle'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Groups',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Groups'
 }
 
 { #category : 'initialization' }
@@ -38,7 +47,7 @@ AbstractSelectableGroupPresenter >> buildButton [
     "Перевизначається підкласом для створення потрібної кнопки"
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'building' }
 AbstractSelectableGroupPresenter >> buildColumnLayout: aColumnCount [
 
 	|singleLayout totalRows hLayout |
@@ -88,13 +97,13 @@ AbstractSelectableGroupPresenter >> enableButtonAt: anIndex [
 	button mainPresenter enabled: true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 AbstractSelectableGroupPresenter >> enableScrolling: aBoolean [ 
     isScrollable := aBoolean.
     self updateCurrentLayout
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 AbstractSelectableGroupPresenter >> generateLayout [
 
 	| tmp1 tmp2 tmp3 tmp4 |
@@ -210,18 +219,18 @@ AbstractSelectableGroupPresenter >> updateButtons [
     self updateLabels.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'updating' }
 AbstractSelectableGroupPresenter >> updateCurrentLayout [ 
     self layout: self generateLayout
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'updating' }
 AbstractSelectableGroupPresenter >> updateLabels [ 
     buttons withIndexDo: [ :btn :ind |
         btn mainPresenter label: (display value: (items at: ind)) ]
 ]
 
-{ #category : 'initialization' }
+{ #category : 'api' }
 AbstractSelectableGroupPresenter >> сolumnCount: aNumber [ 
     columnCount := aNumber max: 1.
     self updateCurrentLayout

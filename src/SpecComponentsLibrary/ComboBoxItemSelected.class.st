@@ -1,11 +1,18 @@
+"
+Клас події, який оголошується при зміні вибору в ComboBox або MultiSelectComboBox.
+
+Містить вибраний елемент (або множину елементів) і використовується для передачі події через Announcer.
+
+"
 Class {
 	#name : 'ComboBoxItemSelected',
 	#superclass : 'Announcement',
 	#instVars : [
 		'item'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Dropdown',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Dropdown'
 }
 
 { #category : 'testing' }
@@ -27,10 +34,4 @@ ComboBoxItemSelected >> item [
 ComboBoxItemSelected >> item: anItem [
 
 	 item := anItem 
-]
-
-{ #category : 'initialization' }
-ComboBoxItemSelected >> prepareForDelivery [
-    "Підготовка до доставки — у нашому випадку нічого не робимо"
-    ^ self
 ]

@@ -1,3 +1,9 @@
+"
+Компонент для відображення таблиці з можливістю пошуку і фільтрації по колонках.
+
+Підтримує пошукове поле, вибір колонок, що фільтруються, і динамічну зміну списку елементів.
+
+"
 Class {
 	#name : 'SearchableTablePresenter',
 	#superclass : 'SpPresenter',
@@ -11,8 +17,9 @@ Class {
 		'filteredItems',
 		'isSearchable'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Tables',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Tables'
 }
 
 { #category : 'private' }
@@ -72,12 +79,12 @@ SearchableTablePresenter >> defaultLayout [
 	^ tmp1 yourself
 ]
 
-{ #category : 'layout' }
+{ #category : 'accessing' }
 SearchableTablePresenter >> displayUsing: aBlock [ 
     displayBlock := aBlock
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 SearchableTablePresenter >> filterComboBox [
    ^ columnSelector 
 ]
@@ -93,7 +100,7 @@ SearchableTablePresenter >> filteredItems [
 	^ filteredItems
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 SearchableTablePresenter >> hideSearchContainer [
 
 	isSearchable := false.
@@ -131,7 +138,7 @@ SearchableTablePresenter >> selectedItem [
     ^ tablePresenter selectedItem
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 SearchableTablePresenter >> showSearchContainer [
 
 	isSearchable := true.
@@ -143,7 +150,7 @@ SearchableTablePresenter >> table [
 ^ tablePresenter 
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'events' }
 SearchableTablePresenter >> whenSelectedItemChangedDo: aBlock [ 
     tablePresenter whenSelectedItemChangedDo: aBlock
 ]

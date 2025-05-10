@@ -1,3 +1,10 @@
+"
+Компонент для побудови покрокового інтерфейсу (майстра).
+
+Кожен крок відображається послідовно, з підтримкою переходів вперед/назад. У кожен крок користувач може вставити всій презентер.
+Зверху відображається прогрес промальований через кастомний клас WizardStepHeaderPresener.
+
+"
 Class {
 	#name : 'WizardPresenter',
 	#superclass : 'SpPresenter',
@@ -13,8 +20,9 @@ Class {
 		'onFinished',
 		'visibleStepCount'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-AdvancedComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'AdvancedComponents'
 }
 
 { #category : 'accessing' }
@@ -31,19 +39,19 @@ WizardPresenter >> backButton [
 ^ backButton 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'refresh' }
 WizardPresenter >> goToNextStep [ 
     (currentStepIndex = steps size)
         ifTrue: [ onFinished ifNotNil: [ onFinished value ] ]
         ifFalse: [ self goToStep: currentStepIndex + 1 ].
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'refresh' }
 WizardPresenter >> goToPreviousStep [ 
     self goToStep: currentStepIndex - 1.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'refresh' }
 WizardPresenter >> goToStep: aNumber [
    |windowMorph bounds|
 	(aNumber between: 1 and: steps size) ifFalse: [ ^ self ].
@@ -67,7 +75,7 @@ WizardPresenter >> initializePresenters [
     currentStepIndex := 1.
     onStepExit := nil.
     onFinished := nil.
-    stepHeaderPresenters := StepHeaderPresenter new.
+    stepHeaderPresenters := WizardStepHeaderPresenter new.
 
     contentPresenter := SpPresenter new.
 
@@ -82,12 +90,12 @@ WizardPresenter >> nextButton [
 ^ nextButton 
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'events' }
 WizardPresenter >> onFinishDo: aBlock [ 
     onFinished := aBlock.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 WizardPresenter >> stepCircleRadius: aNumber [
     stepHeaderPresenters isNil ifTrue: [ ^ self ].
     aNumber isNil ifTrue: [ ^ self ].
@@ -96,7 +104,7 @@ WizardPresenter >> stepCircleRadius: aNumber [
    
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 WizardPresenter >> stepCircleTitleColor: aColor [
 stepHeaderPresenters titleColor: aColor.
     
@@ -107,7 +115,7 @@ WizardPresenter >> stepPresenterAt: index [
     ^ (steps at: index ifAbsent: [ nil ]) ifNotNil: [ :step | step at: #content ifAbsent: [ nil ] ]
 ]
 
-{ #category : 'accessing' }
+{ #category : 'api' }
 WizardPresenter >> steps: aCollection [ 
     |stepTitles|
     steps := aCollection asOrderedCollection.
@@ -116,13 +124,13 @@ WizardPresenter >> steps: aCollection [
     self goToStep: 1.
 ]
 
-{ #category : 'accessing' }
+{ #category : 'updating' }
 WizardPresenter >> updateButtonStates [ 
     backButton mainPresenter enabled: currentStepIndex > 1.
     (currentStepIndex = steps size) ifTrue: [ nextButton label: 'Завершити' ] ifFalse: [ nextButton label: 'Вперед' ]
 ]
 
-{ #category : 'private' }
+{ #category : 'updating' }
 WizardPresenter >> updateLayout [ 
     | buttonBar |
     buttonBar := SpBoxLayout newLeftToRight 
@@ -140,7 +148,7 @@ WizardPresenter >> updateLayout [
 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'updating' }
 WizardPresenter >> updateStepHeader [
 
 	stepHeaderPresenters activeIndex: currentStepIndex 
@@ -151,17 +159,12 @@ WizardPresenter >> visibleStepCount: aCount [
    stepHeaderPresenters visibleStepCount: aCount 
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'events' }
 WizardPresenter >> whenStepChangedDo: aBlock [ 
     onStepChanged := aBlock.
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'events' }
 WizardPresenter >> whenStepExitDo: aBlock [ 
     onStepExit := aBlock.
-]
-
-{ #category : 'accessing' }
-WizardPresenter >> width: aNumber [
-   width := stepHeaderPresenters width: (aNumber max: 1).
 ]

@@ -1,5 +1,11 @@
+"
+Візуальний компонент для відображення заголовків кроків у покрокових інтерфейсах (майстрах).
+
+Показує кола з номерами або назвами кроків, активний крок підсвічується.
+
+"
 Class {
-	#name : 'StepHeaderPresenter',
+	#name : 'WizardStepHeaderPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'roassalPresenter',
@@ -15,24 +21,25 @@ Class {
 		'labelFontSize',
 		'visibleStepCount'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-AdvancedComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'AdvancedComponents'
 }
 
 { #category : 'accessing' }
-StepHeaderPresenter >> activeColor: aColor [ 
+WizardStepHeaderPresenter >> activeColor: aColor [ 
     activeColor := aColor.
     self render.
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> activeIndex: anInteger [ 
+WizardStepHeaderPresenter >> activeIndex: anInteger [ 
     activeIndex := anInteger.
     self render
 ]
 
-{ #category : 'accessing' }
-StepHeaderPresenter >> buildOuterCircleAt: x y: y color: aColor [ 
+{ #category : 'building' }
+WizardStepHeaderPresenter >> buildOuterCircleAt: x y: y color: aColor [ 
     ^ RSEllipse new
         radius: radius + 4;
         color: Color transparent;
@@ -42,8 +49,8 @@ StepHeaderPresenter >> buildOuterCircleAt: x y: y color: aColor [
         yourself
 ]
 
-{ #category : 'accessing' }
-StepHeaderPresenter >> buildStepCircleAt: x y: y color: fillColor borderColor: strokeColor [ 
+{ #category : 'building' }
+WizardStepHeaderPresenter >> buildStepCircleAt: x y: y color: fillColor borderColor: strokeColor [ 
     ^ RSEllipse new
         radius: radius;
         color: fillColor;
@@ -53,8 +60,8 @@ StepHeaderPresenter >> buildStepCircleAt: x y: y color: fillColor borderColor: s
         yourself
 ]
 
-{ #category : 'accessing' }
-StepHeaderPresenter >> buildStepLabelAt: x y: y text: aString fontSize: aSize color: aColor [ 
+{ #category : 'building' }
+WizardStepHeaderPresenter >> buildStepLabelAt: x y: y text: aString fontSize: aSize color: aColor [ 
     ^ RSLabel new
         text: aString;
         fontSize: aSize;
@@ -63,8 +70,8 @@ StepHeaderPresenter >> buildStepLabelAt: x y: y text: aString fontSize: aSize co
         yourself
 ]
 
-{ #category : 'accessing' }
-StepHeaderPresenter >> buildStepTitleAt: x y: y text: aString [ 
+{ #category : 'building' }
+WizardStepHeaderPresenter >> buildStepTitleAt: x y: y text: aString [ 
     ^ RSLabel new
         text: aString;
         fontSize: titleFontSize;
@@ -74,19 +81,19 @@ StepHeaderPresenter >> buildStepTitleAt: x y: y text: aString [
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> canvas [ 
+WizardStepHeaderPresenter >> canvas [ 
   ^ roassalPresenter canvas
 ]
 
-{ #category : 'as yet unclassified' }
-StepHeaderPresenter >> centerXOfStep: i plusRadius: aBool [ 
+{ #category : 'building' }
+WizardStepHeaderPresenter >> centerXOfStep: i plusRadius: aBool [ 
     | x |
     x := (i * stepSpacing).
     ^ aBool ifTrue: [ x + radius ] ifFalse: [ x - radius ].
 ]
 
 { #category : 'layout' }
-StepHeaderPresenter >> defaultLayout [ 
+WizardStepHeaderPresenter >> defaultLayout [ 
     ^ SpBoxLayout newTopToBottom
         spacing: 0;
         add: roassalPresenter;
@@ -94,13 +101,13 @@ StepHeaderPresenter >> defaultLayout [
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> headerHeight [ 
+WizardStepHeaderPresenter >> headerHeight [ 
   ^ ((radius + 4) * 2) + 20 + titleFontSize.
 
 ]
 
 { #category : 'initialization' }
-StepHeaderPresenter >> initialize [
+WizardStepHeaderPresenter >> initialize [
 
 	super initialize.
 	radius := 20.
@@ -120,13 +127,13 @@ StepHeaderPresenter >> initialize [
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> labelFontSize: aNumber [ 
+WizardStepHeaderPresenter >> labelFontSize: aNumber [ 
     labelFontSize := aNumber.
     self render.
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> radius: aNumber [
+WizardStepHeaderPresenter >> radius: aNumber [
 
 	| totalWidth stepCount|
 	radius := aNumber.
@@ -139,7 +146,7 @@ StepHeaderPresenter >> radius: aNumber [
 ]
 
 { #category : 'rendering' }
-StepHeaderPresenter >> render [ 
+WizardStepHeaderPresenter >> render [ 
     | view |
     view := roassalPresenter canvas.
     view shapes do: [ :each | view removeShape: each ].
@@ -149,8 +156,8 @@ StepHeaderPresenter >> render [
 
 ]
 
-{ #category : 'as yet unclassified' }
-StepHeaderPresenter >> renderStepLinesOn: view [
+{ #category : 'rendering' }
+WizardStepHeaderPresenter >> renderStepLinesOn: view [
 	| indexes linesCount |
 	indexes := self visibleStepIndexes.
 	linesCount := indexes size.
@@ -175,7 +182,7 @@ StepHeaderPresenter >> renderStepLinesOn: view [
 ]
 
 { #category : 'rendering' }
-StepHeaderPresenter >> renderStepsOn: view [ 
+WizardStepHeaderPresenter >> renderStepsOn: view [ 
 	| startX startY visibleIndexes i xPos stepColor circle label title outerCircle textSize textColor |
 	startX := 0.
 	startY := 0.
@@ -210,38 +217,38 @@ StepHeaderPresenter >> renderStepsOn: view [
 	].
 ]
 
-{ #category : 'initialization' }
-StepHeaderPresenter >> stepTitleForIndex: index [ 
+{ #category : 'accessing' }
+WizardStepHeaderPresenter >> stepTitleForIndex: index [ 
 	index = #ellipsis ifTrue: [ ^ '…' ].
 	^ stepTitles at: index ifAbsent: [ '' ]
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> stepTitles: aCollection [ 
+WizardStepHeaderPresenter >> stepTitles: aCollection [ 
     stepTitles := aCollection.
     self render.
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> titleColor: aColor [ 
+WizardStepHeaderPresenter >> titleColor: aColor [ 
     titleColor := aColor.
     self render.
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> titleFontSize: aNumber [ 
+WizardStepHeaderPresenter >> titleFontSize: aNumber [ 
     titleFontSize := aNumber.
     self render.
 ]
 
 { #category : 'accessing' }
-StepHeaderPresenter >> visibleStepCount: aNumber [
+WizardStepHeaderPresenter >> visibleStepCount: aNumber [
 
 	visibleStepCount := aNumber max: 1
 ]
 
-{ #category : 'as yet unclassified' }
-StepHeaderPresenter >> visibleStepIndexes [
+{ #category : 'private' }
+WizardStepHeaderPresenter >> visibleStepIndexes [
 
 	| totalSteps maxSteps halfWindow startIdx endIdx |
 	totalSteps := stepTitles size.

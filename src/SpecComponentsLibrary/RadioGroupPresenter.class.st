@@ -1,3 +1,9 @@
+"
+Презентер для відображення групи радіокнопок (Radio Button).
+
+Забезпечує вибір одного елемента з колекції, підтримує заголовок, рамку, кількість колонок і реакцію на зміну вибору.
+
+"
 Class {
 	#name : 'RadioGroupPresenter',
 	#superclass : 'AbstractSelectableGroupPresenter',
@@ -6,8 +12,9 @@ Class {
 		'whenIndexChangedDo',
 		'isEvenEvent'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Groups',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Groups'
 }
 
 { #category : 'building' }
@@ -15,7 +22,7 @@ RadioGroupPresenter >> buildButton [
     ^ RadioButtonPresenter new
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'events' }
 RadioGroupPresenter >> buttonStateChanged [ 
     buttons withIndexDo: [ :btn :ind |
         btn mainPresenter state ifTrue: [ index := ind ] ].
@@ -33,7 +40,7 @@ RadioGroupPresenter >> connectPresenters [
     buttons do: [ :btn | btn mainPresenter whenChangedDo: block ].
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 RadioGroupPresenter >> correctIndexToFirst [ 
     index := 1.
     whenIndexChangedDo ifNotNil: [ whenIndexChangedDo value: index ].
@@ -51,7 +58,7 @@ RadioGroupPresenter >> initialize [
     isEvenEvent := false.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 RadioGroupPresenter >> itemSelected [ 
     ^ items at: index ifAbsent: [ nil ]
 ]

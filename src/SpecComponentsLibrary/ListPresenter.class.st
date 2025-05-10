@@ -1,11 +1,17 @@
+"
+Обгортка над стандартним SpListPresenter.
+Підтримує візуальну стилізацію.
+
+"
 Class {
 	#name : 'ListPresenter',
 	#superclass : 'BasePresenter',
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-BaseComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'BaseComponents'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 ListPresenter >> initializePresenters [
 
 	| list |

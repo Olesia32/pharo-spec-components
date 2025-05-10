@@ -1,11 +1,18 @@
+"
+Простий презентер для одного чекбокса.
+
+Використовується самостійно або в складі форм і груп (CheckboxGroupPresenter). Підтримує візуальну стилізацію.
+
+"
 Class {
 	#name : 'CheckboxPresenter',
 	#superclass : 'BasePresenter',
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-BaseComponents',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'BaseComponents'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 CheckboxPresenter >> initializePresenters [
 
 	| checkbox |

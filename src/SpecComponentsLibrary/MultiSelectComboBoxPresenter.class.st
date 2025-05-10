@@ -1,3 +1,9 @@
+"
+Випадаючий список з можливістю множинного вибору елементів через чекбокси.
+Складається з фільтраційного поля та випадаючого списку чекбоксів.
+Підтримує фільтрацію за введеним текстом, відображає вибрані елементи у полі введення, та оголошує події при зміні вибору.
+
+"
 Class {
 	#name : 'MultiSelectComboBoxPresenter',
 	#superclass : 'AbstractDropdownPresenter',
@@ -6,8 +12,9 @@ Class {
 		'checkboxes',
 		'listPresenter'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Dropdown',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Dropdown'
 }
 
 { #category : 'initialization' }
@@ -17,7 +24,7 @@ MultiSelectComboBoxPresenter >> connectPresenters [
 	toggleButton onClick: [ self toggleList ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 MultiSelectComboBoxPresenter >> createMorphList [
 
 	morphList ifNotNil: [ ^ morphList := listPresenter adapter widget ].
@@ -60,7 +67,7 @@ MultiSelectComboBoxPresenter >> items: arg1 [
 	self filterList
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api' }
 MultiSelectComboBoxPresenter >> selectedIndexes: anIndexList [
 
 	selectedItems := Set new.
@@ -82,14 +89,14 @@ MultiSelectComboBoxPresenter >> selectedItems [
 	^ selectedItems
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 MultiSelectComboBoxPresenter >> toggleList [
 
 	super toggleList.
    self updateFieldContent 
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 MultiSelectComboBoxPresenter >> updateFieldContent [
 isOpen ifFalse: [
 			textInput text: (String streamContents: [ :stream |
@@ -103,7 +110,7 @@ isOpen ifFalse: [
 					 ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private' }
 MultiSelectComboBoxPresenter >> updateListWith: arg1 [
 
 	checkboxes := Dictionary new.
@@ -132,7 +139,7 @@ MultiSelectComboBoxPresenter >> updateListWith: arg1 [
 			 ]
 ]
 
-{ #category : 'enumerating' }
+{ #category : 'events' }
 MultiSelectComboBoxPresenter >> whenSelectionChangedDo: aBlock [ 
     announcer
         when: ComboBoxItemSelected
