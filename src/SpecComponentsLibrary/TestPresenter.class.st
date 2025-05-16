@@ -23,7 +23,7 @@ TestPresenter >> defaultLayout [
 
 	| tmp1 |
 	tmp1 := SpBoxLayout new.
-	tmp1 add: form expand: false.
+	tmp1 add: searchTable.
 	^ tmp1 yourself
 ]
 
@@ -76,60 +76,6 @@ TestPresenter >> initializePresenters [
 			         (#notEmpty -> 'Це поле обов’язкове').
 			         (#minLength -> 'Мінімум 3 символи') }.
 
-	tmp2 := FormStyle new.
-	tmp2
-		labelColor: '#0000ff';
-		buttonWidth: 100;
-		buttonHeight: 60;
-		labelFontSize: 12;
-		inputBorderColor: '#gray';
-		headerFontSize: 16.
-	form := DynamicFormBuilder new.
-	form
-		style: tmp2;
-		header: 'Тестова форма';
-		hideHeader;
-		textField: #name
-		label: 'Ім’я'
-		placeholder: 'Введіть ім’я'
-		rules: nil;
-		textField: #email
-		label: 'Електронна пошта'
-		placeholder: 'email@example.com'
-		rules: nil;
-		checkbox: #agree label: 'Погоджуюсь з умовами';
-		checkboxGroup: #fruits
-		label: 'Фрукти'
-		items: #( 'Яблуко' 'Апельсин' 'Ківі' 'Груша' )
-		columns: 2
-		frame: false;
-		radioGroup: #gender
-		label: 'Стать'
-		items: #( 'Чоловік' 'Жінка' )
-		columns: 1
-		frame: false;
-		dropList: #city label: 'Місто' items: #( 'Київ' 'Львів' 'Харків' );
-		comboBox: #country
-		label: 'Країна'
-		items: #( 'Україна' 'Польща' 'Німеччина' );
-		multiComboBox: #skills
-		label: 'Навички'
-		items: #( 'Smalltalk' 'Python' 'C#' 'SQL' );
-		datePicker: #birthdate label: 'Дата народження';
-		timePicker: #meeting label: 'Час зустрічі'.
-
-
-	form onSubmit: [ :values |
-			Transcript
-				show: 'Отримані дані: ';
-				cr.
-			Transcript
-				show: form collectValues;
-				cr ].
-	form onBack: [
-			Transcript
-				show: 'Натиснуто "Скасувати"';
-				cr ].
 
 
 	radioGroup := RadioGroupPresenter new.
@@ -250,7 +196,7 @@ TestPresenter >> initializePresenters [
 				cr ].
 
 
-	searchTable := SearchableTablePresenter new.
+	searchTable := PaginatedTablePresenter new.
 	searchTable columns: {
 			('Ім’я' -> #name).
 			('Email' -> #email).
@@ -286,7 +232,32 @@ TestPresenter >> initializePresenters [
 				 #phone. '901-234' }).
 			(Dictionary newFromPairs:
 				 { #name. 'Тетяна'. #email. 'tania@ukr.net'. #city. 'Черкаси'.
+				 #phone. '012-345' }).
+				(Dictionary newFromPairs:
+				 { #name. 'Світлана'. #email. 'svitlana@org.ua'. #city. 'Запоріжжя'.
+				 #phone. '789-012' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Ірина'. #email. 'iryna@mail.com'. #city. 'Житомир'.
+				 #phone. '890-123' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Василь'. #email. 'vasyl@net.ua'. #city. 'Дніпро'.
+				 #phone. '901-234' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Тетяна'. #email. 'tania@ukr.net'. #city. 'Черкаси'.
+				 #phone. '012-345' }).
+				(Dictionary newFromPairs:
+				 { #name. 'Світлана'. #email. 'svitlana@org.ua'. #city. 'Запоріжжя'.
+				 #phone. '789-012' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Ірина'. #email. 'iryna@mail.com'. #city. 'Житомир'.
+				 #phone. '890-123' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Василь'. #email. 'vasyl@net.ua'. #city. 'Дніпро'.
+				 #phone. '901-234' }).
+			(Dictionary newFromPairs:
+				 { #name. 'Тетяна'. #email. 'tania@ukr.net'. #city. 'Черкаси'.
 				 #phone. '012-345' }) }.
+		searchTable itemsPerPage: 2.
 
-	date := TimePickerPresenter new.
+	date := TimePickerPresenter new
 ]

@@ -77,11 +77,11 @@ NotificationPresenter >> computePositionFor: morph in: window [
 					   y := container height + containerBounds y // 2
 					        - (morph height // 2).
 					   x @ y ]) }
-		  otherwise: [ "За замовчуванням — як #bottomRight"
-				  x := container width + containerBounds x - morph width - margin.
-				  y := container height + containerBounds y - morph height
-				       - margin.
-				  x @ y ]
+		  otherwise: [ "За замовчуванням — як #topRight"
+				  x := container width + containerBounds x - morph width
+					        - margin.
+					   y := containerBounds y + margin.
+					   x @ y ]
 ]
 
 { #category : 'accessing' }
@@ -161,15 +161,12 @@ NotificationPresenter >> position: anObject [
 
 { #category : 'private' }
 NotificationPresenter >> resolveColorFromType [
-    | colors |
-    colors := Dictionary new.
-    colors
-        at: #info put: (Color r: 0.40 g: 0.60 b: 0.85);
-        at: #success put: (Color r: 0.50 g: 0.75 b: 0.50);
-        at: #warning put: (Color r: 0.95 g: 0.75 b: 0.40);
-        at: #error put: (Color r: 0.85 g: 0.45 b: 0.45).
-    ^ colors at: type ifAbsent: [ (Color r: 0.75 g: 0.75 b: 0.75)  ]
 
+	type = '#info' ifTrue: [ backgroundColor :=  Color r: 0.40 g: 0.60 b: 0.85]
+	ifFalse: [ type = '#success' ifTrue: [ backgroundColor := Color r: 0.50 g: 0.75 b: 0.50 ] ifFalse:
+		[ type = '#warning' ifTrue: [ backgroundColor := Color r: 0.95 g: 0.75 b: 0.40 ] ifFalse: [ 
+			type = '#error' ifTrue: [ backgroundColor := Color r: 0.85 g: 0.45 b: 0.45 ] ifFalse: 
+			[ backgroundColor ifNil: [ backgroundColor := Color r: 0.75 g: 0.75 b: 0.75  ] ]]] ].
 ]
 
 { #category : 'accessing' }
@@ -180,13 +177,12 @@ NotificationPresenter >> show [
 	tmp2
 		font: font;
 		color: textColor.
-	tmp3 := StringMorph contents: message.
-	tmp3
-		font: font;
-		color: textColor.
+	tmp3 := (message isKindOf: Text)
+		        ifTrue: [ TextMorph new contents: message ]
+		        ifFalse: [ StringMorph contents: message asString ].
 	tmp1 := Morph new.
 	tmp1
-		color: self resolveColorFromType;
+		color: backgroundColor;
 		borderWidth: 0;
 		cornerStyle: #rounded;
 		layoutPolicy: ProportionalLayout new;
@@ -237,7 +233,8 @@ NotificationPresenter >> type [
 { #category : 'accessing' }
 NotificationPresenter >> type: anObject [
 
-	type := anObject
+	type := anObject.
+	self resolveColorFromType 
 ]
 
 { #category : 'accessing' }

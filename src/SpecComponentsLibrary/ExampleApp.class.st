@@ -1,29 +1,29 @@
 Class {
-	#name : 'TestApp',
+	#name : 'ExampleApp',
 	#superclass : 'SpApplication',
 	#instVars : [
 		'mainPresenter'
 	],
-	#category : 'SpecComponentsLibrary',
-	#package : 'SpecComponentsLibrary'
+	#category : 'SpecComponentsLibrary-Examples',
+	#package : 'SpecComponentsLibrary',
+	#tag : 'Examples'
 }
 
 { #category : 'initialization' }
-TestApp >> initialize [
+ExampleApp >> initialize [
 
 	super initialize.
 	
 ]
 
 { #category : 'initialization' }
-TestApp >> start [
+ExampleApp >> start [
 
 	| window p |
-	p := TestPresenter new.
+	p := LibraryTable new.
 	p application: self.
 	window := p open.
 	window window
-		
 		removeExpandBox;
 		removeCollapseBox;
 		removeMenuBox

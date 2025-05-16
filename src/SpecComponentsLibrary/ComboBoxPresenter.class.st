@@ -85,6 +85,12 @@ ComboBoxPresenter >> selectIndex: anIndex [
 ]
 
 { #category : 'accessing' }
-ComboBoxPresenter >> selectedItem [ 
-    ^ list selectedItem
+ComboBoxPresenter >> selectedIndex [ 
+ ^selectedIndex 
+]
+
+{ #category : 'accessing' }
+ComboBoxPresenter >> selectedItem [
+
+	^ allItems at: selectedIndex
 ]

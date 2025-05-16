@@ -128,9 +128,10 @@ SearchableTablePresenter >> initializePresenters [
 ]
 
 { #category : 'api' }
-SearchableTablePresenter >> items: aCollection [ 
-    allItems := aCollection asOrderedCollection.
-    self applyFilter.
+SearchableTablePresenter >> items: aCollection [
+
+	allItems := aCollection asOrderedCollection.
+	self applyFilter
 ]
 
 { #category : 'accessing' }

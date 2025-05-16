@@ -77,6 +77,7 @@ PaginatedTablePresenter >> goToPageFromInput [
 	| tmp1 tmp2 |
 	tmp2 := gotoPageInput text asInteger.
 	tmp1 := tmp2 ifNil: [ 1 ] ifNotNil: [ tmp2 ].
+	gotoPageInput text: ''.
 	self goToPage: tmp1
 ]
 
@@ -161,59 +162,61 @@ PaginatedTablePresenter >> updatePagination [
 
 { #category : 'as yet unclassified' }
 PaginatedTablePresenter >> updatePaginationControls [
-
 	paginationControls
 		removeAll;
 		add: (self newPageButtonLabeled: '←' action: [ self previousPage ])
 		expand: false.
+
 	self visiblePageNumbers do: [ :arg1 |
-			| tmp1 tmp2 |
-			arg1 = #'...'
-				ifTrue: [
-						tmp1 := ButtonPresenter new.
-						tmp1
-							label: '...';
-							fontSize: 14.
-						tmp1 mainPresenter enabled: false.
-						paginationControls add: tmp1 ]
-				ifFalse: [
-						tmp2 := ButtonPresenter new.
-						tmp2
-							label: arg1 asString;
-							onClick: [ self goToPage: arg1 ].
-						arg1 = currentPage ifTrue: [ tmp2 bold ].
-						paginationControls add: tmp2 withConstraints: [ :arg2 |
-								arg2
-									width: 30;
-									expand: false ] ] ].
+		| tmp1 tmp2 |
+		arg1 = #'...'
+			ifTrue: [
+				tmp1 := ButtonPresenter new.
+				tmp1
+					label: '...';
+					fontSize: 14.
+				tmp1 mainPresenter enabled: false.
+				paginationControls add: tmp1
+			]
+			ifFalse: [
+				tmp2 := ButtonPresenter new.
+				tmp2
+					label: arg1 asString;
+					onClick: [ self goToPage: arg1 ].
+				arg1 = currentPage ifTrue: [
+					tmp2 bold.
+					tmp2 backgroundColor: '#lightGray'
+				].
+				paginationControls add: tmp2 withConstraints: [ :arg2 |
+					arg2 width: 30; expand: false ]
+			]
+	].
+
 	paginationControls
-		add: (self newPageButtonLabeled: '→' action: [ self nextPage ])
-		expand: false;
-		add: (LabelPresenter new text:
-					 currentPage asString , ' / ' , self totalPages asString)
+		add: (self newPageButtonLabeled: '→' action: [ self nextPage ]) expand: false;
+		add: (LabelPresenter new text: currentPage asString , ' / ' , self totalPages asString)
 		withConstraints: [ :arg3 | arg3 padding: 15 ];
 		add: gotoPageInput withConstraints: [ :arg4 |
-				arg4
-					width: 40;
-					expand: false ];
-		add: gotoPageButton
+			arg4 width: 40; expand: false ];
+		add: gotoPageButton.
+
 ]
 
 { #category : 'as yet unclassified' }
-PaginatedTablePresenter >> visiblePageNumbers [
+PaginatedTablePresenter >> visiblePageNumbers [ 
 
 	| tmp1 |
 	tmp1 := self totalPages.
-	tmp1 <= 7 ifTrue: [ ^ (1 to: tmp1) asOrderedCollection ].
+	tmp1 <= 5 ifTrue: [ ^ (1 to: tmp1) asOrderedCollection ].
 	nil.
 	currentPage <= 4 ifTrue: [
-		^ #( 1 2 3 4 5 #'.' #'.' #'.' ) , { tmp1 } ].
+		^ #( 1 2 3 4 #'...' ) , { tmp1 } ].
 	nil.
-	currentPage >= tmp1 - 3 ifTrue: [
-			^ { 1 } , #( #'.' #'.' #'.' )
-			  , (tmp1 - 4 to: tmp1) asOrderedCollection ].
+	currentPage >= (tmp1 - 3) ifTrue: [
+			^ { 1 } , #( #'...' )
+			  , (tmp1 - 3 to: tmp1) asOrderedCollection ].
 	nil.
-	^ { 1 } , #( #'.' #'.' #'.' )
+	^ { 1 } , #( #'...' )
 	  , (currentPage - 1 to: currentPage + 1) asOrderedCollection
-	  , #( #'.' #'.' #'.' ) , { tmp1 }
+	  , #( #'...' ) , { tmp1 }
 ]
