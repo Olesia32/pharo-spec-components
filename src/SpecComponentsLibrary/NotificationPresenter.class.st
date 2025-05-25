@@ -1,7 +1,47 @@
 "
-Простий презентер для показу сповіщень у вікні Pharo.
-Підтримує позиціонування відносно заданого вікна
-Можна задати тип повідомлення (інформація, успіх, помилка, попередження), колір, шрифт, позицію на екрані і тривалість відображення.
+I am a lightweight presenter used to display notification messages as overlay morphs in a Pharo window.  
+I support positioning relative to a target window, customizable appearance (color, font, size), and different message types such as info, success, warning, and error.  
+Notifications disappear automatically after a given duration and are displayed using standard Morphic primitives.  
+I am not a Spec presenter, but can be used inside Spec-based applications for transient feedback.
+
+### Instance Variables
+
+- _title_: a `String` — the title displayed at the top of the notification  
+- _message_: a `String` or `Text` — the body content of the notification  
+- _type_: a `Symbol` — defines the notification type (`#info`, `#success`, `#warning`, `#error`)  
+- _duration_: a `Number` — how long the notification stays visible, in seconds  
+- _window_: a `SpWindowPresenter` — the window relative to which the notification is positioned  
+- _position_: a `Symbol` — one of `#topLeft`, `#topRight`, `#bottomLeft`, `#bottomRight`, `#center`  
+- _font_: a `Font` — font used for both title and message  
+- _backgroundColor_: a `Color` — background fill of the notification box  
+- _textColor_: a `Color` — color of the title and message text  
+- _width_: an `Integer` — width of the notification morph  
+- _height_: an `Integer` — height of the notification morph
+
+### Public API
+
+- `NotificationPresenter>>#title:`, `NotificationPresenter>>#message:`, `NotificationPresenter>>#type:`, `NotificationPresenter>>#duration:` — basic content and style setters  
+- `NotificationPresenter>>#backgroundColor:`, `NotificationPresenter>>#textColor:`, `NotificationPresenter>>#font:` — appearance customization  
+- `NotificationPresenter>>#width:`, `NotificationPresenter>>#height:` — set dimensions of the notification morph  
+- `NotificationPresenter>>#position:` — sets the relative screen position  
+- `NotificationPresenter>>#window:` — sets the window relative to which the notification is anchored  
+- `NotificationPresenter>>#show` — displays the notification morph and schedules it for automatic removal
+
+### Usage
+
+To show a simple info notification in the bottom-right of the active window:
+
+```smalltalk
+| n |
+n := NotificationPresenter new
+title: 'Saved';
+message: 'Your data has been successfully saved.';
+type: '#success';
+duration: 4;
+width: 200;
+position: '#center';
+window: World activeWindow;
+show.
 
 "
 Class {
@@ -39,7 +79,8 @@ NotificationPresenter >> backgroundColor: anObject [
 
 { #category : 'accessing' }
 NotificationPresenter >> computePositionFor: morph in: window [
-
+"Calculates the position (top-left corner) where the notification should appear within the given window.
+Supports predefined positions like #topRight, #bottomLeft, #center, etc., with a margin offset."
 	| margin container containerBounds x y |
 	margin := 3.
 	containerBounds := window adapter widget bounds origin.
@@ -78,10 +119,9 @@ NotificationPresenter >> computePositionFor: morph in: window [
 					        - (morph height // 2).
 					   x @ y ]) }
 		  otherwise: [ "За замовчуванням — як #topRight"
-				  x := container width + containerBounds x - morph width
-					        - margin.
-					   y := containerBounds y + margin.
-					   x @ y ]
+				  x := container width + containerBounds x - morph width - margin.
+				  y := containerBounds y + margin.
+				  x @ y ]
 ]
 
 { #category : 'accessing' }
@@ -161,17 +201,30 @@ NotificationPresenter >> position: anObject [
 
 { #category : 'private' }
 NotificationPresenter >> resolveColorFromType [
-
-	type = '#info' ifTrue: [ backgroundColor :=  Color r: 0.40 g: 0.60 b: 0.85]
-	ifFalse: [ type = '#success' ifTrue: [ backgroundColor := Color r: 0.50 g: 0.75 b: 0.50 ] ifFalse:
-		[ type = '#warning' ifTrue: [ backgroundColor := Color r: 0.95 g: 0.75 b: 0.40 ] ifFalse: [ 
-			type = '#error' ifTrue: [ backgroundColor := Color r: 0.85 g: 0.45 b: 0.45 ] ifFalse: 
-			[ backgroundColor ifNil: [ backgroundColor := Color r: 0.75 g: 0.75 b: 0.75  ] ]]] ].
+"Sets the backgroundColor depending on the type.
+Supports types: #info, #success, #warning, #error.
+Falls back to a neutral gray color if no type matches or no custom color is set."
+	type = '#info'
+		ifTrue: [ backgroundColor := Color r: 0.40 g: 0.60 b: 0.85 ]
+		ifFalse: [
+				type = '#success'
+					ifTrue: [ backgroundColor := Color r: 0.50 g: 0.75 b: 0.50 ]
+					ifFalse: [
+							type = '#warning'
+								ifTrue: [ backgroundColor := Color r: 0.95 g: 0.75 b: 0.40 ]
+								ifFalse: [
+										type = '#error'
+											ifTrue: [ backgroundColor := Color r: 0.85 g: 0.45 b: 0.45 ]
+											ifFalse: [
+													backgroundColor ifNil: [
+														backgroundColor := Color r: 0.75 g: 0.75 b: 0.75 ] ] ] ] ]
 ]
 
 { #category : 'accessing' }
 NotificationPresenter >> show [
-
+"Creates a Morph that displays the notification with title and message.
+The morph is positioned relative to the window, based on the specified position.
+After the specified duration, the morph is automatically removed from the world in a background process."
 	| tmp1 tmp2 tmp3 tmp5 tmp6 |
 	tmp2 := StringMorph contents: title.
 	tmp2
@@ -232,9 +285,9 @@ NotificationPresenter >> type [
 
 { #category : 'accessing' }
 NotificationPresenter >> type: anObject [
-
+"Sets the type of the notification and resolves the background color automatically using resolveColorFromType."
 	type := anObject.
-	self resolveColorFromType 
+	self resolveColorFromType
 ]
 
 { #category : 'accessing' }

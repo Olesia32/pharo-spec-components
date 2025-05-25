@@ -1,9 +1,19 @@
 "
-Базовий клас для всіх тих презентерів у SpecComponentsLibrary, до яких мають застосовуватися властивості стилізації.
+I am the base class for all styled presenters in the `SpecComponentsLibrary`.  
+I provide support for component styling via generated style properties.  
+Subclasses use me when they need to apply and update visual styles dynamically, such as font size, color, background, borders, and sizing.
 
-Надає підтримку стилізації компонентів, зберігає головний внутрішній презентер.
-Підкласи повинні реалізовувати метод #initializePresenters та за потреби перевизначати layout.
-Щоб отримати доступ до неперевизначених властивостей головного компонента треба прописати mainPresenter.
+I also store the main internal presenter (e.g., a label, button, or input field), accessible via `#mainPresenter`.  
+All styling is applied to this `mainPresenter`, so subclasses that wrap another presenter must assign it via `mainPresenter:`.
+
+This allows external users to access and configure inner presenter behavior (such as validation, event bindings, etc.) without needing to expose it manually. Subclasses should implement `#initializePresenters` to construct inner components.
+
+### Instance Variables
+
+- _styleProperties_: a `Dictionary` — stores the generated style attributes (e.g., font size, color)  
+- _mainPresenter_: a `SpPresenter` — the internal child presenter to which style is applied  
+- _appliedStyleName_: a `String` — name of the currently applied style in the application’s style sheet  
+- _name_: a `String` — optional logical name of the presenter
 
 "
 Class {
@@ -85,22 +95,21 @@ BasePresenter >> fontSize: aNumber [
 
 { #category : 'style' }
 BasePresenter >> generateAndApplyStyle [
-
+"Removes the previously applied generated style (if any) from the application’s stylesheet.
+Creates a new style based on styleProperties using StyleManager, stores its name, and applies it to the mainPresenter."
 	| allStyles |
 	appliedStyleName ifNotNil: [
 			mainPresenter removeStyle: appliedStyleName.
 			allStyles := self application configuration styleSheet styles.
 			allStyles := allStyles reject: [ :each |
-				          (each isKindOf: SpClassStyle) and: [
-					          each name = appliedStyleName ] ].
+				             (each isKindOf: SpClassStyle) and: [
+					             each name = appliedStyleName ] ].
 			self application configuration styleSheet styles: allStyles ].
 
 	appliedStyleName := StyleManager
 		                    installGeneratedStyleFrom: self styleProperties
 		                    in: self application.
 	mainPresenter addStyle: appliedStyleName
-	
-
 ]
 
 { #category : 'style' }
@@ -133,20 +142,24 @@ BasePresenter >> italic [
 
 { #category : 'accessing' }
 BasePresenter >> mainPresenter [
-	"Повертає головний внутрішній демонстратор, якщо є.
-    За замовчуванням повертаємо self. Класи-нащадки можуть перевизначити."
+	"Returns the mainPresenter, or self if not explicitly set.
+Subclasses typically override this or assign it in #initializePresenters."
 
-	^ mainPresenter 
+	^ mainPresenter
 ]
 
 { #category : 'accessing' }
 BasePresenter >> mainPresenter: aPresenter [
-mainPresenter := aPresenter 
+"Sets the internal mainPresenter to the given presenter.
+This presenter will receive all styling and be displayed in the default layout.
+Used in subclasses to assign the primary visual component (e.g., a label or input field)."
+	mainPresenter := aPresenter
 ]
 
 { #category : 'style' }
 BasePresenter >> setGeneratedStyleProperty: key value: val [
-
+"Returns the style dictionary used for generating styles.
+If it hasn't been created yet, initializes it as a new Dictionary."
 	self styleProperties at: key put: val
 ]
 

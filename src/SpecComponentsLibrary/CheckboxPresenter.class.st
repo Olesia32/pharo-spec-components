@@ -1,7 +1,24 @@
 "
-Простий презентер для одного чекбокса.
+I am a styled wrapper for a single `SpCheckBoxPresenter`.  
+I support styling through `BasePresenter` and can be used independently or inside a group (`CheckboxGroupPresenter`).  
+My internal checkbox presenter can be accessed via `mainPresenter`.
 
-Використовується самостійно або в складі форм і груп (CheckboxGroupPresenter). Підтримує візуальну стилізацію.
+### Hierarchy
+
+`SpAbstractPresenter`  
+  `SpPresenter`  
+    `BasePresenter`  
+      `CheckboxPresenter` (this is me)
+
+### Usage
+
+Use me for simple yes/no choices or as part of larger forms:
+
+```smalltalk
+c := CheckboxPresenter new;
+mainPresenter label: 'Subscribe to newsletter';
+bold; fontSize: 12.
+
 
 "
 Class {

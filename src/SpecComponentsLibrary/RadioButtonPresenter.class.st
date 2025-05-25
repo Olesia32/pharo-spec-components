@@ -1,7 +1,14 @@
 "
-Презентер для однієї радіокнопки.
+I am a styled wrapper around `SpRadioButtonPresenter`.  
+I am used inside a `RadioGroupPresenter` to display and manage mutually exclusive options.  
+All visual properties (color, font, size) can be controlled through `BasePresenter`.
 
-Використовується в складі групового компонента RadioGroupPresenter. Може бути стилізованим та інтегрованим у форми.
+### Hierarchy
+
+`SpAbstractPresenter`  
+  `SpPresenter` 
+    `BasePresenter`  
+      `RadioButtonPresenter` (this is me)
 
 "
 Class {

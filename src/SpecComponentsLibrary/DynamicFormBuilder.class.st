@@ -1,10 +1,61 @@
 "
-Компонент для динамічного створення форм.
+I am a high-level presenter for building dynamic forms in Spec.  
+I support automatic construction of labeled input fields using a wide variety of built-in presenters including:
+`TextInputPresenter`, `CheckboxPresenter`, `CheckboxGroupPresenter`, `RadioGroupPresenter`, `SpDatePresenter`, `TimePickerPresenter`, `SpDropListPresenter`, `ComboBoxPresenter`, and `MultiSelectComboBoxPresenter`.
 
-Підтримує побудову TextInputPresenter, CheckBoxPresenter, CheckBoxGroupPresenter, RadioGroupPresenter, SpDatePresenter, TimePickerPresenter, SpDropList, ComboBoxPresenter, MultiSelectComboBoxPresenter.
-Має заголовок та кнопки 'Продовжити/Скасувати', які можна приховати.
-Підтримує стилізацію через клас FormStyle.
-Має метод для збір значень всіх полів у словник.
+I also support:
+- Form-wide styling via `FormStyle`
+- Submit/Back buttons (which can be shown or hidden)
+- Optional header with custom styling
+- Collection of all field values as a dictionary
+- Input validation and button-driven event callbacks
+
+### Instance Variables
+
+- _fields_: an `Array` or `Collection` — optional list of presenter specifications for auto-creation  
+- _fieldLabels_: a `Dictionary` — maps field keys to label texts  
+- _fieldPresenters_: an `OrderedCollection` — contains key–presenter pairs  
+- _formData_: a `Dictionary` — stores collected values from the form  
+- _customTopPresenter_: a `SpPresenter` — optional presenter displayed above the form  
+- _submitButton_, _backButton_: `ButtonPresenter`s — buttons shown at the bottom for submission and navigation  
+- _headerLabel_: a `LabelPresenter` — optional header text displayed at the top  
+- _onSubmitAction_, _onBackAction_: `BlockClosure`s — callbacks for button events  
+- _formStyle_: a `FormStyle` — optional object controlling visual appearance of fields  
+- _isHideHeader_, _isHideButtons_: `Boolean`s — control visibility of header and buttons  
+- _height_: `Integer — optional size constraint for the form area
+
+### Public API
+
+- `DynamicFormBuilder>>#textField:label:placeholder:rules:` — adds a text input with validation
+- `DynamicFormBuilder>>#checkbox:label:text:` — adds a single checkbox
+- `DynamicFormBuilder>>#checkboxGroup:label:items:columns:frame:` — adds a checkbox group with layout options
+- `DynamicFormBuilder>>#radioGroup:label:items:columns:frame:` — adds a radio button group
+- `DynamicFormBuilder>>#dropList:label:items:` — adds a drop-down list
+- `DynamicFormBuilder>>#comboBox:label:items:` — adds a filterable combobox
+- `DynamicFormBuilder>>#multiComboBox:label:items:` — adds a multi-selection combobox
+- `DynamicFormBuilder>>#datePicker:label:` — adds a date picker
+- `DynamicFormBuilder>>#timePicker:label:` — adds a time picker
+- `DynamicFormBuilder>>#style:` — applies a `FormStyle` to all components
+- `DynamicFormBuilder>>#collectValues` — collects and returns a dictionary of all current field values
+- `DynamicFormBuilder>>#validateFields` — validates fields and returns `true` or `false`
+- `DynamicFormBuilder>>#onSubmit:` / `DynamicFormBuilder>>#onBack:` — sets callbacks for submit and back buttons
+- `DynamicFormBuilder>>#showHeader`, `DynamicFormBuilder>>#hideHeader`, `DynamicFormBuilder>>#showButtons`, `DynamicFormBuilder>>#hideButtons` — toggles UI elements
+- `DynamicFormBuilder>>#header:` — sets the form title
+- `DynamicFormBuilder>>#submitButtonLabel:` / `DynamicFormBuilder>>#backButtonLabel:` — sets button text
+- `DynamicFormBuilder>>#topPresenter:` — sets a custom presenter above the form
+
+### Usage
+
+To create a form programmatically:
+
+```smalltalk
+| form |
+form := DynamicFormBuilder new.
+form textField: #name label: 'Your Name' placeholder: 'Enter full name' rules: { ValidationRules nonEmpty }.
+form checkbox: #terms label: 'Terms' text: 'I agree to the terms'.
+form onSubmit: [ Transcript show: form collectValues printString ].
+form open.
+
 
 "
 Class {
@@ -24,7 +75,6 @@ Class {
 		'formStyle',
 		'isHideHeader',
 		'isHideButtons',
-		'width',
 		'height'
 	],
 	#category : 'SpecComponentsLibrary-AdvancedComponents',
@@ -34,7 +84,7 @@ Class {
 
 { #category : 'as yet unclassified' }
 DynamicFormBuilder >> applyButtonStyle: arg1 [
-
+"Applies style properties (font, size, background, bold, italic) from the current FormStyle to a ButtonPresenter."
 	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 tmp9 |
 	(arg1 isKindOf: ButtonPresenter) ifFalse: [ ^ self ].
 	tmp3 := tmp1 := formStyle labelFontSize.
@@ -55,7 +105,7 @@ DynamicFormBuilder >> applyButtonStyle: arg1 [
 
 { #category : 'style' }
 DynamicFormBuilder >> applyInputStyleTo: arg1 [
-
+"Applies style properties (font, background, border, size) to a TextInputPresenter, using values from FormStyle."
 	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 |
 	(arg1 isKindOf: TextInputPresenter) ifFalse: [ ^ self ].
 	tmp3 := tmp1 := formStyle inputFontSize.
@@ -74,7 +124,7 @@ DynamicFormBuilder >> applyInputStyleTo: arg1 [
 
 { #category : 'style' }
 DynamicFormBuilder >> applyLabelStyle: arg1 [
-
+"Applies label styling (font size, bold, italic, color) to a LabelPresenter using values from FormStyle."
 	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 |
 	(arg1 isKindOf: LabelPresenter) ifFalse: [ ^ self ].
 	tmp3 := tmp1 := formStyle labelFontSize.
@@ -91,7 +141,8 @@ DynamicFormBuilder >> applyLabelStyle: arg1 [
 
 { #category : 'style' }
 DynamicFormBuilder >> applyStyleToAllPresenters [
-
+"Iterates through all presenters in the form and applies the appropriate style (label, input, or button) depending on the type.
+Also applies header styling if present."
 	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 |
 	formStyle ifNil: [ ^ self ].
 	formStyle.
@@ -120,13 +171,14 @@ DynamicFormBuilder >> applyStyleToAllPresenters [
 
 { #category : 'accessing' }
 DynamicFormBuilder >> backButtonLabel: arg1 [
-
+"Sets the label text for the back button."
 	backButton label: arg1
 ]
 
 { #category : 'creation' }
 DynamicFormBuilder >> checkbox: arg1 label: arg2 text: arg3 [
-
+"Adds a CheckboxPresenter with a given label and inline text.
+Stores it in fieldPresenters under the provided key."
 	| tmp1 |
 	tmp1 := CheckboxPresenter new.
 	tmp1 mainPresenter label: arg3.
@@ -136,7 +188,8 @@ DynamicFormBuilder >> checkbox: arg1 label: arg2 text: arg3 [
 
 { #category : 'creation' }
 DynamicFormBuilder >> checkboxGroup: aKey label: aLabel items: itemsList columns: columnCount frame: aBoolean [
-
+"Adds a CheckboxGroupPresenter with provided items and layout settings.
+Optional frame and label are applied."
 	| presenter |
 	presenter := CheckboxGroupPresenter new.
 	presenter
@@ -150,7 +203,8 @@ DynamicFormBuilder >> checkboxGroup: aKey label: aLabel items: itemsList columns
 
 { #category : 'accessing' }
 DynamicFormBuilder >> collectValues [
-
+"Collects the current values of all form fields into a dictionary.
+Supports multiple presenter types by using presenter-specific accessors (e.g., text, selectedItem, selectedItems, date, hour/minute, etc.)."
 	| tmp1 |
 	tmp1 := Dictionary new.
 	fieldPresenters do: [ :arg1 |
@@ -196,7 +250,7 @@ DynamicFormBuilder >> collectValues [
 
 { #category : 'creation' }
 DynamicFormBuilder >> comboBox: arg1 label: arg2 items: arg3 [
-
+"Adds a ComboBoxPresenter initialized with the given item list and label."
 	| tmp1 |
 	tmp1 := ComboBoxPresenter new.
 	tmp1 items: arg3.
@@ -206,20 +260,18 @@ DynamicFormBuilder >> comboBox: arg1 label: arg2 items: arg3 [
 
 { #category : 'initialization' }
 DynamicFormBuilder >> connectPresenters [
-
+"Connects the click events of the back and submit buttons to the defined callbacks.
+Triggers validation and value collection before submission."
 	submitButton onClick: [
 			((onSubmitAction isNil or: [ self validateFields not ]) or: [
 				 self collectValues isNil ]) ifFalse: [
 				onSubmitAction value: self collectValues ] ].
-	backButton onClick: [
-	onBackAction ifNotNil: [ onBackAction value ].
-]
-
+	backButton onClick: [ onBackAction ifNotNil: [ onBackAction value ] ]
 ]
 
 { #category : 'creation' }
 DynamicFormBuilder >> datePicker: aKey label: aLabel [
-
+"Adds a SpDatePresenter to the form under the specified key and label."
 	| presenter |
 	presenter := SpDatePresenter new.
 	fieldPresenters add: aKey -> presenter.
@@ -272,36 +324,36 @@ DynamicFormBuilder >> defaultLayout [
 
 { #category : 'creation' }
 DynamicFormBuilder >> dropList: aKey label: aLabel items: itemsList [
-
+"Adds a SpDropListPresenter to the form with the given label and items."
 	| presenter |
 	presenter := SpDropListPresenter new.
-	presenter
-		items: itemsList.
+	presenter items: itemsList.
 	fieldPresenters add: aKey -> presenter.
 	fieldLabels at: aKey put: aLabel
 ]
 
 { #category : 'accessing' }
 DynamicFormBuilder >> header: arg1 [
-
+"Sets the text for the form header label."
 	headerLabel text: arg1
 ]
 
 { #category : 'accessing' }
 DynamicFormBuilder >> height: aHeight [
-   height := aHeight 
+"Sets the total height constraint of the form content area."
+	height := aHeight
 ]
 
 { #category : 'accessing' }
 DynamicFormBuilder >> hideButtons [
-
+"Hides the submit/back buttons and refreshes the layout."
 	isHideButtons := true.
 	self defaultLayout
 ]
 
 { #category : 'accessing' }
 DynamicFormBuilder >> hideHeader [
-
+"Hides the header label and refreshes the layout."
 	isHideHeader := true.
 	self defaultLayout
 ]
@@ -330,35 +382,37 @@ DynamicFormBuilder >> initializePresenters [
 
 { #category : 'creation' }
 DynamicFormBuilder >> multiComboBox: aKey label: aLabel items: itemsList [
-
+"Adds a MultiSelectComboBoxPresenter with the specified label and items."
 	| presenter |
 	presenter := MultiSelectComboBoxPresenter new.
-	presenter
-		items: itemsList.
+	presenter items: itemsList.
 	fieldPresenters add: aKey -> presenter.
 	fieldLabels at: aKey put: aLabel
 ]
 
 { #category : 'events' }
 DynamicFormBuilder >> onBack: arg1 [
-
+"Sets the callback to execute when the back button is clicked."
 	onBackAction := arg1
 ]
 
 { #category : 'events' }
 DynamicFormBuilder >> onSubmit: arg1 [
-
+"Sets the callback to execute when the submit button is clicked."
 	onSubmitAction := arg1
 ]
 
 { #category : 'accessing' }
 DynamicFormBuilder >> presenterAt: aKey [
-	^ (fieldPresenters detect: [ :assoc | assoc key = aKey ] ifNone: [ nil ]) ifNotNil: [ :assoc | assoc value ]
+"Returns the presenter associated with the given field key (or nil if not found)."
+	^ (fieldPresenters
+		   detect: [ :assoc | assoc key = aKey ]
+		   ifNone: [ nil ]) ifNotNil: [ :assoc | assoc value ]
 ]
 
 { #category : 'creation' }
 DynamicFormBuilder >> radioGroup: aKey label: aLabel items: itemsList columns: columnCount frame: aBoolean [
-
+"Adds a RadioGroupPresenter with provided items, optional frame, and multi-column layout."
 	| presenter |
 	presenter := RadioGroupPresenter new.
 	presenter
@@ -372,21 +426,22 @@ DynamicFormBuilder >> radioGroup: aKey label: aLabel items: itemsList columns: c
 
 { #category : 'accessing' }
 DynamicFormBuilder >> showButtons [
-
+"Shows the submit/back buttons and refreshes the layout."
 	isHideButtons := false.
 	self defaultLayout
 ]
 
 { #category : 'accessing' }
 DynamicFormBuilder >> showHeader [
-
+"Shows the header label and refreshes the layout."
 	isHideHeader := false.
 	self defaultLayout
 ]
 
 { #category : 'accessing' }
 DynamicFormBuilder >> style: arg1 [
-
+"Assigns a FormStyle to the form.
+Immediately applies the style to all presenters if they already exist."
 	formStyle := arg1.
 	(fieldPresenters notNil and: [ fieldPresenters notEmpty ]) ifTrue: [
 		self applyStyleToAllPresenters ]
@@ -394,13 +449,14 @@ DynamicFormBuilder >> style: arg1 [
 
 { #category : 'accessing' }
 DynamicFormBuilder >> submitButtonLabel: arg1 [
-
+"Sets the label text for the submit button."
 	submitButton label: arg1
 ]
 
 { #category : 'creation' }
 DynamicFormBuilder >> textField: arg1 label: arg2 placeholder: arg3 rules: arg4 [
-
+"Adds a TextInputPresenter with optional placeholder and validation rules.
+Adds it to the form under the given key."
 	| tmp1 |
 	tmp1 := TextInputPresenter new.
 	tmp1 placeholder: arg3.
@@ -414,7 +470,7 @@ DynamicFormBuilder >> textField: arg1 label: arg2 placeholder: arg3 rules: arg4 
 
 { #category : 'creation' }
 DynamicFormBuilder >> timePicker: aKey label: aLabel [
-
+"Adds a TimePickerPresenter to the form with the specified label."
 	| presenter |
 	presenter := TimePickerPresenter new.
 	fieldPresenters add: aKey -> presenter.
@@ -423,13 +479,14 @@ DynamicFormBuilder >> timePicker: aKey label: aLabel [
 
 { #category : 'accessing' }
 DynamicFormBuilder >> topPresenter: arg1 [
-
+"Adds a custom presenter to be shown above the form (e.g., icon, instruction, image, etc.)."
 	customTopPresenter := arg1
 ]
 
 { #category : 'validation' }
 DynamicFormBuilder >> validateFields [
-
+"Validates all fields in the form.
+Checks TextInputPresenter for validation status and ComboBoxPresenter for empty selection."
 	fieldPresenters do: [ :arg1 |
 			| tmp1 |
 			tmp1 := arg1 value.
@@ -443,12 +500,6 @@ DynamicFormBuilder >> validateFields [
 
 { #category : 'accessing' }
 DynamicFormBuilder >> values [
-
+"Returns the previously collected values (if collectValues was called) from formData."
 	^ formData
-]
-
-{ #category : 'accessing' }
-DynamicFormBuilder >> width: arg1 [
-
-	width := arg1
 ]

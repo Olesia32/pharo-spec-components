@@ -1,6 +1,26 @@
 "
-Обгортка над стандартним SpButtonPresenter.
-Підтримує візуальну стилізацію.
+I am a styled wrapper around `SpButtonPresenter`.  
+I provide button functionality and expose a consistent interface for label setting, click handling, and visual customization.  
+Style properties such as font size, color, width, and background can be applied through the inherited `BasePresenter`.
+
+### Hierarchy
+
+`SpAbstractPresenter`  
+  `SpPresenter` 
+    `BasePresenter`  
+      `ButtonPresenter` (this is me)
+
+### Usage
+
+This presenter is typically used in dynamic forms, toolbars, or dialogs where a standard button with custom appearance is needed:
+
+```smalltalk
+|b|
+b := ButtonPresenter new
+label: 'Save';
+onClick: [ self saveData ];
+fontSize: 14; bold; backgroundColor: '#green'.
+
 "
 Class {
 	#name : 'ButtonPresenter',

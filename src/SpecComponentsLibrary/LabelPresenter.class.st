@@ -1,6 +1,21 @@
 "
-Обгортка над стандартним SpLabelPresenter.
-Підтримує візуальну стилізацію.
+I am a styled wrapper around `SpLabelPresenter`.  
+I provide label rendering with support for font size, color, alignment, and weight customization through style properties.  
+My label text is accessible via #text and #text:.
+
+### Hierarchy
+
+`SpAbstractPresenter`  
+  `SpPresenter`  
+    `BasePresenter`  
+      `LabelPresenter` (this is me)
+
+### Usage
+
+```smalltalk
+l := LabelPresenter new
+text: 'Enter your name';
+fontSize: 16; italic; color: Color gray.
 "
 Class {
 	#name : 'LabelPresenter',

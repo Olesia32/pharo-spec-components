@@ -1,9 +1,46 @@
 "
-Компонент для вибору часу у вигляді круглого годинника з підтримкою AM/PM.
+I am a full-screen time selection dialog displayed as a circular clock interface.  
+I allow selecting hours and minutes by clicking on visual elements, and support both 12-hour and 24-hour formats with AM/PM toggles.  
+I am built using Roassal for visual rendering and include confirmation/cancel buttons for integration in modal workflows.  
+I am primarily used as the view component inside `TimePickerPresenter`.
 
-Використовує Roassal для візуального відображення годин і хвилин. 
-Має повноекранне представлення з кнопками підтвердження/скасування.
-Використовується у діалоговому вікні TimePickerPresenter
+### Instance Variables
+
+- _roassalPresenre_: a `Roassal2Presenter` — Roassal visualization presenter that holds the clock diagram  
+- _canvas_: a `RSCanvas` — the Roassal drawing canvas used for shapes  
+- _center_: a `Point` — center of the circular clock  
+- _radius_: an `Integer` — visual radius of the clock face  
+- _selectedHour_: an `Integer` — currently selected hour (0–23)  
+- _selectedMinute_: an `Integer` — currently selected minute (0–59)  
+- _startHour_: an `Integer` — used to switch between AM (0) and PM (12)  
+- _mainColor_: a `Color` — accent color used for highlighting  
+- _additionColor_: a `Color` — secondary color used for selection highlights  
+- _hourCircles_: a `Dictionary` — map of indexes to clickable hour or minute markers  
+- _selectionDot_: a `RSEllipse` — small dot indicating current selection  
+- _selectionLine_: a `RSLine` — line from center to current hour/minute  
+- _backgroundCircle_: a `RSEllipse` — background clock circle  
+- _hourLabel_, _minutesLabel_: `ButtonPresenter`s — toggles between hour and minute selection  
+- _isHourMode_: a `Boolean` — whether currently selecting hour (`true`) or minute (`false`)  
+- _isPm_: a `Boolean` — whether the selected time is PM  
+- _amButton_, _pmButton_: `ButtonPresenter`s — toggles for AM and PM modes  
+- _okButton_, _cancelButton_: `ButtonPresenter`s — confirmation and cancellation actions  
+- _onOkAction_, _onCancelAction_: `BlockClosure`s — callbacks for OK or Cancel actions  
+- _onChanged_: a `BlockClosure` — optional callback invoked on time changes
+
+### Public API
+
+- `TimePickerDialogPresenter>>#selectedHour`, `>>#selectedHour:` — gets or sets the selected hour  
+- `TimePickerDialogPresenter>>#selectedMinute`, `>>#selectedMinute:` — gets or sets the selected minute  
+- `TimePickerDialogPresenter>>#isHourMode:` — switches between hour/minute selection  
+- `TimePickerDialogPresenter>>#isPm:` — sets PM state (and adjusts visual)  
+- `TimePickerDialogPresenter>>#mainColor:`, `>>#additionColor:` — customize color scheme  
+- `TimePickerDialogPresenter>>#onOk:`, `TimePickerDialogPresenter>>#onCancel:`, `TimePickerDialogPresenter>>#onChanged:` — sets external callbacks
+
+### Usage
+
+This component is typically used inside a `TimePickerPresenter`.  
+It is presented modally and controlled through dialog lifecycle.
+
 
 "
 Class {
@@ -43,7 +80,7 @@ Class {
 
 { #category : 'private' }
 TimePickerDialogPresenter >> addSelectionMarker [
-
+"Adds a dot and a line to visually mark the currently selected hour or minute on the clock."
 	| tmp1 tmp2 |
 	tmp1 := RSEllipse new.
 	tmp1 radius: 5.
@@ -57,37 +94,43 @@ TimePickerDialogPresenter >> addSelectionMarker [
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> additionColor: aColor [
-   additionColor := aColor 
+"Sets the secondary (accent) color used for button highlights and AM/PM selection."
+	additionColor := aColor
 ]
 
 { #category : 'building' }
-TimePickerDialogPresenter >> buildClockFace [ 
+TimePickerDialogPresenter >> buildClockFace [
+"Draws the static 12-hour layout with circular hour markers and labels positioned around the center."
 	| pointFor |
 	pointFor := [ :c :r :angle |
-		| rad |
-		rad := angle degreesToRadians.
-		c + (r * rad cos @ (r * rad sin)) ].
+		            | rad |
+		            rad := angle degreesToRadians.
+		            c + (r * rad cos @ (r * rad sin)) ].
 
 	1 to: 12 do: [ :i |
-		| angle pos circle label |
-		angle := i * 30 - 90.
-		pos := pointFor value: center value: radius - 20 value: angle.
-		circle := RSEllipse new radius: 20; color: Color veryLightGray.
-		circle translateTo: pos.
-		canvas add: circle.
-		hourCircles at: i put: circle.
-		label := RSLabel new.
-		label fontSize: 12; translateTo: pos.
-		canvas add: label ]
+			| angle pos circle label |
+			angle := i * 30 - 90.
+			pos := pointFor value: center value: radius - 20 value: angle.
+			circle := RSEllipse new
+				          radius: 20;
+				          color: Color veryLightGray.
+			circle translateTo: pos.
+			canvas add: circle.
+			hourCircles at: i put: circle.
+			label := RSLabel new.
+			label
+				fontSize: 12;
+				translateTo: pos.
+			canvas add: label ]
 ]
 
 { #category : 'initialization' }
 TimePickerDialogPresenter >> connectPresenters [
-
+"Attaches click events to toggle between hour/minute mode and switch AM/PM state."
 	hourLabel onClick: [ self isHourMode: true ].
 	minutesLabel onClick: [ self isHourMode: false ].
 	amButton onClick: [ self switchToAm ].
-	pmButton onClick: [ self switchToPm ].
+	pmButton onClick: [ self switchToPm ]
 ]
 
 { #category : 'layout' }
@@ -122,7 +165,7 @@ TimePickerDialogPresenter >> defaultLayout [
 
 { #category : 'private' }
 TimePickerDialogPresenter >> drawBackgroundCircle [
-
+"Creates and displays the outer background circle for the clock face."
 	| tmp1 |
 	tmp1 := RSEllipse new.
 	tmp1 radius: radius.
@@ -133,7 +176,8 @@ TimePickerDialogPresenter >> drawBackgroundCircle [
 
 { #category : 'initialization' }
 TimePickerDialogPresenter >> initializeDialogWindow: arg1 [
-
+"Initializes the modal dialog with title, layout, and OK/Cancel buttons.
+Triggers callbacks on user actions."
 	arg1
 		title: 'Оберіть час';
 		initialExtent: 300 @ 350;
@@ -201,58 +245,62 @@ TimePickerDialogPresenter >> initializeWindow: arg1 [
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> isHourMode: aBool [
-
+"Switches between hour and minute selection modes.
+Updates UI and redrawing accordingly."
 	isHourMode := aBool.
 	self updateSelectionHighlight.
 	self updateClockLabels.
-	self updateSelectionMarker 
+	self updateSelectionMarker
 ]
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> isPm: aBool [
-
+"Sets whether the selected time is PM.
+Redraws selection and adjusts labels accordingly."
 	isPm := aBool.
 	(roassalPresenre canvas shapes includes: selectionLine) ifTrue: [
 		canvas removeShape: selectionLine ].
 	selectionLine := nil.
-	self updateClockLabels.
+	self updateClockLabels
 ]
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> mainColor: aColor [
-
+"Sets the primary color used for selection highlights.
+Updates the selection marker and AM/PM button visuals."
 	mainColor := aColor.
 	selectionDot ifNotNil: [ selectionDot color: aColor ].
 	self updateSelectionMarker.
-	self updateAmPmButtons.
+	self updateAmPmButtons
 ]
 
 { #category : 'events' }
 TimePickerDialogPresenter >> onCancel: arg1 [
-
+"Sets the callback to be executed when the dialog is canceled."
 	onCancelAction := arg1
 ]
 
 { #category : 'events' }
 TimePickerDialogPresenter >> onChanged: aBlook [
-onChanged := aBlook 
+"Sets a callback block to be triggered when the time is updated by the user."
+	onChanged := aBlook
 ]
 
 { #category : 'events' }
 TimePickerDialogPresenter >> onOk: arg1 [
-
+"Sets the callback to be executed when the user confirms their selection."
 	onOkAction := arg1
 ]
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> selectedHour [
-
+"Returns the currently selected hour value."
 	^ selectedHour
 ]
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> selectedHour: arg1 [
-
+"Updates the selected hour, adjusts label, switches AM/PM if needed, and updates the marker."
 	selectedHour := (arg1 max: 0) min: 23.
 	hourLabel label: (arg1 < 10
 			 ifTrue: [ '0' , arg1 asString ]
@@ -263,13 +311,13 @@ TimePickerDialogPresenter >> selectedHour: arg1 [
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> selectedMinute [
-
+"Returns the currently selected minute value."
 	^ selectedMinute
 ]
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> selectedMinute: arg1 [
-
+"Updates the selected minute, adjusts label, and updates the marker."
 	selectedMinute := (arg1 max: 0) min: 59.
 	minutesLabel label: (arg1 < 10
 			 ifTrue: [ '0' , arg1 asString ]
@@ -279,7 +327,7 @@ TimePickerDialogPresenter >> selectedMinute: arg1 [
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> switchToAm [
-
+"Switches the internal clock mode to AM (0–11) and updates visuals."
 	startHour := 0.
 	self isPm: false.
 	self updateAmPmButtons
@@ -287,7 +335,7 @@ TimePickerDialogPresenter >> switchToAm [
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> switchToPm [
-
+"Switches the internal clock mode to PM (12–23) and updates visuals."
 	startHour := 12.
 	self isPm: true.
 	self updateAmPmButtons
@@ -295,7 +343,7 @@ TimePickerDialogPresenter >> switchToPm [
 
 { #category : 'updating' }
 TimePickerDialogPresenter >> updateAmPmButtons [
-
+"Visually indicates which AM/PM button is active using background color."
 	amButton backgroundColor: (isPm
 			 ifTrue: [ '#veryLightGray' ]
 			 ifFalse: [ additionColor ]).
@@ -306,27 +354,26 @@ TimePickerDialogPresenter >> updateAmPmButtons [
 
 { #category : 'updating' }
 TimePickerDialogPresenter >> updateClockLabels [
-
+"Redraws all hour or minute labels and markers depending on current mode.
+Removes previous elements from the canvas and adds new clickable shapes."
 	| pointFor windowMorph bounds |
 	pointFor := [ :c :r :angle |
 		            | rad |
 		            rad := angle degreesToRadians.
 		            c + (r * rad cos @ (r * rad sin)) ].
 
-	"Очистити старі кола та підписи"
 	(canvas shapes select: [ :s |
-	(s isKindOf: RSLabel) or: [ 
-		(s isKindOf: RSLine) or: [ 
-			((s isKindOf: RSEllipse) and: [ s ~~ selectionDot and: [ s ~~ backgroundCircle ] ])
-		]
-	]
-]) do: [ :shape | canvas removeShape: shape ].
+			 (s isKindOf: RSLabel) or: [
+					 (s isKindOf: RSLine) or: [
+							 (s isKindOf: RSEllipse) and: [
+								 s ~~ selectionDot and: [ s ~~ backgroundCircle ] ] ] ] ])
+		do: [ :shape | canvas removeShape: shape ].
 
 
 	hourCircles := Dictionary new.
 
 	isHourMode
-		ifTrue: [ "=== ГОДИННИЙ РЕЖИМ ==="
+		ifTrue: [ "=== HOURS MODE ==="
 				1 to: 12 do: [ :i |
 						| value angle pos circle label |
 						value := i = 12
@@ -347,12 +394,12 @@ TimePickerDialogPresenter >> updateClockLabels [
 							         fontSize: 12;
 							         translateTo: pos.
 						canvas add: label.
-                  
+
 						circle
 							when: RSMouseClick
 							do: [ self selectedHour: value ]
 							for: self ] ]
-		ifFalse: [ "=== ХВИЛИННИЙ РЕЖИМ ==="
+		ifFalse: [ "=== MINUTES MODE ==="
 				0 to: 59 do: [ :i |
 						| angle startPos endPos lineColor tickLength label pos invisibleHitbox |
 						angle := i * 6 - 90.
@@ -385,17 +432,17 @@ TimePickerDialogPresenter >> updateClockLabels [
 									         translateTo: pos.
 								canvas add: label ].
 
-						"Додати невидимий клікабельний об'єкт"
 						invisibleHitbox := RSEllipse new
 							                   radius: 5;
-							                   color: Color transparent .
+							                   color: Color transparent.
 						invisibleHitbox translateTo: startPos.
 						canvas add: invisibleHitbox.
 						hourCircles at: i put: invisibleHitbox.
-						invisibleHitbox when: RSMouseClick do: [
-							isHourMode ifFalse: [ self selectedMinute: i ] ] for: self.] ].
+						invisibleHitbox
+							when: RSMouseClick
+							do: [ isHourMode ifFalse: [ self selectedMinute: i ] ]
+							for: self ] ].
 
-	"Примусове оновлення вікна"
 	windowMorph := self owner ifNotNil: [ :o | o adapter widget ].
 	windowMorph ifNotNil: [
 			bounds := windowMorph bounds.
@@ -405,7 +452,7 @@ TimePickerDialogPresenter >> updateClockLabels [
 
 { #category : 'updating' }
 TimePickerDialogPresenter >> updateSelectionHighlight [
-
+"Highlights the currently active mode (hour or minute) and enables/disables AM/PM controls accordingly."
 	hourLabel backgroundColor: (isHourMode
 			 ifTrue: [ additionColor ]
 			 ifFalse: [ '#veryLightGray' ]).
@@ -423,7 +470,8 @@ TimePickerDialogPresenter >> updateSelectionHighlight [
 
 { #category : 'updating' }
 TimePickerDialogPresenter >> updateSelectionMarker [
-
+"Draws or updates the pointer line and dot from center to the selected value on the clock.
+Also updates visual highlighting of the selected circle."
 	| computeTarget endPoint windowMorph bounds |
 	selectedHour ifNil: [ ^ self ].
 
