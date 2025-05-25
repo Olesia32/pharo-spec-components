@@ -1,7 +1,44 @@
 "
-Презентер, що відображає групу чекбоксів у сітці.
+I am a presenter that displays a group of checkboxes arranged in a configurable layout.  
+I support multiple selection, scrollable layout, column-based arrangement, and optional visual decorations such as a frame and title.  
+Each checkbox represents an item from the list. Users can select or deselect multiple items, and selection changes are reported via an event.
 
-Підтримує багаторазовий вибір, прокручування, кількість колонок та зовнішнє оформлення (рамка, заголовок).
+### Hierarchy
+
+`SpAbstractPresenter`  
+  `SpPresenter` 
+    `AbstractSelectableGroupPresenter`  
+      `CheckboxGroupPresenter` (this is me)
+
+### Instance Variables
+
+- _selectedIndexes_: a `Set` — stores the indexes of selected checkboxes
+- _whenSelectionChangedDo_: a `BlockClosure` — optional callback executed when the selection changes
+
+### Public API
+
+- `CheckboxGroupPresenter>>#selectedIndexes` — returns the list of selected indexes in sorted order
+- `CheckboxGroupPresenter>>#selectedItems` — returns the corresponding items for selected indexes
+- `CheckboxGroupPresenter>>#clearSelection` — deselects all checkboxes
+- `CheckboxGroupPresenter>>#isCheckedAt:` — returns whether the checkbox at the given index is selected
+
+### Events
+
+- `CheckboxGroupPresenter>>#whenSelectionChangedDo:` — sets a callback block for selection change
+
+### Usage
+
+To use this component, provide it with a list of items and optionally configure its layout:
+
+```smalltalk
+| group |
+group := CheckboxGroupPresenter new.
+group items: #( 'Red' 'Green' 'Blue' 'Yellow' ).
+group сolumnCount: 2.
+group showFrame: true.
+group whenSelectionChangedDo: [ :selected | Transcript show: selected printString; cr ].
+group open.
+
 
 "
 Class {
@@ -17,25 +54,24 @@ Class {
 }
 
 { #category : 'building' }
-CheckboxGroupPresenter >> buildButton [ 
-    ^ CheckboxPresenter new
-]
-
-{ #category : 'announcements' }
-CheckboxGroupPresenter >> checkedItems [ 
-    ^ selectedIndexes collect: [ :i | items at: i ifAbsent: nil ]
+CheckboxGroupPresenter >> buildButton [
+"Creates and returns a new CheckboxPresenter for representing an item in the group."
+	^ CheckboxPresenter new
 ]
 
 { #category : 'resolution' }
-CheckboxGroupPresenter >> clearSelection [ 
-    selectedIndexes := Set new.
-    buttons do: [ :btn | btn mainPresenter state: false ].
+CheckboxGroupPresenter >> clearSelection [
+"Deselects all checkboxes and clears the selectedIndexes set."
+	selectedIndexes := Set new.
+	buttons do: [ :btn | btn mainPresenter state: false ]
 ]
 
 { #category : 'initialization' }
-CheckboxGroupPresenter >> connectPresenters [ 
-    buttons withIndexDo: [ :btn :ind |
-        btn mainPresenter whenChangedDo: [ self toggleSelectionAt: ind ] ]
+CheckboxGroupPresenter >> connectPresenters [
+"Connects each checkbox’s whenChangedDo: event to internal toggle logic.
+Triggered whenever a checkbox is checked or unchecked."
+	buttons withIndexDo: [ :btn :ind |
+		btn mainPresenter whenChangedDo: [ self toggleSelectionAt: ind ] ]
 ]
 
 { #category : 'initialization' }
@@ -45,36 +81,41 @@ CheckboxGroupPresenter >> initialize [
 ]
 
 { #category : 'accessing' }
-CheckboxGroupPresenter >> isCheckedAt: anIndex [ 
-    ^ selectedIndexes includes: anIndex
+CheckboxGroupPresenter >> isCheckedAt: anIndex [
+"Returns true if the checkbox at the given index is selected."
+	^ selectedIndexes includes: anIndex
 ]
 
 { #category : 'accessing' }
-CheckboxGroupPresenter >> selectedIndexes [ 
-    ^ selectedIndexes asSortedCollection
+CheckboxGroupPresenter >> selectedIndexes [
+"Returns a sorted collection of the indexes corresponding to selected checkboxes."
+	^ selectedIndexes asSortedCollection
 ]
 
 { #category : 'accessing' }
 CheckboxGroupPresenter >> selectedItems [
-
-	^ selectedIndexes collect:
-		  [ :i | items at: i ifAbsent: nil ] 
+"Returns the actual data items corresponding to selectedIndexes."
+	^ selectedIndexes collect: [ :i | items at: i ifAbsent: nil ]
 ]
 
 { #category : 'private' }
-CheckboxGroupPresenter >> toggleSelectionAt: index [ 
-    | buttonState |
-    buttonState := (buttons at: index ifAbsent: [ ^ self ]) mainPresenter state.
+CheckboxGroupPresenter >> toggleSelectionAt: index [
+"Toggles the selection state of the checkbox at the given index.
+Updates the internal selectedIndexes set and triggers the selectionChanged callback if present."
+	| buttonState |
+	buttonState := (buttons at: index ifAbsent: [ ^ self ]) mainPresenter
+		               state.
 
-    buttonState
-        ifTrue: [ selectedIndexes add: index ]
-        ifFalse: [ selectedIndexes remove: index ].
+	buttonState
+		ifTrue: [ selectedIndexes add: index ]
+		ifFalse: [ selectedIndexes remove: index ].
 
-    whenSelectionChangedDo ifNotNil: [
-        whenSelectionChangedDo value: self selectedIndexes ]
+	whenSelectionChangedDo ifNotNil: [
+		whenSelectionChangedDo value: self selectedIndexes ]
 ]
 
 { #category : 'accessing' }
-CheckboxGroupPresenter >> whenSelectionChangedDo: aBlock [ 
-    whenSelectionChangedDo := aBlock
+CheckboxGroupPresenter >> whenSelectionChangedDo: aBlock [
+"Sets the callback block to be executed each time the selection changes."
+	whenSelectionChangedDo := aBlock
 ]
