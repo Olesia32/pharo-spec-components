@@ -86,13 +86,21 @@ BasePresenter >> fontSize: aNumber [
 { #category : 'style' }
 BasePresenter >> generateAndApplyStyle [
 
+	| allStyles |
 	appliedStyleName ifNotNil: [
-		mainPresenter removeStyle: appliedStyleName ].
+			mainPresenter removeStyle: appliedStyleName.
+			allStyles := self application configuration styleSheet styles.
+			allStyles := allStyles reject: [ :each |
+				          (each isKindOf: SpClassStyle) and: [
+					          each name = appliedStyleName ] ].
+			self application configuration styleSheet styles: allStyles ].
 
 	appliedStyleName := StyleManager
 		                    installGeneratedStyleFrom: self styleProperties
 		                    in: self application.
 	mainPresenter addStyle: appliedStyleName
+	
+
 ]
 
 { #category : 'style' }

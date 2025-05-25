@@ -1,7 +1,6 @@
 "
-Клас події, який оголошується при зміні вибору в ComboBox або MultiSelectComboBox.
-
-Містить вибраний елемент (або множину елементів) і використовується для передачі події через Announcer.
+I am an event class used to announce selection changes in `ComboBoxPresenter` and `MultiSelectComboBoxPresenter`.  
+I store the selected item or a set of selected items and am broadcast through the `Announcer` system.
 
 "
 Class {

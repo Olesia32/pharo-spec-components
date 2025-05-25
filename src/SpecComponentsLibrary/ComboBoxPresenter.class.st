@@ -1,7 +1,33 @@
 "
-Компонент типу ComboBox з підтримкою фільтрації під час введення.
+I am a dropdown component with filterable text input. I display a list of selectable items and update the text field based on selection. The dropdown opens as a floating morph above other UI components.
 
-Дозволяє вибирати один елемент зі списку, автоматично фільтруючи його при введенні тексту.
+### Hierarchy
+
+`SpAbstractPresenter`  
+`SpPresenter`  
+`AbstractDropdownPresenter`  
+`ComboBoxPresenter` (this is me)
+
+### Instance Variables
+
+- _selectedIndex_: an `Integer` — the index of the currently selected item in the original item list
+
+### Public API
+
+- `ComboBoxPresenter>>#items:` — sets the full list of items and updates the filtered list
+- `ComboBoxPresenter>>#selectedIndex` — gets the index of the currently selected item
+- `ComboBoxPresenter>>#selectedItem` — returns the currently selected item from the original list
+- `ComboBoxPresenter>>#selectIndex:` — selects the item by index and updates the input field accordingly
+
+### Usage
+
+To use a `ComboBoxPresenter`, create an instance, set the list of items, and open it in a window:
+
+```smalltalk
+| combo |
+combo := ComboBoxPresenter new.
+combo items: #( 'Apple' 'Banana' 'Orange' 'Pear' ).
+combo openInWindow.
 
 "
 Class {
@@ -14,13 +40,14 @@ Class {
 
 { #category : 'initialization' }
 ComboBoxPresenter >> connectPresenters [
-
+"Connects the text input to the filtering logic. The list is updated every time the user types."
 	textInput mainPresenter whenTextChangedDo: [ self filterList ]
 ]
 
 { #category : 'private' }
 ComboBoxPresenter >> createMorphList [
-
+"Creates and returns a PluggableListMorph connected to the filteredItems and selectedIndex.
+Used to display the dropdown as a floating morph."
 	^ PluggableListMorph
 		  on: self
 		  list: #filteredItems
@@ -30,7 +57,9 @@ ComboBoxPresenter >> createMorphList [
 
 { #category : 'private' }
 ComboBoxPresenter >> filterList [
-
+"Filters the item list according to the current text input (case-insensitive).
+If the exact match is found — it becomes selected.
+If the dropdown is open, it refreshes its content to reflect the filter."
 	| tmp1 tmp2 |
 	tmp1 := textInput text asLowercase.
 	filteredItems := allItems select: [ :arg1 |
@@ -39,8 +68,8 @@ ComboBoxPresenter >> filterList [
 		        detect: [ :arg2 | arg2 asString = textInput text ]
 		        ifNone: [ ].
 	selectedIndex := tmp2
-		        ifNil: [ 0 ]
-		        ifNotNil: [ allItems indexOf: tmp2 ifAbsent: 0 ].
+		                 ifNil: [ 0 ]
+		                 ifNotNil: [ allItems indexOf: tmp2 ifAbsent: 0 ].
 	isOpen ifFalse: [ ^ self ].
 	self
 		closeMorphList;
@@ -62,7 +91,7 @@ ComboBoxPresenter >> initializePresenters [
 
 { #category : 'accessing' }
 ComboBoxPresenter >> items: arg1 [
-
+"Sets the full list of items, updates the filtered list and applies the current filter immediately."
 	super items: arg1.
 	filteredItems := allItems.
 	self filterList
@@ -70,7 +99,8 @@ ComboBoxPresenter >> items: arg1 [
 
 { #category : 'accessing' }
 ComboBoxPresenter >> selectIndex: anIndex [
-
+"Updates the selectedIndex and fills the text input with the selected item's string.
+Also triggers a selection event and closes the dropdown."
 	selectedIndex := anIndex.
 
 	anIndex > 0 ifTrue: [
@@ -85,12 +115,13 @@ ComboBoxPresenter >> selectIndex: anIndex [
 ]
 
 { #category : 'accessing' }
-ComboBoxPresenter >> selectedIndex [ 
- ^selectedIndex 
+ComboBoxPresenter >> selectedIndex [
+"Returns the index of the currently selected item."
+	^ selectedIndex
 ]
 
 { #category : 'accessing' }
 ComboBoxPresenter >> selectedItem [
-
+"Returns the selected item from the original (unfiltered) list based on selectedIndex."
 	^ allItems at: selectedIndex
 ]
