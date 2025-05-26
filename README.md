@@ -45,7 +45,7 @@ The components are particularly well-suited for building:
 | `SearchableTablePresenter`    | Data Display     | Table with a search field and optional column filtering           |
 | `PaginatedTablePresenter`     | Data Display     | Table view with pagination controls              |
 | `NotificationPresenter`       | Feedback         | Overlay-style notifications with styling and timeout              |
-| `BasePresenter`               | Utility/Base     | Presenter with inline styling API for fonts, sizes, colors, etc.  |
+| `PresenterDecorator`          | Utility          | Wrapper that adds styling support to standard Spec presenters (e.g., buttons, labels, lists). |
 | `StyleManager`                | Utility          | Generates and installs STON-based styles from dictionaries        |
 
 ---
