@@ -1,5 +1,41 @@
 # 📘 SpecComponentsLibrary Documentation
 
+# Table of contents
+
+- [Introduction](#introduction)
+  - [Motivation](#motivation)
+  - [Architecture](#architecture)
+
+- [Styling and Configuration](#styling-and-configuration)
+  - [Styling API](#styling-api)
+  - [Using PresenterDecorator](#using-presenterdecorator)
+  - [Ready-to-Use Stylable Components](#ready-to-use-stylable-components)
+
+- [Input Components](#input-components)
+  - [TextInputPresenter](#textinputpresenter)
+  - [ValidationRules](#validationrules)
+  - [ComboBoxPresenter](#comboboxpresenter)
+  - [MultiSelectComboBoxPresenter](#multiselectcomboboxpresenter)
+  - [CheckboxGroupPresenter](#checkboxgrouppresenter)
+  - [RadioGroupPresenter](#radiogrouppresenter)
+  - [TimePickerPresenter](#timepickerpresenter)
+
+- [Data Display](#data-display)
+  - [SearchableTablePresenter](#searchabletablepresenter)
+  - [PaginatedTablePresenter](#paginatedtablepresenter)
+
+- [Form Construction](#form-construction)
+  - [DynamicFormBuilder](#dynamicformbuilder)
+  - [API](#api)
+  - [Styling with FormStyle](#styling-with-formstyle)
+  - [Validation](#validation)
+
+- [Process Control](#process-control)
+  - [WizardPresenter](#wizardpresenter)
+
+- [Notifications](#notifications)
+  - [NotificationPresenter](#notificationpresenter)
+
 ## 1. Introduction
 
 ### Motivation
