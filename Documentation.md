@@ -122,7 +122,7 @@ All input components support styling via the same API shown earlier.
 
 ---
 
-### 🔤 `TextInputPresenter`
+### TextInputPresenter
 
 A stylable input field for entering single-line text, with optional validation logic.
 The component supports placeholder text and dynamic styling through `BasePresenter`. Validation rules can be attached to check user input automatically after each keystroke.
@@ -186,8 +186,6 @@ rules
 input addValidationRules: rules.
 ```
 
----
-
 #### Example. Using Built-in Rules
 
 ```smalltalk
@@ -201,3 +199,169 @@ input addValidationRules: rules.
 ```
 
 These rules will be automatically triggered when the user types, if the field is marked as a validation field.
+
+---
+
+### ComboBoxPresenter
+
+A dropdown list with built-in filtering and single selection.
+The component combines a text input field for search and a dropdown list of options. Users can filter the list by typing, and select a single item by clicking.
+
+#### API
+
+- `items:` — set the list of values
+- `selectedItem` — returns the currently selected item
+- `selectIndex:` — programmatically select item by index
+- `whenSelectionChangedDo:` — triggered when the selection changes
+
+#### Example
+
+```smalltalk
+combo := ComboBoxPresenter new.
+combo
+  items: #('Apple' 'Banana' 'Cherry');
+  whenSelectionChangedDo: [ :selected |
+    Transcript show: 'Selected: ', selected asString; cr ].
+```
+
+The selected value is displayed in the text input once chosen. Filtering is case-insensitive.
+
+---
+
+### MultiSelectComboBoxPresenter
+
+A dropdown that allows multiple selections using checkboxes.
+Instead of returning a single item, this component allows the user to select many values by checking boxes inside the dropdown list.
+
+#### API
+
+- `items:` — set the list of values
+- `selectedItems` — returns the set of selected values
+- `selectedIndexes:` — programmatically select multiple items
+- `whenSelectionChangedDo:` — triggered when selection changes
+
+#### Example
+
+```smalltalk
+multi := MultiSelectComboBoxPresenter new.
+multi
+  items: #('Linux' 'Windows' 'macOS');
+  selectedIndexes: #(1 3);
+  whenSelectionChangedDo: [ :selected |
+    Transcript show: 'Selected OS: ', selected asString; cr ].
+```
+
+When the dropdown is closed, the text field shows a comma-separated list of selected items. When opened, it switches to filter mode.
+
+> Internally, this component uses `SpComponentListPresenter` with `CheckboxPresenter` elements to render the list.
+
+---
+
+### CheckboxGroupPresenter
+
+A component that displays a group of checkboxes, allowing users to select multiple values from a list.
+You can control layout by specifying the number of columns, adding a frame, and enabling scroll support. The presenter provides methods to access selected values and track changes.
+
+#### API
+
+- `items:` — set the list of options  
+- `selectedItems` — returns the list of selected values  
+- `selectedIndexes` — returns selected indexes  
+- `isCheckedAt:` — checks if an item is selected  
+- `clearSelection` — deselects all items  
+- `whenSelectionChangedDo:` — event fired when selection changes  
+- `showFrame:` — display a border around the group  
+- `showTitle:` — show a title label  
+- `columnCount:` — set the number of columns  
+- `title:` — set title text
+- `enableButtonAt:` — enable button at index  
+- `disableButtonAt:` — disable button at index 
+
+#### Example
+
+```smalltalk
+group := CheckboxGroupPresenter new.
+group
+  items: #('Email' 'SMS' 'Push Notification');
+  columnCount: 2;
+  showFrame: true;
+  showTitle: true;
+  title: 'Preferred Contact Methods';
+  whenSelectionChangedDo: [ :indexes |
+    Transcript show: 'Selected indexes: ', indexes printString; cr ].
+```
+
+---
+
+### RadioGroupPresenter
+
+A component that displays a group of radio buttons for selecting one item from a list.
+Only one item may be selected at a time. Selecting a new item deselects the previous one. Useful for gender, payment type, etc.
+
+#### API
+
+- `items:` — set the list of options  
+- `itemSelected` — returns the selected value  
+- `selectedIndex:` — programmatically select by index  
+- `clearSelection` — deselects the current selection  
+- `whenSelectionChangedDo:` — triggered when user selects a new option  
+- `showFrame:` — add a surrounding border  
+- `showTitle:` — show group title  
+- `columnCount:` — number of columns  
+- `title:` — set the title text
+- `enableButtonAt:` — enable button at index  
+- `disableButtonAt:` — disable button at index 
+
+#### Example
+
+```smalltalk
+group := RadioGroupPresenter new.
+group
+  items: #('Credit Card' 'PayPal' 'Bank Transfer');
+  columnCount: 1;
+  showTitle: true;
+  title: 'Payment Method';
+  whenSelectionChangedDo: [ :choice |
+    Transcript show: 'Payment option: ', choice asString; cr ].
+```
+
+> Use `clearSelection` if you want to reset the group manually.
+
+---
+
+### TimePickerPresenter
+
+A UI component that allows users to select time using an interactive clock dialog.
+It consists of a read-only text field and a button with a clock icon. When clicked, a modal dialog opens with a circular time selector powered by Roassal.
+
+#### API
+
+- `hour` / `hour:` — get or set selected hour (0–23)  
+- `minutes` / `minutes:` — get or set selected minutes (0–59)  
+- `whenTimeChangedDo:` — callback when time changes (after dialog confirmation)  
+- `color:` — primary accent color for clock visuals  
+- `additionColor:` — secondary UI color
+
+#### Dialog Behavior
+
+When the dialog is opened via `openDialog`, the current time is passed to the internal `TimePickerDialogPresenter`. The user can:
+
+- Switch between hour and minute selection
+- Choose AM/PM mode
+- Confirm or cancel the selection
+
+After confirmation, the selected time is shown in the main field in `HH:MM` format, and the `whenTimeChangedDo:` callback is triggered.
+
+> Note: The dialog uses Roassal shapes and event handlers for full interaction.
+
+#### Example
+
+```smalltalk
+time := TimePickerPresenter new.
+time
+  hour: 14;
+  minutes: 30;
+  whenTimeChangedDo: [
+    Transcript show: 'Time changed to: ', time hour printString, ':', time minutes printString; cr
+  ].
+```
