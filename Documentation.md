@@ -113,3 +113,91 @@ button
 
 These components integrate smoothly into Spec layouts and can be used anywhere a `SpPresenter` is expected.
 
+---
+
+## 3. Input Components
+
+This section covers the basic input controls included in the library, designed to simplify user input and enhance interaction.
+All input components support styling via the same API shown earlier.
+
+---
+
+### 🔤 `TextInputPresenter`
+
+A stylable input field for entering single-line text, with optional validation logic.
+The component supports placeholder text and dynamic styling through `BasePresenter`. Validation rules can be attached to check user input automatically after each keystroke.
+
+#### API
+
+* `text:` — set the current value
+* `placeholder:` — hint text displayed when empty
+* `addValidationRule: message:` — add a single validation rule (a block and its error message)
+* `addValidationRules:` — apply a set of predefined rules from a `ValidationRules` object
+* `isValid` — check if the current text passes all validations
+* `onValidationChangedDo:` — register a callback for validation status changes
+
+#### Example
+
+```smalltalk
+field := TextInputPresenter new.
+field
+  placeholder: 'Enter your email';
+  addValidationRule: [ :txt | txt includes: '@' ] message: 'Invalid email';
+  onValidationChangedDo: [ :isValid |
+    isValid ifTrue: [ Transcript show: 'Valid input' ]
+  ].
+```
+
+### ValidationRules
+
+`ValidationRules` is a utility class for defining reusable validation logic for text input fields. It allows bundling multiple rule blocks with error messages and applying them to any `TextInputPresenter` instance.
+
+Each rule is a pair:
+
+* **block** — a predicate that takes the current text and returns a boolean
+* **message** — a string to be shown if the rule fails
+
+#### API
+
+* `addRule: aBlock message: aString` — adds a rule with its error message
+* `addRulePair: aBlock -> aString` — alternative form
+* `all` — returns all added rules
+* `applyTo: aPresenter` — applies all rules to a given input field using `addValidationRule:message:`
+
+#### Built-in Rule Factories (Class Side)
+
+```smalltalk
+ValidationRules nonEmpty.
+ValidationRules isEmail.
+ValidationRules minLength: 5.
+ValidationRules maxLength: 20.
+```
+
+These return rule pairs (`block -> message`) that you can add with `addRulePair:` or include in collections.
+
+#### Example. Custom Rule Set
+
+```smalltalk
+rules := ValidationRules new.
+rules
+  addRule: [ :txt | txt notEmpty ] message: 'Field is required';
+  addRule: [ :txt | txt includes: '@' ] message: 'Email must contain @'.
+
+input addValidationRules: rules.
+```
+
+---
+
+#### Example. Using Built-in Rules
+
+```smalltalk
+rules := ValidationRules new.
+rules
+  addRulePair: ValidationRules nonEmpty;
+  addRulePair: ValidationRules isEmail;
+  addRulePair: (ValidationRules minLength: 8).
+
+input addValidationRules: rules.
+```
+
+These rules will be automatically triggered when the user types, if the field is marked as a validation field.
