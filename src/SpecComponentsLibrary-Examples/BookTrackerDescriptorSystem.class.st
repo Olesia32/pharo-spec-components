@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'mainPresenter'
 	],
-	#category : 'SpecComponentsLibrary-Examples',
-	#package : 'SpecComponentsLibrary',
-	#tag : 'Examples'
+	#category : 'SpecComponentsLibrary-Examples-BookTracker',
+	#package : 'SpecComponentsLibrary-Examples',
+	#tag : 'BookTracker'
 }
 
 { #category : 'as yet unclassified' }

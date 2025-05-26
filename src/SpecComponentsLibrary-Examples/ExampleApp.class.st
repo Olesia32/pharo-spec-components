@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'mainPresenter'
 	],
-	#category : 'SpecComponentsLibrary-Examples',
-	#package : 'SpecComponentsLibrary',
-	#tag : 'Examples'
+	#category : 'SpecComponentsLibrary-Examples-SimpleExamples',
+	#package : 'SpecComponentsLibrary-Examples',
+	#tag : 'SimpleExamples'
 }
 
 { #category : 'initialization' }

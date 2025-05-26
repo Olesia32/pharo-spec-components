@@ -10,9 +10,9 @@ Class {
 		'logoutButton',
 		'table'
 	],
-	#category : 'SpecComponentsLibrary-Examples',
-	#package : 'SpecComponentsLibrary',
-	#tag : 'Examples'
+	#category : 'SpecComponentsLibrary-Examples-BookTracker',
+	#package : 'SpecComponentsLibrary-Examples',
+	#tag : 'BookTracker'
 }
 
 { #category : 'accessing' }

@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'currentSession'
 	],
-	#category : 'SpecComponentsLibrary-Examples',
-	#package : 'SpecComponentsLibrary',
-	#tag : 'Examples'
+	#category : 'SpecComponentsLibrary-Examples-BookTracker',
+	#package : 'SpecComponentsLibrary-Examples',
+	#tag : 'BookTracker'
 }
 
 { #category : 'adding' }
@@ -54,21 +54,23 @@ BookTrackerRepository >> getUserByLogin: aLogin [
 ]
 
 { #category : 'initialization' }
-BookTrackerRepository >> initialize [ 
+BookTrackerRepository >> initialize [
+
 	| login accessor session |
 	login := Login new
-		database: PostgreSQLPlatform new;
-		username: 'postgres';
-		password: '19724Kll';
-		host: 'localhost';
-		port: '5432';
-		databaseName: 'BookTrackerDB'.
+		         database: PostgreSQLPlatform new;
+		         username: 'postgres';
+		         password: '';
+		         host: 'localhost';
+		         port: '5432';
+		         databaseName: 'BookTrackerDB'.
 
 	accessor := DatabaseAccessor forLogin: login.
 	accessor login.
 
 	session := GlorpSession new.
-	session system: (BookTrackerDescriptorSystem forPlatform: login database).
+	session system:
+		(BookTrackerDescriptorSystem forPlatform: login database).
 	session accessor: accessor.
 	currentSession := session
 ]
