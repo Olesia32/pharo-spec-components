@@ -1,17 +1,17 @@
 # 📘 SpecComponentsLibrary Documentation
 
-# Table of contents
+## Table of contents
 
-- [Introduction](#introduction)
+- [Introduction](#1-introduction)
   - [Motivation](#motivation)
   - [Architecture](#architecture)
 
-- [Styling and Configuration](#styling-and-configuration)
+- [Styling and Configuration](#2-styling-and-configuration)
   - [Styling API](#styling-api)
   - [Using PresenterDecorator](#using-presenterdecorator)
   - [Ready-to-Use Stylable Components](#ready-to-use-stylable-components)
 
-- [Input Components](#input-components)
+- [Input Components](#3-input-components)
   - [TextInputPresenter](#textinputpresenter)
   - [ValidationRules](#validationrules)
   - [ComboBoxPresenter](#comboboxpresenter)
@@ -20,20 +20,19 @@
   - [RadioGroupPresenter](#radiogrouppresenter)
   - [TimePickerPresenter](#timepickerpresenter)
 
-- [Data Display](#data-display)
+- [Data Display](#4-data-display)
   - [SearchableTablePresenter](#searchabletablepresenter)
   - [PaginatedTablePresenter](#paginatedtablepresenter)
 
-- [Form Construction](#form-construction)
+- [Form Construction](#5-form-construction)
   - [DynamicFormBuilder](#dynamicformbuilder)
   - [API](#api)
   - [Styling with FormStyle](#styling-with-formstyle)
-  - [Validation](#validation)
 
-- [Process Control](#process-control)
+- [Process Control](#6-process-control)
   - [WizardPresenter](#wizardpresenter)
 
-- [Notifications](#notifications)
+- [Notifications](#7-notifications)
   - [NotificationPresenter](#notificationpresenter)
 
 ## 1. Introduction
@@ -148,8 +147,6 @@ button
 ```
 
 These components integrate smoothly into Spec layouts and can be used anywhere a `SpPresenter` is expected.
-
----
 
 ## 3. Input Components
 
@@ -451,7 +448,7 @@ As the user types into the search field, the table dynamically updates to show m
 
 ---
 
-### 📄 `PaginatedTablePresenter`
+### PaginatedTablePresenter
 
 A searchable table with pagination support.
 Inherits all features from `SearchableTablePresenter` and adds UI for navigating between pages, jumping to a specific page, and customizing the number of rows per page.
@@ -499,7 +496,7 @@ The form automatically generates layout, validation hooks, submit/back buttons, 
 
 ---
 
-### 🧾 `DynamicFormBuilder`
+### DynamicFormBuilder
 
 A grid-based dynamic form that supports:
 
