@@ -1,3 +1,30 @@
+"
+I am a manually composed form-based presenter for event registration.
+
+I demonstrate how to construct a full-featured UI by assembling various presenters from `SpecComponentsLibrary`. I validate input, collect user responses, and display them in the `Transcript` upon submission.
+
+### Instance Variables
+
+- _nameField_ (`TextInputPresenter`) — group of radio buttons for gender selection.
+- _genderGroup_ (`RadioGroupPresenter`) — group of radio buttons for gender selection.
+- _interestsBox_ (`MultiSelectComboBoxPresenter`) — multi-select list of interests.
+- _countryBox_ (`ComboBoxPresenter`) — dropdown list of available countries.
+- _languagesBox_ (`CheckboxGroupPresenter`) — group of checkboxes for spoken languages.
+- _notificationCheck_ (`CheckboxPresenter`) — checkbox for enabling event notifications.
+- _preferredTime_ (`TimePickerPresenter`) — time selection component.
+- _submitButton_ (`ButtonPresenter`) — button that triggers form validation and prints results.
+- _headerLabel_ (`LabelPresenter`) — stylized header label for the form.
+
+### Public API
+
+- `SimplePresenter>>#submit` - validates the form and prints all submitted values to the `Transcript` if valid.
+
+### Usage
+
+```smalltalk
+SimplePresenter new open
+
+"
 Class {
 	#name : 'SimplePresenter',
 	#superclass : 'SpPresenter',

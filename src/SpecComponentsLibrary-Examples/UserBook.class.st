@@ -1,3 +1,25 @@
+"
+I am a domain model representing a book associated with a user in the BookTracker system.
+
+I store information about a book added by a user, including metadata, rating, personal impression, and date of entry.
+
+### Instance Variables
+
+- _id_ — the unique identifier of the book entry.
+- _username_ — the name of the user who added the book.
+- _title_ — the book’s title.
+- _author_ — the book’s author.
+- _genre_ — the literary genre.
+- _year_ — the year of publication.
+- _rating_ — the user’s rating (e.g. from 1 to 10).
+- _impression_ — the user's personal comments about the book.
+- _dateAdded_ — the timestamp when the book was added.
+
+### Responsibilities
+
+- Hold structured book information tied to a user.
+- Provide access to all relevant metadata and user-generated input.
+"
 Class {
 	#name : 'UserBook',
 	#superclass : 'Object',

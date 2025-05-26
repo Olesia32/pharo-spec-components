@@ -1,3 +1,33 @@
+"
+I am the main application class of the BookTracker example.
+
+I launch the user interface, manage transitions between login, registration, and the main window, and coordinate user validation. I demonstrate how components of the `SpecComponentsLibrary` can be combined to build a minimal user authentication flow. I use a `BookTrackerRepository` to manage user data and delegate UI rendering to dynamically generated forms.
+
+### Instance Variables
+
+**repository** `BookTrackerRepository` — stores and retrieves user data.
+
+### Public API
+
+- `BookTrackerApp>>#start` - opens the login window and starts the application.
+- `BookTrackerApp>>#repository` - returns the repository instance used for user management.
+
+### Window Management
+
+- `BookTrackerApp>>#openLoginWindow` - builds a login form with validation. Opens the main window on success or shows a notification on failure. Also allows switching to the registration form.
+- `BookTrackerApp>>#openRegisterWindow` - builds a registration form. If the entered username is unique, creates a new user and returns to login. Otherwise shows a warning.
+- `BookTrackerApp>>#openMainWindow:` - opens the main interface for a logged-in user.
+
+### Styling
+
+All windows are styled via a `FormStyle` object, with unified input dimensions and color schemes. Expand/collapse/menu window controls are disabled for a cleaner look.
+
+### Example
+
+```smalltalk
+BookTrackerApp new start
+
+"
 Class {
 	#name : 'BookTrackerApp',
 	#superclass : 'SpApplication',

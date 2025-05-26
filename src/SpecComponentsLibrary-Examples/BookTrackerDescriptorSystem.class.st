@@ -1,77 +1,98 @@
+"
+I am the descriptor system for the BookTracker application.
+
+I define how domain objects like `User` and `UserBook` are represented in the database. I configure object-relational mappings using Glorp, specifying class models, descriptors, and table schemas. My purpose is to support persistence and retrieval of application data.
+
+### Responsibilities
+
+- Define class models for domain entities.
+- Map object fields to relational table columns using direct mappings.
+- Declare primary keys and foreign key constraints.
+- Provide table schemas for users and their books.
+"
 Class {
 	#name : 'BookTrackerDescriptorSystem',
 	#superclass : 'DescriptorSystem',
-	#instVars : [
-		'mainPresenter'
-	],
 	#category : 'SpecComponentsLibrary-Examples-BookTracker',
 	#package : 'SpecComponentsLibrary-Examples',
 	#tag : 'BookTracker'
 }
 
 { #category : 'as yet unclassified' }
-BookTrackerDescriptorSystem >> classModelForUser: aClassModel [ 
-	(aClassModel newAttributeNamed: #username) useDirectAccess: true.
-	aClassModel newAttributeNamed: #password.
+BookTrackerDescriptorSystem >> classModelForUser: arg1 [
+
+	(arg1 newAttributeNamed: #username) useDirectAccess: true.
+	arg1 newAttributeNamed: #password
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerDescriptorSystem >> classModelForUserBook: aClassModel [ 
-	(aClassModel newAttributeNamed: #id) useDirectAccess: true.
-	aClassModel newAttributeNamed: #username.
-	aClassModel newAttributeNamed: #title.
-	aClassModel newAttributeNamed: #author.
-	aClassModel newAttributeNamed: #genre.
-	aClassModel newAttributeNamed: #year.
-	aClassModel newAttributeNamed: #rating.
-	aClassModel newAttributeNamed: #impression.
-	aClassModel newAttributeNamed: #dateAdded.
+BookTrackerDescriptorSystem >> classModelForUserBook: arg1 [
+
+	(arg1 newAttributeNamed: #id) useDirectAccess: true.
+	arg1
+		newAttributeNamed: #username;
+		newAttributeNamed: #title;
+		newAttributeNamed: #author;
+		newAttributeNamed: #genre;
+		newAttributeNamed: #year;
+		newAttributeNamed: #rating;
+		newAttributeNamed: #impression;
+		newAttributeNamed: #dateAdded
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerDescriptorSystem >> descriptorForUser: aDescriptor [ 
-	| table |
-	table := self tableNamed: 'USERS'.
-	aDescriptor table: table.
-	(aDescriptor newMapping: DirectMapping) from: #username to: (table fieldNamed: 'username').
-	(aDescriptor newMapping: DirectMapping) from: #password to: (table fieldNamed: 'password').
+BookTrackerDescriptorSystem >> descriptorForUser: arg1 [
+
+	| tmp1 |
+	tmp1 := self tableNamed: 'USERS'.
+	arg1 table: tmp1.
+	(arg1 newMapping: DirectMapping)
+		from: #username to: (tmp1 fieldNamed: 'username');
+		from: #password to: (tmp1 fieldNamed: 'password')
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerDescriptorSystem >> descriptorForUserBook: aDescriptor [ 
-	| table |
-	table := self tableNamed: 'USER_BOOKS'.
-	aDescriptor table: table.
-	(aDescriptor newMapping: DirectMapping) from: #id to: (table fieldNamed: 'id').
-	(aDescriptor newMapping: DirectMapping) from: #username to: (table fieldNamed: 'username').
-	(aDescriptor newMapping: DirectMapping) from: #title to: (table fieldNamed: 'title').
-	(aDescriptor newMapping: DirectMapping) from: #author to: (table fieldNamed: 'author').
-	(aDescriptor newMapping: DirectMapping) from: #genre to: (table fieldNamed: 'genre').
-	(aDescriptor newMapping: DirectMapping) from: #year to: (table fieldNamed: 'year').
-	(aDescriptor newMapping: DirectMapping) from: #rating to: (table fieldNamed: 'rating').
-	(aDescriptor newMapping: DirectMapping) from: #impression to: (table fieldNamed: 'impression').
-	(aDescriptor newMapping: DirectMapping) from: #dateAdded to: (table fieldNamed: 'dateAdded').
+BookTrackerDescriptorSystem >> descriptorForUserBook: arg1 [
+
+	| tmp1 |
+	tmp1 := self tableNamed: 'USER_BOOKS'.
+	arg1 table: tmp1.
+	(arg1 newMapping: DirectMapping)
+		from: #id to: (tmp1 fieldNamed: 'id');
+		from: #username to: (tmp1 fieldNamed: 'username');
+		from: #title to: (tmp1 fieldNamed: 'title');
+		from: #author to: (tmp1 fieldNamed: 'author');
+		from: #genre to: (tmp1 fieldNamed: 'genre');
+		from: #year to: (tmp1 fieldNamed: 'year');
+		from: #rating to: (tmp1 fieldNamed: 'rating');
+		from: #impression to: (tmp1 fieldNamed: 'impression');
+		from: #dateAdded to: (tmp1 fieldNamed: 'dateAdded')
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerDescriptorSystem >> tableForUSERS: aTable [ 
-	(aTable createFieldNamed: 'username' type: (platform varChar: 100)) bePrimaryKey.
-	aTable createFieldNamed: 'password' type: (platform varChar: 100).
+BookTrackerDescriptorSystem >> tableForUSERS: arg1 [
+
+	(arg1 createFieldNamed: 'username' type: (platform varChar: 100))
+		bePrimaryKey.
+	arg1 createFieldNamed: 'password' type: (platform varChar: 100)
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerDescriptorSystem >> tableForUSER_BOOKS: aTable [ 
-   | userField |
-	(aTable createFieldNamed: 'id' type: platform serial) bePrimaryKey.
-	userField := aTable createFieldNamed: 'username' type: (platform varChar: 100).
-	aTable
-		addForeignKeyFrom: userField
-		to: ((self tableNamed: 'USERS') fieldNamed: 'username').
-	aTable createFieldNamed: 'title' type: (platform varChar: 200).
-	aTable createFieldNamed: 'author' type: (platform varChar: 200).
-	aTable createFieldNamed: 'genre' type: (platform varChar: 100).
-	aTable createFieldNamed: 'year' type: platform integer.
-	aTable createFieldNamed: 'rating' type: platform integer.
-	aTable createFieldNamed: 'impression' type: (platform varChar: 500).
-	aTable createFieldNamed: 'dateAdded' type: platform timestamp.
+BookTrackerDescriptorSystem >> tableForUSER_BOOKS: arg1 [
+
+	| tmp1 |
+	(arg1 createFieldNamed: 'id' type: platform serial) bePrimaryKey.
+	tmp1 := arg1
+		        createFieldNamed: 'username'
+		        type: (platform varChar: 100).
+	arg1
+		addForeignKeyFrom: tmp1
+		to: ((self tableNamed: 'USERS') fieldNamed: 'username');
+		createFieldNamed: 'title' type: (platform varChar: 200);
+		createFieldNamed: 'author' type: (platform varChar: 200);
+		createFieldNamed: 'genre' type: (platform varChar: 100);
+		createFieldNamed: 'year' type: platform integer;
+		createFieldNamed: 'rating' type: platform integer;
+		createFieldNamed: 'impression' type: (platform varChar: 500);
+		createFieldNamed: 'dateAdded' type: platform timestamp
 ]
