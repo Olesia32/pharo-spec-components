@@ -455,4 +455,182 @@ table
 
 The table shows pagination controls below the grid: current page, total pages, navigation arrows, and a text box for jumping directly to a page.
 
+## 5. Form Construction
 
+`DynamicFormBuilder` is a high-level component that allows you to build data entry forms declaratively.  
+Instead of manually creating and laying out each field, you define fields using DSL-style methods such as `textField:label:placeholder:rules:`.
+The form automatically generates layout, validation hooks, submit/back buttons, and styling support.
+
+---
+
+### 🧾 `DynamicFormBuilder`
+
+A grid-based dynamic form that supports:
+
+- declarative field creation via methods
+- validation rules per field
+- custom headers and buttons
+- styling via `FormStyle`
+- data collection and submission
+
+#### Supported Field Types
+
+| Field Method                   | Description                             |
+|-------------------------------|-----------------------------------------|
+| `textField:label:placeholder:rules:` | Single-line text input (with validation) |
+| `comboBox:label:items:`       | Filterable single-select dropdown       |
+| `multiComboBox:label:items:`  | Dropdown with checkbox multiselect      |
+| `checkbox:label:`             | Single checkbox                         |
+| `checkboxGroup:label:items:columns:frame:` | Multi-option checkbox group       |
+| `radioGroup:label:items:columns:frame:`    | Radio group for single selection |
+| `dropList:label:items:`       | Standard Spec drop-down list            |
+| `datePicker:label:`           | Date selector                           |
+| `timePicker:label:`           | Time selector                           |
+
+#### Basic Usage
+
+```smalltalk
+form := DynamicFormBuilder new.
+form
+  header: 'User Registration';
+  textField: #name label: 'Name' placeholder: 'Enter full name' rules: nil;
+  comboBox: #role label: 'Role' items: #('Admin' 'User' 'Guest');
+  onSubmit: [ :values | Transcript inspect: values ].
+form open.
+```
+
+Each field is associated with a key (e.g., `#name`), which is used to retrieve values on submission.
+
+> Call `collectValues` or use the `onSubmit:` block to access entered data.
+
+#### API
+
+The following methods are available to configure the form and extract values:
+
+- `header:` — set the title text above the form  
+- `onSubmit:` — provide a block to call when the user clicks the submit button  
+- `onBack:` — (optional) callback for the back/cancel button  
+- `style:` — apply a `FormStyle` to control fonts, spacing, colors  
+- `values` — return current form values as a dictionary  
+- `collectValues` — same as `values`, but always recalculates  
+- `validateFields` — return `true` if all validation fields pass
+
+You can also control layout visibility:
+
+- `hideHeader`, `showHeader` — toggle header visibility  
+- `hideButtons`, `showButtons` — toggle submit/back buttons  
+- `topPresenter:` — insert a custom presenter above the form
+
+#### Styling with `FormStyle`
+
+You can apply visual styling to the form using a `FormStyle` object. It supports customizing:
+
+- font size and color for labels and headers
+- field sizes, background colors, borders
+- button dimensions
+
+```smalltalk
+style := FormStyle new.
+style
+  labelFontSize: 12;
+  inputBackground: Color veryLightGray;
+  inputBorderColor: Color gray;
+  buttonWidth: 100.
+
+form := DynamicFormBuilder new.
+form
+  style: style;
+  header: 'Contact';
+  textField: #email label: 'Email' placeholder: '' rules: nil.
+```
+
+## 6. Process Control
+
+This section introduces the `WizardPresenter`, a component for building multi-step interfaces — useful for guided input, registration wizards, or complex workflows.
+
+---
+
+### WizardPresenter
+
+`WizardPresenter` manages a linear sequence of steps. Each step is a regular Spec presenter, and the wizard provides built-in navigation (Next, Back) and a header that shows current progress.
+
+Features
+- Step-by-step navigation
+- Visual step tracker (with optional labels)
+- Support for cancel/back actions
+- Styled layout and buttons
+- Integration with `DynamicFormBuilder` or any custom presenter
+
+#### API
+
+- `steps:` — set an ordered collection of steps (`{#title -> String. #content -> Presenter}`)
+- `goToNextStep`, `goToPreviousStep`, `goToStep:` — navigate steps
+- `stepPresenterAt:` — access the content presenter of a specific step
+- `whenStepChangedDo:` — callback after step is switched
+- `onFinishDo:` — callback when the final step is completed
+- `visibleStepCount:` — control how many step indicators are shown
+- `stepCircleRadius:`, `stepCircleTitleColor:`, `activeColor:` — style customization
+- `nextButton`, `backButton` — access navigation buttons for further customization
+
+#### Example
+
+```smalltalk
+wizard := WizardPresenter new.
+
+step1 := DynamicFormBuilder new.
+step1
+  header: 'User Info';
+  textField: #name label: 'Full Name' placeholder: '' rules: nil.
+
+step2 := DynamicFormBuilder new.
+step2
+  header: 'Contact';
+  textField: #email label: 'Email' placeholder: 'example@domain.com' rules: nil.
+
+wizard
+  addStep: 'Step 1' title: 'User Info' presenter: step1;
+  addStep: 'Step 2' title: 'Contact Info' presenter: step2;
+  onFinish: [ Transcript show: 'Wizard finished'; cr ].
+```
+
+## 7. Notifications
+
+`NotificationPresenter` is a utility class for showing transient in-window messages (toasts).  
+It's useful for confirming user actions (e.g. save success, errors, or alerts) without opening modal dialogs.
+The notification appears as an overlay in a corner or center of the given window, styled with custom text, colors, and display duration.
+
+---
+
+### NotificationPresenter
+
+You create and configure the presenter via setters, then call `showOn:` to display it over a specific `SpWindowPresenter`.
+
+#### API
+
+- `title:` — header text  
+- `message:` — main message body  
+- `type:` — predefined type (`#info`, `#success`, `#warning`, `#error`)  
+- `duration:` — seconds before the message disappears (default: 3)  
+- `position:` — `#topLeft`, `#topRight`, `#bottomLeft`, `#bottomRight`, `#center`  
+- `font:` — font used for both title and message  
+- `textColor:` — color of text  
+- `backgroundColor:` — background fill (overrides type if set)  
+- `width:`, `height:` — fixed size of the message box  
+- `window:` — the `SpWindowPresenter` to anchor to (required)  
+- `show` — render the message
+
+#### Example
+
+```smalltalk
+notification := NotificationPresenter new.
+notification
+  title: 'Saved';
+  message: 'Changes have been successfully saved.';
+  type: #success;
+  position: #topRight;
+  window: activeWindow;
+  duration: 3;
+  show.
+```
+
+> The notification disappears automatically after the given duration. No user action is required.
