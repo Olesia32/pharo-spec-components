@@ -365,3 +365,94 @@ time
     Transcript show: 'Time changed to: ', time hour printString, ':', time minutes printString; cr
   ].
 ```
+
+## 4. Data Display
+
+This section covers components used to display collections of items, with built-in support for filtering, pagination, and selection.
+
+---
+
+### SearchableTablePresenter
+
+A data table with live filtering support.
+This component extends a standard `SpTablePresenter` by adding a search field and a column selector. Users can filter visible rows based on search input and select which columns to include in the filter.
+It consists of:
+- a `SpTablePresenter` for rendering data
+- a `TextInputPresenter` for search queries
+- a `MultiSelectComboBoxPresenter` for selecting searchable columns
+
+#### API
+
+- `items:` — set the full dataset  
+- `selectedItem` — get currently selected item from the table  
+- `whenSelectedItemChangedDo:` — listen for selection changes  
+- `filterField` — access the search input field   
+- `displayUsing:` — set a custom display block  
+- `hideSearchContainer` / `showSearchContainer` — toggle search UI visibility  
+- `table` — access the internal `SpTablePresenter`
+  
+> Column configuration is done by passing a dictionary of column name → accessor key.
+
+#### Example
+
+```smalltalk
+table := SearchableTablePresenter new.
+table
+  columns: {
+    'Name' -> #name.
+    'Email' -> #email.
+    'Role' -> #role.
+  };
+  items: {
+    { #name -> 'Alice'; #email -> 'alice@example.com'; #role -> 'Admin' } asDictionary.
+    { #name -> 'Bob'; #email -> 'bob@example.com'; #role -> 'User' } asDictionary.
+    { #name -> 'Charlie'; #email -> 'charlie@example.com'; #role -> 'Moderator' } asDictionary.
+  };
+  whenSelectedItemChangedDo: [ :selected | Transcript inspect: selected ].
+```
+
+As the user types into the search field, the table dynamically updates to show matching rows.
+
+---
+
+### 📄 `PaginatedTablePresenter`
+
+A searchable table with pagination support.
+Inherits all features from `SearchableTablePresenter` and adds UI for navigating between pages, jumping to a specific page, and customizing the number of rows per page.
+Includes:
+- page buttons (next, previous, numbered)
+- input field for direct page access
+- current/total page counter
+
+#### Additional API
+
+- `itemsPerPage:` — set number of rows per page  
+- `currentPage` — get current page number  
+- `goToPage:` — jump to a specific page  
+- `updatePagination` — refresh paging after filtering or data changes  
+- `updateDisplayedItems` — update visible items based on current page  
+- `previousPage`, `nextPage` — navigate pages  
+- `gotoPageInput`, `gotoPageButton` — access navigation input and button  
+- `displayedItems` — get items for current page  
+
+#### Example
+
+```smalltalk
+table := PaginatedTablePresenter new.
+table
+  columns: {
+    'Name' -> #name.
+    'Email' -> #email.
+    'Role' -> #role.
+  };
+  items: {
+    { #name -> 'Alice'; #email -> 'alice@example.com'; #role -> 'Admin' } asDictionary.
+    { #name -> 'Bob'; #email -> 'bob@example.com'; #role -> 'User' } asDictionary.
+    { #name -> 'Charlie'; #email -> 'charlie@example.com'; #role -> 'Moderator' } asDictionary.
+  };
+  itemsPerPage: 2.
+```
+
+The table shows pagination controls below the grid: current page, total pages, navigation arrows, and a text box for jumping directly to a page.
+
+
