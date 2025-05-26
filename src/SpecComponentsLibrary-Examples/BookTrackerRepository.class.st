@@ -1,3 +1,19 @@
+"
+I am the data access layer for the BookTracker application.
+
+I encapsulate all interactions with the Glorp persistence framework and PostgreSQL database. I provide methods to query, add, update, and delete `User` and `UserBook` records. I initialize the session and descriptor system used for object-relational mapping.
+
+### Instance Variables
+
+- _currentSession_ — the active Glorp session used to perform database operations.
+
+### Responsibilities
+
+- Connect to a PostgreSQL database and initialize the persistence layer.
+- Manage users and their books through `add`, `read`, `update`, and `delete` operations.
+- Provide methods for authentication and book retrieval.
+- Create database tables when needed.
+"
 Class {
 	#name : 'BookTrackerRepository',
 	#superclass : 'Object',

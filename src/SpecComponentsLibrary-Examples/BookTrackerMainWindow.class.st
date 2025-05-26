@@ -1,3 +1,23 @@
+"
+I am the main window of the BookTracker application.
+
+I organize the primary user interface into notebook pages for book management, user statistics, and profile settings. I allow users to add, view, and delete books, and visualize personal reading statistics. My structure is based on `SpNotebookPresenter`, and I use various presenters from the `SpecComponentsLibrary`.
+
+### Instance Variables
+- _username_ — the currently logged-in user.
+- _notebook_ — the main notebook UI container.
+- _booksPage_, _statsPage_, _profilePage_ — individual tabs in the notebook.
+- _logoutButton_ — a button to exit the account.
+- _table_ — a paginated table displaying the user’s books.
+
+### Responsibilities
+
+- Display notebook with pages for books, statistics, and profile.
+- Allow adding new books through a multi-step wizard.
+- Show book details and delete selected entries.
+- Calculate and display reading statistics over time.
+- Support logout and user-switching.
+"
 Class {
 	#name : 'BookTrackerMainWindow',
 	#superclass : 'SpPresenter',

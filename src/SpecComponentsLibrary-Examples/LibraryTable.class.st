@@ -1,3 +1,19 @@
+"
+I am a simple table-based component that displays a paginated catalog of books.
+
+I load data from a local CSV file and present it in a `PaginatedTablePresenter` with sortable columns. I demonstrate how to structure and render tabular data in `SpecComponentsLibrary`.
+
+### Instance Variables
+
+- _table_ (`PaginatedTablePresenter`) — the main component that renders the data table with pagination.
+- _originalData_ (`Collection`) — the raw book data parsed from the CSV file.
+
+## Usage
+
+```smalltalk
+LibraryTable new open
+
+"
 Class {
 	#name : 'LibraryTable',
 	#superclass : 'SpPresenter',

@@ -1,3 +1,22 @@
+"
+I am a simple registration form example built using `DynamicFormBuilder`.
+
+I demonstrate how to declaratively construct and style a complex user form with validation, grouping, and post-submission feedback. My layout includes various types of interactive fields and displays a summary of the collected data upon submission.
+
+### Instance Variables
+
+- _form_ (`DynamicFormBuilder`) — the builder used to define, validate, and layout all input fields.
+
+### Public API
+
+- `EventRegistrationForm>>#show:` - builds and displays a notification with formatted submitted values.
+
+## Usage
+
+```smalltalk
+EventRegistrationForm new open
+
+"
 Class {
 	#name : 'EventRegistrationForm',
 	#superclass : 'SpPresenter',
