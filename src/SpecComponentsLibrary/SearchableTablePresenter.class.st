@@ -68,16 +68,17 @@ Class {
 
 { #category : 'private' }
 SearchableTablePresenter >> applyFilter [
-"Applies the current search query to the list of items.
+	"Applies the current search query to the list of items.
 Only rows that match the search string in at least one of the selected columns will remain visible."
+
 	| tmp1 tmp2 |
 	tmp1 := searchField text asLowercase.
 	tmp2 := columnSelector selectedItems collect: [ :arg1 |
 		        labelToKey at: arg1 ifAbsent: nil ].
-	filteredItems := allItems select: [ :arg2 |
-			                 tmp2 anySatisfy: [ :arg3 |
-					                 (arg2 at: arg3 ifAbsent: '') asString
-						                 asLowercase includesSubstring: tmp1 ] ].
+	filteredItems := allItems select: [ :row |
+			                 tmp2 anySatisfy: [ :key |
+					                 (row at: key ifAbsent: '') asString asLowercase
+						                 includesSubstring: tmp1 ] ].
 	tablePresenter items: filteredItems
 ]
 

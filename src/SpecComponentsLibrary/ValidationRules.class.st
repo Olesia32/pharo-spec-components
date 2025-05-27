@@ -60,8 +60,9 @@ ValidationRules class >> isEmail [
 
 { #category : 'accessing' }
 ValidationRules class >> matchesRegex: pattern [
-"Returns a rule that validates text using a regular expression pattern."
-	^ [ :text | pattern match: text ] -> 'Недопустимий формат'
+	"Returns a rule that validates text using a regular expression pattern."
+
+	^ [ :text | pattern matches: text ] -> 'Недопустимий формат'
 ]
 
 { #category : 'accessing' }
