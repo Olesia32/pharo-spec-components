@@ -113,26 +113,7 @@ TimePickerPresenter >> minutes: aMinutes [
 ]
 
 { #category : 'showing' }
-TimePickerPresenter >> openDialog [
-"Creates and opens a TimePickerDialogPresenter as a modal dialog.
-Passes the current hour/minute to the dialog, configures its color theme, and handles user confirmation via onOk.
-Updates the time field and triggers the onTimeChanged callback if defined."
-	| tmp2 |
-	dialog := TimePickerDialogPresenter new.
-	color ifNotNil: [ dialog mainColor: color ].
-	additionalColor ifNotNil: [ dialog additionColor: additionalColor ].
-	dialog
-		selectedHour: selectedHour;
-		selectedMinute: selectedMinute;
-		onOk: [ :arg1 |
-				selectedHour := arg1 at: #hour.
-				selectedMinute := arg1 at: #minute.
-				timeFieldPresenter text:
-						selectedHour printString , ':' , (selectedMinute < 10
-								 ifTrue: [ '0' , selectedMinute asString ]
-								 ifFalse: [ selectedMinute asString ]).
-				onTimeChanged ifNotNil: [ onTimeChanged value ] ].
-	tmp2 := dialog openModal
+TimePickerPresenter >> openDialog [ [ dialog := self instVarNamed: 'dialog'. dialog openModal ]
 ]
 
 { #category : 'events' }

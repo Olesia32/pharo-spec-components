@@ -6,7 +6,7 @@ I am primarily used as the view component inside `TimePickerPresenter`.
 
 ### Instance Variables
 
-- _roassalPresenre_: a `Roassal2Presenter` — Roassal visualization presenter that holds the clock diagram  
+- _roassalPresenre_: a `SpRoassalPresenter` — Roassal visualization presenter that holds the clock diagram  
 - _canvas_: a `RSCanvas` — the Roassal drawing canvas used for shapes  
 - _center_: a `Point` — center of the circular clock  
 - _radius_: an `Integer` — visual radius of the clock face  
@@ -255,8 +255,9 @@ Updates UI and redrawing accordingly."
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> isPm: aBool [
-"Sets whether the selected time is PM.
+	"Sets whether the selected time is PM.
 Redraws selection and adjusts labels accordingly."
+
 	isPm := aBool.
 	(roassalPresenre canvas shapes includes: selectionLine) ifTrue: [
 		canvas removeShape: selectionLine ].
@@ -300,12 +301,13 @@ TimePickerDialogPresenter >> selectedHour [
 
 { #category : 'accessing' }
 TimePickerDialogPresenter >> selectedHour: arg1 [
-"Updates the selected hour, adjusts label, switches AM/PM if needed, and updates the marker."
+	"Updates the selected hour, adjusts label, switches AM/PM if needed, and updates the marker."
+
 	selectedHour := (arg1 max: 0) min: 23.
 	hourLabel label: (arg1 < 10
 			 ifTrue: [ '0' , arg1 asString ]
 			 ifFalse: [ arg1 asString ]).
-	selectedHour > 12 ifTrue: [ self switchToPm ].
+	selectedHour > 12 ifTrue: [ self switchToPm ] ifFalse: [self switchToAm ].
 	self updateSelectionMarker
 ]
 
