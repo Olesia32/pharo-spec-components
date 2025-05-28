@@ -8,6 +8,11 @@ Class {
 	#package : 'SpecComponentsLibrary-Tests'
 }
 
+{ #category : 'accessing' }
+TimePickerDialogPresenterTest >> classToTest [  
+  ^TimePickerDialogPresenter 
+]
+
 { #category : 'running' }
 TimePickerDialogPresenterTest >> setUp [ 
 	super setUp.

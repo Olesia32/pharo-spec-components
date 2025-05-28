@@ -1,9 +1,6 @@
 Class {
 	#name : 'PaginatedTablePresenterTest',
 	#superclass : 'SearchableTablePresenterTest',
-	#instVars : [
-		'sampleItems'
-	],
 	#category : 'SpecComponentsLibrary-Tests',
 	#package : 'SpecComponentsLibrary-Tests'
 }
@@ -14,15 +11,18 @@ PaginatedTablePresenterTest >> classToTest [
 ]
 
 { #category : 'running' }
-PaginatedTablePresenterTest >> setUp [ 
+PaginatedTablePresenterTest >> setUp [
+   |sampleItems|
 	super setUp.
 	presenter := PaginatedTablePresenter new.
 	sampleItems := (1 to: 25) collect: [ :i |
-		Dictionary newFromPairs: { #title -> ('Book ', i asString) } ].
-	presenter columns: { 'Title' -> #title }.
+			               Dictionary newFromPairs: {
+					               #title.
+					               ('Book ' , i asString) } ].
+	presenter columns: { ('Title' -> #title) }.
 	presenter items: sampleItems.
 	presenter itemsPerPage: 10.
-	presenter updatePagination.
+	presenter updatePagination
 ]
 
 { #category : 'tests' }
@@ -38,6 +38,17 @@ PaginatedTablePresenterTest >> testApplyFilter [
 { #category : 'tests' }
 PaginatedTablePresenterTest >> testCurrentPage [
 	self assert: presenter currentPage equals: 1
+]
+
+{ #category : 'tests' }
+PaginatedTablePresenterTest >> testDisplayedItems [
+
+	| result |
+	presenter goToPage: 3.
+	result := presenter displayedItems.
+	self assert: result size equals: 5.
+	self assert: (result first at: #title) equals: 'Book 21'.
+	self assert: (result last at: #title) equals: 'Book 25'
 ]
 
 { #category : 'tests' }
@@ -86,8 +97,9 @@ PaginatedTablePresenterTest >> testPaginatedItems [
 	| titles |
 	presenter goToPage: 2.
 	titles := presenter paginatedItems.
-	self assert: titles first equals: 'Book 11'.
-	self assert: titles last equals: 'Book 20'
+	self assert: (titles first at: #title) equals: 'Book 11'.
+self assert: (titles last at: #title) equals: 'Book 20'.
+
 ]
 
 { #category : 'tests' }
@@ -112,6 +124,21 @@ PaginatedTablePresenterTest >> testUpdateDisplayedItems [
 	self
 		assert: (presenter table items first at: #title)
 		equals: 'Book 11'
+]
+
+{ #category : 'tests' }
+PaginatedTablePresenterTest >> testUpdatePagination [
+
+	| totalButtons tableItems |
+	presenter goToPage: 2.
+	presenter updatePagination.
+	totalButtons := (presenter instVarNamed: 'paginationControls') children.
+	self assert: (totalButtons anySatisfy: [ :each |
+			 (each isKindOf: LabelPresenter) and: [ each text = '2 / 3' ] ]).
+
+	tableItems := presenter table items.
+	self assert: (tableItems first at: #title) equals: 'Book 11'.
+	self assert: (tableItems last at: #title) equals: 'Book 20'
 ]
 
 { #category : 'tests' }

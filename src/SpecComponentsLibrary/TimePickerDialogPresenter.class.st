@@ -62,7 +62,6 @@ Class {
 		'hourLabel',
 		'minutesLabel',
 		'isHourMode',
-		'okButton',
 		'isPm',
 		'amButton',
 		'pmButton',
@@ -70,7 +69,6 @@ Class {
 		'onOkAction',
 		'onCancelAction',
 		'onChanged',
-		'accentColor',
 		'additionColor'
 	],
 	#category : 'SpecComponentsLibrary-Time',

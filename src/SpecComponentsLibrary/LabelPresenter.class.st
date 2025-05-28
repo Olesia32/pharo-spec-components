@@ -28,11 +28,11 @@ Class {
 { #category : 'initialization' }
 LabelPresenter >> initializePresenters [
 
-	| label |
+	| tmp1 |
 	super initializePresenters.
-	label := SpLabelPresenter new.
-	self focusOrder add: label.
-	self mainPresenter: label
+	tmp1 := SpLabelPresenter new.
+	self focusOrder add: tmp1.
+	self mainPresenter: tmp1
 ]
 
 { #category : 'accessing' }

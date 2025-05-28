@@ -28,9 +28,9 @@ Class {
 { #category : 'initialization' }
 ListPresenter >> initializePresenters [
 
-	| list |
+	| tmp1 |
 	super initializePresenters.
-	list := SpListPresenter new.
-	self focusOrder add: list.
-	self mainPresenter: list
+	tmp1 := SpListPresenter new.
+	self focusOrder add: tmp1.
+	self mainPresenter: tmp1
 ]

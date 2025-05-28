@@ -8,6 +8,11 @@ Class {
 	#package : 'SpecComponentsLibrary-Tests'
 }
 
+{ #category : 'accessing' }
+TimePickerPresenterTest >> classToTest [ 
+ ^ TimePickerPresenter 
+]
+
 { #category : 'running' }
 TimePickerPresenterTest >> setUp [ 
 	super setUp.

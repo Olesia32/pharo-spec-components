@@ -26,19 +26,15 @@ SearchableTablePresenterTest >> testApplyFilter [
 
 	| records result columnSelector |
 	records := {
-	Dictionary newFromPairs: { #name -> 'Alpha'. #category -> 'Group 1' }.
-	Dictionary newFromPairs: { #name -> 'Beta'.  #category -> 'Group 2' }.
-	Dictionary newFromPairs: { #name -> 'Gamma'. #category -> 'Group 3' }
-}.
-
+		           (Dictionary newFromPairs: { #name. 'Alpha'. #category. 'Group 1'}).
+		           (Dictionary newFromPairs: { #name. 'Beta'. #category. 'Group 2' }).
+		           (Dictionary newFromPairs: { #name. 'Gamma'. #category. 'Group 3'}) }.
 
 	presenter columns: {
 			('Name' -> #name).
 			('Category' -> #category) }.
 
 	presenter items: records.
-
-	"Important: trigger filtering to populate columnSelector allItems"
 	presenter applyFilter.
 
 	columnSelector := presenter instVarNamed: 'columnSelector'.
@@ -48,7 +44,6 @@ SearchableTablePresenterTest >> testApplyFilter [
 	presenter applyFilter.
 
 	result := presenter filteredItems.
-
 	self assert: result size equals: 1.
 	self assert: (result first at: #name) equals: 'Gamma'
 ]

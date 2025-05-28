@@ -22,9 +22,9 @@ Class {
 { #category : 'initialization' }
 RadioButtonPresenter >> initializePresenters [
 
-	| button |
+	| tmp1 |
 	super initializePresenters.
-	button := SpRadioButtonPresenter new.
-	self focusOrder add: button.
-	self mainPresenter: button
+	tmp1 := SpRadioButtonPresenter new.
+	self focusOrder add: tmp1.
+	self mainPresenter: tmp1
 ]
