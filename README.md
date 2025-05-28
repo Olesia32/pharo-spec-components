@@ -53,7 +53,7 @@ The components are particularly well-suited for building:
 
 Documentation of all components, their public API and usage examples is available in a separate file:
 
-- 📘 **Component Reference**: [Documentation.md](./Documentation.md)
+- 📘 [**Documentation.md**](./Documentation.md)
 
 ---
 ## 📦 Installation
