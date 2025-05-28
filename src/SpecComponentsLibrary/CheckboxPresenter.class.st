@@ -32,9 +32,9 @@ Class {
 { #category : 'initialization' }
 CheckboxPresenter >> initializePresenters [
 
-	| checkbox |
+	| tmp1 |
 	super initializePresenters.
-	checkbox := SpCheckBoxPresenter new.
-	self focusOrder add: checkbox.
-	self mainPresenter: checkbox
+	tmp1 := SpCheckBoxPresenter new.
+	self focusOrder add: tmp1.
+	self mainPresenter: tmp1
 ]

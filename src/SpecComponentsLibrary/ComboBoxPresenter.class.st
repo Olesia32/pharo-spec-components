@@ -99,19 +99,20 @@ ComboBoxPresenter >> items: arg1 [
 
 { #category : 'accessing' }
 ComboBoxPresenter >> selectIndex: anIndex [
-"Updates the selectedIndex and fills the text input with the selected item's string.
+	"Updates the selectedIndex and fills the text input with the selected item's string.
 Also triggers a selection event and closes the dropdown."
 	selectedIndex := anIndex.
 
-	anIndex > 0 ifTrue: [
-			| item |
-			item := filteredItems at: anIndex.
-			textInput text: item asString.
-			announcer announce: (ComboBoxItemSelected new item: item) ].
+	(anIndex between: 1 and: filteredItems size) ifTrue: [
+		| item |
+		item := filteredItems at: anIndex.
+		textInput text: item asString.
+		announcer announce: (ComboBoxItemSelected new item: item)
+	].
 
 	self closeMorphList.
 	isOpen := false.
-	self updateToggleButtonIcon
+	self updateToggleButtonIcon.
 ]
 
 { #category : 'accessing' }

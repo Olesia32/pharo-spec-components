@@ -100,15 +100,17 @@ CheckboxGroupPresenter >> selectedItems [
 
 { #category : 'private' }
 CheckboxGroupPresenter >> toggleSelectionAt: index [
-"Toggles the selection state of the checkbox at the given index.
+	"Toggles the selection state of the checkbox at the given index.
 Updates the internal selectedIndexes set and triggers the selectionChanged callback if present."
+
 	| buttonState |
 	buttonState := (buttons at: index ifAbsent: [ ^ self ]) mainPresenter
 		               state.
 
 	buttonState
 		ifTrue: [ selectedIndexes add: index ]
-		ifFalse: [ selectedIndexes remove: index ].
+		ifFalse: [
+		selectedIndexes remove: index  ].
 
 	whenSelectionChangedDo ifNotNil: [
 		whenSelectionChangedDo value: self selectedIndexes ]

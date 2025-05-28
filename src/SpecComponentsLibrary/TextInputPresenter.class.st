@@ -93,9 +93,8 @@ TextInputPresenter >> defaultLayout [
 	| tmp1 |
 	self generateAndApplyStyle.
 	tmp1 := SpBoxLayout newTopToBottom.
-	tmp1
-		add: mainPresenter.
-	isValidationField ifTrue: [ tmp1 add: errorLabel. ].
+	tmp1 add: mainPresenter.
+	isValidationField ifTrue: [ tmp1 add: errorLabel ].
 	^ tmp1 yourself
 ]
 
@@ -108,7 +107,7 @@ TextInputPresenter >> initialize [
 { #category : 'initialization' }
 TextInputPresenter >> initializePresenters [
 
-   super initializePresenters.
+	super initializePresenters.
 	self mainPresenter: SpTextInputFieldPresenter new.
 	errorLabel := LabelPresenter new.
 	errorLabel

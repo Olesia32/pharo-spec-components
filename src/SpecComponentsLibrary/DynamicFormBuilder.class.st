@@ -11,8 +11,7 @@ I also support:
 - Input validation and button-driven event callbacks
 
 ### Instance Variables
-
-- _fields_: an `Array` or `Collection` — optional list of presenter specifications for auto-creation  
+ 
 - _fieldLabels_: a `Dictionary` — maps field keys to label texts  
 - _fieldPresenters_: an `OrderedCollection` — contains key–presenter pairs  
 - _formData_: a `Dictionary` — stores collected values from the form  
@@ -62,7 +61,6 @@ Class {
 	#name : 'DynamicFormBuilder',
 	#superclass : 'SpPresenter',
 	#instVars : [
-		'fields',
 		'fieldLabels',
 		'fieldPresenters',
 		'formData',
@@ -361,7 +359,6 @@ DynamicFormBuilder >> hideHeader [
 { #category : 'initialization' }
 DynamicFormBuilder >> initializePresenters [
 
-	fields ifNil: [ fields := #(  ) ] ifNotNil: [ fields ].
 	fieldPresenters := OrderedCollection new.
 	formData := Dictionary new.
 	fieldLabels := Dictionary new.
@@ -373,11 +370,6 @@ DynamicFormBuilder >> initializePresenters [
 	backButton label: 'Скасувати'.
 	headerLabel := LabelPresenter new.
 	headerLabel text: ''.
-	fieldPresenters addAll: (fields collect: [ :arg1 |
-				 | tmp1 tmp2 |
-				 tmp2 := arg1 at: #key.
-				 tmp1 := self createPresenterFromSpec: arg1.
-				 tmp2 -> tmp1 ])
 ]
 
 { #category : 'creation' }

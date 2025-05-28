@@ -36,9 +36,10 @@ Class {
 
 { #category : 'adding' }
 StyleManager class >> installGeneratedStyleFrom: dict in: app [
-"Generates a unique style name and creates a STON style definition from the given dictionary of properties.
+	"Generates a unique style name and creates a STON style definition from the given dictionary of properties.
 Parses it into a Spec style using SpStyleVariableSTONReader, and installs it into the application's style sheet (app styleSheet).
 Returns the generated style name as a string."
+
 	| styleManager styleName stonString parsed |
 	styleManager := self new.
 	styleName := '' , UUID new asString first: 8.
@@ -51,7 +52,7 @@ Returns the generated style name as a string."
 
 { #category : 'style' }
 StyleManager >> stonFromProperties: dict [
-"Converts a dictionary of style properties into a STON-style string representation.
+	"Converts a dictionary of style properties into a STON-style string representation.
 Groups the properties into logical Spec categories:
 
 Font: for font-related attributes (fontSize, bold, italic, name)
@@ -62,7 +63,6 @@ Geometry: for sizing and layout (width, height, etc.)
 
 Container: for borders and padding
 
-Text: for text-specific flags (textColor, readOnly, etc.)
 Each section is output as a STON block, ready to be parsed by Spec."
 
 	| container font draw geometry text sections |
@@ -74,25 +74,21 @@ Each section is output as a STON block, ready to be parsed by Spec."
 	sections := OrderedCollection new.
 
 	dict keysAndValuesDo: [ :k :v |
-			(k = #borderColor or: [ k = #borderWidth or: [ k = #padding ] ])
+			(k = #borderColor or: [ #( #borderWidth #padding ) includes: k ])
 				ifTrue: [ container add: k -> v ].
 
 			(k = #fontSize or: [
-				 k = #bold or: [ k = #italic or: [ k = #name ] ] ]) ifTrue: [
+				 k = #bold or: [ #( #italic #name ) includes: k ] ]) ifTrue: [
 					| targetKey |
 					targetKey := k = #fontSize
 						             ifTrue: [ #size ]
 						             ifFalse: [ k ].
 					font add: targetKey -> v ].
-
-			(k = #color or: [ k = #backgroundColor ]) ifTrue: [
+			(#( #color #backgroundColor ) includes: k) ifTrue: [
 				draw add: k -> v ].
 
 			(#( height width minHeight maxHeight hResizing vResizing )
-				 includes: k) ifTrue: [ geometry add: k -> v ].
-
-			(#( alignment textColor readOnly textWrapping ) includes: k)
-				ifTrue: [ text add: k -> v ] ].
+				 includes: k) ifTrue: [ geometry add: k -> v ] ].
 
 	container isEmpty ifFalse: [
 		sections add: 'Container { ' , (self stonMap: container) , ' }' ].
@@ -102,8 +98,6 @@ Each section is output as a STON block, ready to be parsed by Spec."
 		sections add: 'Draw { ' , (self stonMap: draw) , ' }' ].
 	geometry isEmpty ifFalse: [
 		sections add: 'Geometry { ' , (self stonMap: geometry) , ' }' ].
-	text isEmpty ifFalse: [
-		sections add: 'Text { ' , (self stonMap: text) , ' }' ].
 
 	^ String streamContents: [ :stream |
 			  sections doWithIndex: [ :part :i |

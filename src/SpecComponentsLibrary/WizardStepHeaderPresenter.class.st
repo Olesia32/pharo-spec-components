@@ -16,8 +16,7 @@ The display is based on Roassal and dynamically adapts to the number of steps an
 - _borderColor_: a `Color` — border color of inactive steps  
 - _titleFontSize_: an `Integer` — font size of the text below each step  
 - _titleColor_: a `Color` — text color of step titles  
-- _labelFontSize_: an `Integer` — font size of the number inside the step circle  
-- _visibleStepCount_: an `Integer` — maximum number of steps visible at once
+- _labelFontSize_: an `Integer` — font size of the number inside the step circle 
 
 ### Public API
 

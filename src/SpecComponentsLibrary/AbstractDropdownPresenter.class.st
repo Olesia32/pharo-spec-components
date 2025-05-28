@@ -19,6 +19,7 @@ My subclasses must define how the list is created, filtered and connected.
 - `AbstractDropdownPresenter>>#items:` — sets the complete list of items. Nil values will be removed.
 - `AbstractDropdownPresenter>>#selectedIndex`, `AbstractDropdownPresenter>>#selectedIndex:` — gets or sets the index of the selected item.
 - `AbstractDropdownPresenter>>#filteredItems`, `AbstractDropdownPresenter>>#filteredItems:` — gets or sets the filtered list.
+- `AbstractDropdownPresenter>>#textInput` — gets filter field.
 
 ### Events
 
@@ -180,6 +181,11 @@ AbstractDropdownPresenter >> selectedIndex [
 AbstractDropdownPresenter >> selectedIndex: anObject [
 "Sets the selected item index."
 	selectedIndex := anObject
+]
+
+{ #category : 'accessing' }
+AbstractDropdownPresenter >> textInput [
+^ textInput 
 ]
 
 { #category : 'private' }

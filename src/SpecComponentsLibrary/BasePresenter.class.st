@@ -13,7 +13,6 @@ This allows external users to access and configure inner presenter behavior (suc
 - _styleProperties_: a `Dictionary` — stores the generated style attributes (e.g., font size, color)  
 - _mainPresenter_: a `SpPresenter` — the internal child presenter to which style is applied  
 - _appliedStyleName_: a `String` — name of the currently applied style in the application’s style sheet  
-- _name_: a `String` — optional logical name of the presenter
 
 "
 Class {
@@ -22,8 +21,7 @@ Class {
 	#instVars : [
 		'styleProperties',
 		'mainPresenter',
-		'appliedStyleName',
-		'name'
+		'appliedStyleName'
 	],
 	#category : 'SpecComponentsLibrary-BaseComponents',
 	#package : 'SpecComponentsLibrary',
@@ -128,9 +126,8 @@ BasePresenter >> height: aHeight [
 
 { #category : 'initialization' }
 BasePresenter >> initializePresenters [
-	"Стандартне місце для створення вкладених демонстраторів"
 
-	SpNullApplication reset.
+	SpNullApplication reset
 ]
 
 { #category : 'style' }
@@ -165,7 +162,6 @@ If it hasn't been created yet, initializes it as a new Dictionary."
 
 { #category : 'accessing' }
 BasePresenter >> styleProperties [
-	"Гарантовано повертає словник (навіть якщо ще не створений)"
 
 	styleProperties ifNil: [ styleProperties := Dictionary new ].
 	^ styleProperties

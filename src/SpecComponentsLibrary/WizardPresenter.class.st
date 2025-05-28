@@ -60,8 +60,7 @@ Class {
 		'backButton',
 		'onStepChanged',
 		'onStepExit',
-		'onFinished',
-		'visibleStepCount'
+		'onFinished'
 	],
 	#category : 'SpecComponentsLibrary-AdvancedComponents',
 	#package : 'SpecComponentsLibrary',
