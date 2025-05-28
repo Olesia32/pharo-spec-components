@@ -1,4 +1,4 @@
-# 📘 SpecComponentsLibrary Documentation
+📘 SpecComponentsLibrary Documentation
 
 ## Table of contents
 
@@ -88,8 +88,8 @@ label := LabelPresenter new.
 label
   text: 'Email';
   fontSize: 14;
-  fontFamily: 'Source Sans Pro';
-  color: Color darkGray;
+  color: '#darkGray';
+  bold;
   italic.
 ```
 
@@ -102,7 +102,7 @@ If you want to apply styles to a standard Spec 2 component (such as `SpButtonPre
 ```smalltalk
 styled := PresenterDecorator wrap: SpButtonPresenter.
 styled
-  backgroundColor: Color green;
+  backgroundColor: '#green';
   fontSize: 16.
 styled mainPresenter label: 'Confirm'.
 ```
@@ -115,7 +115,7 @@ raw label: 'Status:'.
 
 styled := PresenterDecorator wrap: raw.
 styled
-  color: Color gray;
+  color: '#gray';
   italic.
 ```
 
@@ -141,7 +141,7 @@ Instead of wrapping presenters manually, most common UI elements already have st
 button := ButtonPresenter new.
 button
   label: 'Save';
-  backgroundColor: Color blue;
+  backgroundColor: '#blue';
   fontSize: 13;
   onClick: [ self saveData ].
 ```
@@ -169,13 +169,15 @@ The component supports placeholder text and dynamic styling through `BasePresent
 * `isValid` — check if the current text passes all validations
 * `onValidationChangedDo:` — register a callback for validation status changes
 
+>⚠️ The field will only perform validation if the isValidationEnabled property is set to true.
+
 #### Example
 
 ```smalltalk
 field := TextInputPresenter new.
 field
-  placeholder: 'Enter your email';
-  addValidationRule: [ :txt | txt includes: '@' ] message: 'Invalid email';
+  backgroundColor: '#F2F2F2';
+  addValidationRule: [ :txt | txt includes: $@ ] message: 'Invalid email';
   onValidationChangedDo: [ :isValid |
     isValid ifTrue: [ Transcript show: 'Valid input' ]
   ].
@@ -214,7 +216,7 @@ These return rule pairs (`block -> message`) that you can add with `addRulePair:
 rules := ValidationRules new.
 rules
   addRule: [ :txt | txt notEmpty ] message: 'Field is required';
-  addRule: [ :txt | txt includes: '@' ] message: 'Email must contain @'.
+  addRule: [ :txt | txt includes: $@ ] message: 'Email must contain @'.
 
 input addValidationRules: rules.
 ```
@@ -315,7 +317,7 @@ You can control layout by specifying the number of columns, adding a frame, and 
 ```smalltalk
 group := CheckboxGroupPresenter new.
 group
-  items: #('Email' 'SMS' 'Push Notification');
+  items: #('Email' 'SMS' 'Push Notification' 'Other');
   columnCount: 2;
   showFrame: true;
   showTitle: true;
@@ -354,7 +356,7 @@ group
   columnCount: 1;
   showTitle: true;
   title: 'Payment Method';
-  whenSelectionChangedDo: [ :choice |
+  whenIndexChangedDo: [ :choice |
     Transcript show: 'Payment option: ', choice asString; cr ].
 ```
 
@@ -437,11 +439,24 @@ table
     'Role' -> #role.
   };
   items: {
-    { #name -> 'Alice'; #email -> 'alice@example.com'; #role -> 'Admin' } asDictionary.
-    { #name -> 'Bob'; #email -> 'bob@example.com'; #role -> 'User' } asDictionary.
-    { #name -> 'Charlie'; #email -> 'charlie@example.com'; #role -> 'Moderator' } asDictionary.
-  };
-  whenSelectedItemChangedDo: [ :selected | Transcript inspect: selected ].
+    (Dictionary new
+        at: #name put: 'Alice';
+        at: #email put: 'alice@example.com';
+        at: #role put: 'Admin';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Bob';
+        at: #email put: 'bob@example.com';
+        at: #role put: 'User';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Charlie';
+        at: #email put: 'charlie@example.com';
+        at: #role put: 'Moderator';
+        yourself)
+}
 ```
 
 As the user types into the search field, the table dynamically updates to show matching rows.
@@ -477,10 +492,24 @@ table
     'Role' -> #role.
   };
   items: {
-    { #name -> 'Alice'; #email -> 'alice@example.com'; #role -> 'Admin' } asDictionary.
-    { #name -> 'Bob'; #email -> 'bob@example.com'; #role -> 'User' } asDictionary.
-    { #name -> 'Charlie'; #email -> 'charlie@example.com'; #role -> 'Moderator' } asDictionary.
-  };
+    (Dictionary new
+        at: #name put: 'Alice';
+        at: #email put: 'alice@example.com';
+        at: #role put: 'Admin';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Bob';
+        at: #email put: 'bob@example.com';
+        at: #role put: 'User';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Charlie';
+        at: #email put: 'charlie@example.com';
+        at: #role put: 'Moderator';
+        yourself)
+}
   itemsPerPage: 2.
 ```
 
@@ -526,7 +555,7 @@ form
   header: 'User Registration';
   textField: #name label: 'Name' placeholder: 'Enter full name' rules: nil;
   comboBox: #role label: 'Role' items: #('Admin' 'User' 'Guest');
-  onSubmit: [ :values | Transcript inspect: values ].
+  onSubmit: [ :values | Transcript show: values; cr ].
 form open.
 ```
 
@@ -563,15 +592,17 @@ You can apply visual styling to the form using a `FormStyle` object. It supports
 ```smalltalk
 style := FormStyle new.
 style
+  headerFontSize: 14;
   labelFontSize: 12;
-  inputBackground: Color veryLightGray;
-  inputBorderColor: Color gray;
+  inputBackground: '#veryLightGray';
+  inputBorderColor: '#gray';
   buttonWidth: 100.
 
 form := DynamicFormBuilder new.
 form
   style: style;
   header: 'Contact';
+  height: 50;
   textField: #email label: 'Email' placeholder: '' rules: nil.
 ```
 
