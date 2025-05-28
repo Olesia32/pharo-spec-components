@@ -461,9 +461,7 @@ Includes:
 
 - `itemsPerPage:` — set number of rows per page  
 - `currentPage` — get current page number  
-- `goToPage:` — jump to a specific page  
-- `updatePagination` — refresh paging after filtering or data changes  
-- `updateDisplayedItems` — update visible items based on current page  
+- `goToPage:` — jump to a specific page   
 - `previousPage`, `nextPage` — navigate pages  
 - `gotoPageInput`, `gotoPageButton` — access navigation input and button  
 - `displayedItems` — get items for current page  
@@ -501,7 +499,7 @@ The form automatically generates layout, validation hooks, submit/back buttons, 
 A grid-based dynamic form that supports:
 
 - declarative field creation via methods
-- validation rules per field
+- validation rules per text field
 - custom headers and buttons
 - styling via `FormStyle`
 - data collection and submission
