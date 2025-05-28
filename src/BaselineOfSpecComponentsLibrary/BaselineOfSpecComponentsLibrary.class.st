@@ -32,10 +32,8 @@ BaselineOfSpecComponentsLibrary >> baseline: spec [
 	<baseline>
 	spec for: #common do: [
 			spec blessing: #baseline.
-			spec repository: 'github://Olesia32/pharo-spec-components/src'.
-
 			spec package: 'SpecComponentsLibrary'.
-			spec package: 'SpecComponentsLibrary-Examples' ]
+			spec package: 'SpecComponentsLibrary-Tests' ]
 ]
 
 { #category : 'accessing' }
