@@ -102,7 +102,7 @@ AbstractDropdownPresenter >> defaultLayout [
 	| tmp1 tmp2 |
 	tmp2 := SpBoxLayout newLeftToRight.
 	tmp2 add: textInput mainPresenter.
-	tmp1 := SpBoxLayout newTopToBottom add:
+	tmp1 := SpBoxLayout new add:
 		        (tmp2 add: toggleButton withConstraints: [ :arg1 |
 				         arg1
 					         width: 25;
@@ -157,17 +157,23 @@ AbstractDropdownPresenter >> items: arg1 [
 
 { #category : 'private' }
 AbstractDropdownPresenter >> openMorphList [
-"Creates and displays the dropdown morph below the text input field with the correct size and position."
-	| tmp1 tmp2 |
+	"Creates and displays the dropdown morph below the text input field with the correct size and position."
+
+	| tmp1 tmp2 listBottom windowBottom extraHeight wnd |
 	morphList := self createMorphList.
 	morphList color: Color white.
-	tmp1 := textInput mainPresenter adapter widget bounds bottomLeft.
+	tmp1 := textInput mainPresenter adapter widget bounds.
 	tmp2 := textInput mainPresenter adapter widget width.
 	morphList
 		width: tmp2;
-		position: tmp1;
+		position: tmp1 bottomLeft;
 		height: 100.
-	World addMorph: morphList.
+	wnd := self window window.
+	wnd addMorph: morphList.
+	listBottom := tmp1 bottom + 100.
+	windowBottom := wnd bounds bottom.
+	extraHeight := listBottom - windowBottom.
+	extraHeight > 0 ifTrue: [ wnd height: wnd height + extraHeight + 10 ].
 	morphList comeToFront
 ]
 

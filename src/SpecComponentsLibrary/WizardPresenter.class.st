@@ -60,7 +60,9 @@ Class {
 		'backButton',
 		'onStepChanged',
 		'onStepExit',
-		'onFinished'
+		'onFinished',
+		'finishLabel',
+		'nextButtonLabel'
 	],
 	#category : 'SpecComponentsLibrary-AdvancedComponents',
 	#package : 'SpecComponentsLibrary',
@@ -81,6 +83,12 @@ WizardPresenter >> activeColor: aColor [
 WizardPresenter >> backButton [
 "Returns the ""Back"" button presenter."
 	^ backButton
+]
+
+{ #category : 'as yet unclassified' }
+WizardPresenter >> finishButtonLabel: arg1 [
+
+	finishLabel := arg1
 ]
 
 { #category : 'refresh' }
@@ -119,25 +127,38 @@ Updates the content view, step header, button states, and triggers onStepExit an
 ]
 
 { #category : 'initialization' }
-WizardPresenter >> initializePresenters [ 
-    steps := OrderedCollection new.
-    currentStepIndex := 1.
-    onStepExit := nil.
-    onFinished := nil.
-    stepHeaderPresenters := WizardStepHeaderPresenter new.
+WizardPresenter >> initializePresenters [
 
-    contentPresenter := SpPresenter new.
-
-    nextButton := ButtonPresenter new label: 'Далі'; onClick: [ self goToNextStep ]; height: 40.
-    backButton := ButtonPresenter new label: 'Повернутись'; onClick: [ self goToPreviousStep ]; height: 40.
-
-    self updateLayout.
+	| tmp2 tmp4 |
+	steps := OrderedCollection new.
+	currentStepIndex := 1.
+	onStepExit := nil.
+	onFinished := nil.
+	stepHeaderPresenters := WizardStepHeaderPresenter new.
+	contentPresenter := SpPresenter new.
+	finishLabel := 'Завершити'.
+	tmp2 := ButtonPresenter new.
+	tmp2
+		label: 'Вперед';
+		onClick: [ self goToNextStep ].
+	nextButton := tmp2 height: 40.
+	tmp4 := ButtonPresenter new.
+	tmp4
+		label: 'Повернутись';
+		onClick: [ self goToPreviousStep ].
+	backButton := tmp4 height: 40.
+	self updateLayout
 ]
 
 { #category : 'accessing' }
 WizardPresenter >> nextButton [
 "Returns the ""Next"" button presenter."
 	^ nextButton
+]
+
+{ #category : 'accessing' }
+WizardPresenter >> nextButtonLabel: aLabel [
+   nextButtonLabel := aLabel 
 ]
 
 { #category : 'events' }
@@ -183,12 +204,11 @@ Passes the titles to the step header and displays the first step."
 
 { #category : 'updating' }
 WizardPresenter >> updateButtonStates [
-"Enables or disables the ""Back"" button depending on the current index.
-Changes the ""Next"" button label to ""Finish"" if on the last step."
+
 	backButton mainPresenter enabled: currentStepIndex > 1.
 	currentStepIndex = steps size
-		ifTrue: [ nextButton label: 'Завершити' ]
-		ifFalse: [ nextButton label: 'Вперед' ]
+		ifTrue: [ nextButton label: finishLabel ]
+		ifFalse: [ nextButton label: nextButtonLabel ]
 ]
 
 { #category : 'updating' }
