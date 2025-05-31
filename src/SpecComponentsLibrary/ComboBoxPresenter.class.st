@@ -80,7 +80,7 @@ If the dropdown is open, it refreshes its content to reflect the filter."
 ComboBoxPresenter >> initialize [
 
 	super initialize.
-	selectedIndex := 0.
+	selectedIndex := 0
 ]
 
 { #category : 'initialization' }
