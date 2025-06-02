@@ -197,6 +197,7 @@ The component supports placeholder text and dynamic styling through `BasePresent
 field := TextInputPresenter new.
 field
   backgroundColor: '#F2F2F2';
+  isValidationField: true;
   addValidationRule: [ :txt | txt includes: $@ ] message: 'Invalid email';
   onValidationChangedDo: [ :isValid |
     isValid ifTrue: [ Transcript show: 'Valid input' ]
