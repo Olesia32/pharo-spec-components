@@ -26,6 +26,7 @@ I am primarily used as the view component inside `TimePickerPresenter`.
 - _okButton_, _cancelButton_: `ButtonPresenter`s — confirmation and cancellation actions  
 - _onOkAction_, _onCancelAction_: `BlockClosure`s — callbacks for OK or Cancel actions  
 - _onChanged_: a `BlockClosure` — optional callback invoked on time changes
+- _okButtonLabel:_, _cancelButtonLabel:_ `String`s — custom text labels for the OK and Cancel buttons displayed in the time picker dialog  
 
 ### Public API
 
@@ -33,7 +34,8 @@ I am primarily used as the view component inside `TimePickerPresenter`.
 - `TimePickerDialogPresenter>>#selectedMinute`, `>>#selectedMinute:` — gets or sets the selected minute  
 - `TimePickerDialogPresenter>>#isHourMode:` — switches between hour/minute selection  
 - `TimePickerDialogPresenter>>#isPm:` — sets PM state (and adjusts visual)  
-- `TimePickerDialogPresenter>>#mainColor:`, `>>#additionColor:` — customize color scheme  
+- `TimePickerDialogPresenter>>#mainColor:`, `>>#additionColor:` — customize color scheme 
+- `TimePickerDialogPresenter>>#okButtonLabel:`, `TimePickerDialogPresenter>>#cancelButtonLabel:` — set custom labels for the OK and Cancel buttons in the time picker dialog 
 - `TimePickerDialogPresenter>>#onOk:`, `TimePickerDialogPresenter>>#onCancel:`, `TimePickerDialogPresenter>>#onChanged:` — sets external callbacks
 
 ### Usage
@@ -65,11 +67,12 @@ Class {
 		'isPm',
 		'amButton',
 		'pmButton',
-		'cancelButton',
 		'onOkAction',
 		'onCancelAction',
 		'onChanged',
-		'additionColor'
+		'additionColor',
+		'okButtonlabel',
+		'cancelButtonLabel'
 	],
 	#category : 'SpecComponentsLibrary-Time',
 	#package : 'SpecComponentsLibrary',
@@ -120,6 +123,12 @@ TimePickerDialogPresenter >> buildClockFace [
 				fontSize: 12;
 				translateTo: pos.
 			canvas add: label ]
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerDialogPresenter >> cancelButtonLabel: aLabel [
+
+	cancelButtonLabel := aLabel
 ]
 
 { #category : 'initialization' }
@@ -174,16 +183,17 @@ TimePickerDialogPresenter >> drawBackgroundCircle [
 
 { #category : 'initialization' }
 TimePickerDialogPresenter >> initializeDialogWindow: arg1 [
-"Initializes the modal dialog with title, layout, and OK/Cancel buttons.
+	"Initializes the modal dialog with title, layout, and OK/Cancel buttons.
 Triggers callbacks on user actions."
+
 	arg1
 		title: 'Оберіть час';
 		initialExtent: 300 @ 350;
 		layout: self defaultLayout;
-		addButton: 'Скасувати' do: [
+		addButton: cancelButtonLabel do: [
 				onCancelAction ifNotNil: [ onCancelAction value ].
 				arg1 close ];
-		addButton: 'Підтвердити' do: [
+		addButton: okButtonlabel do: [
 				| tmp1 |
 				onOkAction ifNotNil: [
 							tmp1 := Dictionary new.
@@ -208,6 +218,8 @@ TimePickerDialogPresenter >> initializePresenters [
 	selectedMinute := 0.
 	mainColor := Color purple.
 	additionColor := #e6e0f8.
+	okButtonlabel := 'Продовжити'.
+	cancelButtonLabel := 'Скасувати'.
 	hourCircles := Dictionary new.
 	hourLabel := ButtonPresenter new.
 	hourLabel
@@ -225,7 +237,7 @@ TimePickerDialogPresenter >> initializePresenters [
 	self isHourMode: true.
 	selectedHour := 1.
 	self
-		switchToAm ;
+		switchToAm;
 		drawBackgroundCircle;
 		buildClockFace;
 		updateClockLabels;
@@ -271,6 +283,11 @@ Updates the selection marker and AM/PM button visuals."
 	selectionDot ifNotNil: [ selectionDot color: aColor ].
 	self updateSelectionMarker.
 	self updateAmPmButtons
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerDialogPresenter >> okButtonLabel: aLabel [
+okButtonlabel := aLabel 
 ]
 
 { #category : 'events' }

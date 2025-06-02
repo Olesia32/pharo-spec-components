@@ -14,6 +14,18 @@ This allows external users to access and configure inner presenter behavior (suc
 - _mainPresenter_: a `SpPresenter` — the internal child presenter to which style is applied  
 - _appliedStyleName_: a `String` — name of the currently applied style in the application’s style sheet  
 
+### Public API
+
+`BasePresenter>>#mainPresenter`, `BasePresenter>>#mainPresenter:` — get or assign the internal component that receives styles
+`BasePresenter>>#styleProperties` — access the dictionary of current style attributes
+`BasePresenter>>#backgroundColor:` — sets the background color
+`BasePresenter>>#color:` — sets the foreground/text color
+`BasePresenter>>#borderColor:`, `BasePresenter>>#borderWidth:` — sets border color and width
+`BasePresenter>>#width:`, `BasePresenter>>#height:` — sets explicit dimensions
+`BasePresenter>>#fontSize:`, `BasePresenter>>#fontFamily:` — sets text appearance
+`BasePresenter>>#bold`, `BasePresenter>>#italic` — toggles bold or italic text
+`BasePresenter>>#hResizing:`, `BasePresenter>>#vResizing:` — sets horizontal and vertical resizing policies
+
 "
 Class {
 	#name : 'BasePresenter',

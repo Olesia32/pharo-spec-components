@@ -168,13 +168,15 @@ AbstractDropdownPresenter >> openMorphList [
 		width: tmp2;
 		position: tmp1 bottomLeft;
 		height: 100.
-	wnd := self window window.
+	wnd := self window.
+	wnd ifNotNil: [  
+	wnd := wnd window.
 	wnd addMorph: morphList.
 	listBottom := tmp1 bottom + 100.
 	windowBottom := wnd bounds bottom.
 	extraHeight := listBottom - windowBottom.
 	extraHeight > 0 ifTrue: [ wnd height: wnd height + extraHeight + 10 ].
-	morphList comeToFront
+	morphList comeToFront ]
 ]
 
 { #category : 'accessing' }

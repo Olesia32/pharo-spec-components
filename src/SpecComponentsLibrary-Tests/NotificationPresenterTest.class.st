@@ -86,8 +86,10 @@ NotificationPresenterTest >> testResolveColorFromType [
 
 { #category : 'tests' }
 NotificationPresenterTest >> testShow [
-	| initialCount finalCount |
-	initialCount := World submorphs size.
+
+	| initialMorphs finalMorphs addedMorphs |
+	initialMorphs := World submorphs.
+
 	presenter
 		title: 'Test';
 		message: 'Message';
@@ -97,7 +99,11 @@ NotificationPresenterTest >> testShow [
 		show.
 
 	(Delay forSeconds: 0.1) wait.
-	finalCount := World submorphs size.
 
-	self assert: finalCount > initialCount.
+	finalMorphs := World submorphs.
+	addedMorphs := finalMorphs difference: initialMorphs.
+
+	self assert: addedMorphs notEmpty.
+
+	addedMorphs do: [ :m | m delete ]
 ]

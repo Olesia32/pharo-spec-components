@@ -146,7 +146,7 @@ WizardPresenterTest >> testUpdateButtonStates [
 
 	wizard goToStep: 1.
 	self assert: back isEnabled not.
-	self assert: wizard nextButton label equals: 'Вперед'.
+	self assert: wizard nextButton label equals: 'Продовжити'.
 
 	wizard goToStep: 2.
 	self assert: back isEnabled.

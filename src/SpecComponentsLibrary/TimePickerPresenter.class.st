@@ -13,12 +13,14 @@ Internally, I use `TimePickerDialogPresenter` to render and manage the full-scre
 - _dialog_: a `TimePickerDialogPresenter` — modal dialog for selecting time  
 - _color_: a `Color` — primary accent color used for the clock UI  
 - _additionalColor_: a `Color` — secondary color used for highlighting buttons or active elements
+- _okButtonLabel:_, _cancelButtonLabel:_ `String`s — custom text labels for the OK and Cancel buttons displayed in the time picker dialog  
 
 ### Public API
 
 - `TimePickerPresenter>>#hour`, `TimePickerPresenter>>#hour:` — gets or sets the selected hour  
 - `TimePickerPresenter>>#minutes`, `TimePickerPresenter>>#minutes:` — gets or sets the selected minute  
 - `TimePickerPresenter>>#color:`, `TimePickerPresenter>>#additionColor:` — sets the primary and secondary accent colors  
+- `TimePickerPresenter>>#okButtonLabel:`, `TimePickerPresenter>>#cancelButtonLabel:` — set custom labels for the OK and Cancel buttons in the time picker dialog
 
 ### Events
 
@@ -47,7 +49,9 @@ Class {
 		'onTimeChanged',
 		'dialog',
 		'color',
-		'additionalColor'
+		'additionalColor',
+		'okButtonlabel',
+		'cancelButtonLabel'
 	],
 	#category : 'SpecComponentsLibrary-Time',
 	#package : 'SpecComponentsLibrary',
@@ -58,6 +62,12 @@ Class {
 TimePickerPresenter >> additionColor: aColor [
 "Sets the secondary UI color (used to highlight active states in the dialog, e.g., AM/PM buttons)."
 	additionalColor := aColor
+]
+
+{ #category : 'as yet unclassified' }
+TimePickerPresenter >> cancelButtonLabel: aLabel [
+
+	cancelButtonLabel := aLabel
 ]
 
 { #category : 'accessing' }
@@ -112,8 +122,36 @@ TimePickerPresenter >> minutes: aMinutes [
 	selectedMinute := aMinutes
 ]
 
+{ #category : 'as yet unclassified' }
+TimePickerPresenter >> okButtonLabel: aLabel [
+  okButtonlabel := aLabel 
+]
+
 { #category : 'showing' }
-TimePickerPresenter >> openDialog [ [ dialog := self instVarNamed: 'dialog'. dialog openModal ]
+TimePickerPresenter >> openDialog [
+	"Creates and opens a TimePickerDialogPresenter as a modal dialog.
+Passes the current hour/minute to the dialog, configures its color theme, and handles user confirmation via onOk.
+Updates the time field and triggers the onTimeChanged callback if defined."
+
+	| tmp2 |
+	dialog := TimePickerDialogPresenter new.
+	color ifNotNil: [ dialog mainColor: color ].
+	additionalColor ifNotNil: [ dialog additionColor: additionalColor ].
+	okButtonlabel ifNotNil: [ dialog okButtonLabel: okButtonlabel ].
+	cancelButtonLabel ifNotNil: [
+		dialog cancelButtonLabel: cancelButtonLabel ].
+	dialog
+		selectedHour: selectedHour;
+		selectedMinute: selectedMinute;
+		onOk: [ :arg1 |
+				selectedHour := arg1 at: #hour.
+				selectedMinute := arg1 at: #minute.
+				timeFieldPresenter text:
+						selectedHour printString , ':' , (selectedMinute < 10
+								 ifTrue: [ '0' , selectedMinute asString ]
+								 ifFalse: [ selectedMinute asString ]).
+				onTimeChanged ifNotNil: [ onTimeChanged value ] ].
+	tmp2 := dialog openModal
 ]
 
 { #category : 'events' }
