@@ -97,7 +97,7 @@ label
 
 ### Using `PresenterDecorator`
 
-If you want to apply styles to a standard Spec 2 component (such as `SpButtonPresenter`), you can wrap it using `PresenterDecorator`.
+If you want to apply styles to a standard Spec 2 component (such as `SpButtonPresenter`), you can wrap it using `PresenterDecorator`. 
 
 ```smalltalk
 styled := PresenterDecorator wrap: SpButtonPresenter.
@@ -120,6 +120,25 @@ styled
 ```
 
 > ⚠️ Only use this for basic Spec 2 presenters. Do not wrap components that already inherit from `BasePresenter` or belong to this library.
+
+#### `mainPresenter:` / `mainPresenter`
+
+When using a `PresenterDecorator`, the actual Spec 2 component being styled is held in the `mainPresenter` variable.
+
+* `mainPresenter:` — sets the core presenter to decorate (can be a class or instance)
+* `mainPresenter` — returns the currently wrapped presenter
+
+This allows full access to the underlying presenter's API while still applying styles through the decorator. Use this when you need to configure properties specific to the core component (e.g., labels, models, callbacks).
+
+##### Example
+
+```smalltalk
+dropList := PresenterDecorator wrap: SpDropListPresenter .
+dropList mainPresenter items: #( 'Low' 'Medium' 'High' ).
+dropList backgroundColor: '#yellow'.
+```
+
+In this example, the dropdown is customized through both `mainPresenter` and styling methods, ensuring visual integration without modifying global stylesheets.
 
 ---
 
@@ -162,12 +181,13 @@ The component supports placeholder text and dynamic styling through `BasePresent
 
 #### API
 
-* `text:` — set the current value
-* `placeholder:` — hint text displayed when empty
-* `addValidationRule: message:` — add a single validation rule (a block and its error message)
-* `addValidationRules:` — apply a set of predefined rules from a `ValidationRules` object
-* `isValid` — check if the current text passes all validations
-* `onValidationChangedDo:` — register a callback for validation status changes
+* `text:` / `text` — set or get the current value entered in the text field
+* `placeholder:` — set the placeholder (hint) text shown when the field is empty
+* `isValidationField:` / `isValidationField` — enable or check whether the field performs input validation
+* `isValid` — returns `true` if the current text satisfies all validation rules
+* `addValidationRule: message:` — add a single validation rule as a block and an associated error message
+* `addValidationRules:` — add multiple validation rules using a `ValidationRules` object
+* `onValidationChangedDo:` — set a callback to be triggered when the validation status changes
 
 >⚠️ The field will only perform validation if the isValidationEnabled property is set to true.
 
@@ -244,10 +264,14 @@ The component combines a text input field for search and a dropdown list of opti
 
 #### API
 
-- `items:` — set the list of values
-- `selectedItem` — returns the currently selected item
-- `selectIndex:` — programmatically select item by index
-- `whenSelectionChangedDo:` — triggered when the selection changes
+* `items:` — sets the list of available options
+* `allItems` — returns the full list of all items (before filtering)
+* `filteredItems` — returns the list of items currently matching the search query
+* `selectIndex:` — selects an item by its index (0-based)
+* `selectedIndex` — returns the index of the currently selected item
+* `selectedItem` — returns the currently selected item
+* `whenSelectionChangedDo:` — sets a callback to be triggered when the selection changes
+* `textInput` — returns the internal text input presenter used for filtering
 
 #### Example
 
@@ -270,10 +294,13 @@ Instead of returning a single item, this component allows the user to select man
 
 #### API
 
-- `items:` — set the list of values
-- `selectedItems` — returns the set of selected values
-- `selectedIndexes:` — programmatically select multiple items
-- `whenSelectionChangedDo:` — triggered when selection changes
+* `items:` — sets the list of available options
+* `allItems` — returns the full list of all items (before filtering)
+* `filteredItems` — returns the list of items currently matching the search query
+* `selectedItems` — returns the set of currently selected items
+* `selectedIndexes:` — sets the selected items by their indexes
+* `whenSelectionChangedDo:` — sets a callback triggered when the selection of any checkbox changes
+* `textInput` — returns the internal text input presenter used for filtering
 
 #### Example
 
@@ -299,18 +326,25 @@ You can control layout by specifying the number of columns, adding a frame, and 
 
 #### API
 
-- `items:` — set the list of options  
-- `selectedItems` — returns the list of selected values  
-- `selectedIndexes` — returns selected indexes  
-- `isCheckedAt:` — checks if an item is selected  
-- `clearSelection` — deselects all items  
-- `whenSelectionChangedDo:` — event fired when selection changes  
-- `showFrame:` — display a border around the group  
-- `showTitle:` — show a title label  
-- `columnCount:` — set the number of columns  
-- `title:` — set title text
-- `enableButtonAt:` — enable button at index  
-- `disableButtonAt:` — disable button at index 
+* `items:` — set the list of options  
+* `addItem:` — add a new checkbox to the group  
+* `removeItem:` — remove a checkbox from the group  
+* `itemAtIndex:` — return the checkbox at the given index  
+* `selectedItems` — return the values of all selected checkboxes  
+* `selectedIndexes` — return the indexes of all selected checkboxes  
+* `isCheckedAt:` — check whether the checkbox at the given index is selected  
+* `toggleSelectionAt:` — toggle the selection state of the checkbox at the given index  
+* `clearSelection` — deselect all checkboxes  
+* `whenSelectionChangedDo:` — register a callback triggered when any checkbox changes state  
+* `title` — return the current group title  
+* `title:` — set the group title  
+* `columnCount:` — set the number of columns to split items into (minimum 1)  
+* `display:` — set a block that converts item values into label text  
+* `enableButtonAt:` — enable the checkbox at the given index  
+* `disableButtonAt:` — disable the checkbox at the given index  
+* `enableScrolling:` — enable or disable scrollability for the group  
+* `showTitle:` — show or hide the group title  
+* `showFrame:` — show or hide the border around the group  
 
 #### Example
 
@@ -335,17 +369,24 @@ Only one item may be selected at a time. Selecting a new item deselects the prev
 
 #### API
 
-- `items:` — set the list of options  
-- `itemSelected` — returns the selected value  
-- `selectedIndex:` — programmatically select by index  
-- `clearSelection` — deselects the current selection  
-- `whenSelectionChangedDo:` — triggered when user selects a new option  
-- `showFrame:` — add a surrounding border  
-- `showTitle:` — show group title  
-- `columnCount:` — number of columns  
-- `title:` — set the title text
-- `enableButtonAt:` — enable button at index  
-- `disableButtonAt:` — disable button at index 
+* `items:` — set the list of options  
+* `addItem:` — add a new radio button to the group  
+* `removeItem:` — remove a radio button from the group  
+* `itemAtIndex:` — return the radio button at the given index  
+* `itemSelected` — return the value of the selected radio button  
+* `indexSelected` — return the index of the selected radio button  
+* `selectedIndex:` — programmatically select a button by index  
+* `clearSelection` — deselect the currently selected radio button  
+* `whenIndexChangedDo:` — register a callback triggered when the selected index changes  
+* `title` — return the current group title  
+* `title:` — set the group title  
+* `columnCount:` — set the number of columns to display items (minimum 1)  
+* `display:` — set a block for rendering item labels from values  
+* `enableButtonAt:` — enable the radio button at the given index  
+* `disableButtonAt:` — disable the radio button at the given index  
+* `enableScrolling:` — enable or disable scrolling for the group  
+* `showTitle:` — show or hide the title label  
+* `showFrame:` — show or hide a border around the group  
 
 #### Example
 
@@ -371,11 +412,13 @@ It consists of a read-only text field and a button with a clock icon. When click
 
 #### API
 
-- `hour` / `hour:` — get or set selected hour (0–23)  
-- `minutes` / `minutes:` — get or set selected minutes (0–59)  
-- `whenTimeChangedDo:` — callback when time changes (after dialog confirmation)  
-- `color:` — primary accent color for clock visuals  
-- `additionColor:` — secondary UI color
+* `hour` / `hour:` — get or set the selected hour (0–23)  
+* `minutes` / `minutes:` — get or set the selected minutes (0–59)  
+* `whenTimeChangedDo:` — set a callback triggered when the time is changed (after OK is pressed in the dialog)  
+* `color:` — set the primary accent color for the clock interface  
+* `additionColor:` — set the secondary color used to highlight active elements or selection modes  
+* `okButtonLabel:` — set the label text for the OK button in the dialog  
+* `cancelButtonLabel:` — set the label text for the Cancel button in the dialog  
 
 #### Dialog Behavior
 
@@ -418,13 +461,15 @@ It consists of:
 
 #### API
 
-- `items:` — set the full dataset  
-- `selectedItem` — get currently selected item from the table  
-- `whenSelectedItemChangedDo:` — listen for selection changes  
-- `filterField` — access the search input field   
-- `displayUsing:` — set a custom display block  
-- `hideSearchContainer` / `showSearchContainer` — toggle search UI visibility  
-- `table` — access the internal `SpTablePresenter`
+* `items:` — set the full dataset (each row should be a dictionary)  
+* `columns:` — define table columns as key → label pairs  
+* `displayUsing:` — set a custom formatting block for how cell values are rendered  
+* `selectedItem` — get the currently selected row from the table  
+* `filteredItems` — return the list of rows that match the current filter criteria  
+* `whenSelectedItemChangedDo:` — register a callback triggered when the selected item changes  
+* `showSearchContainer` / `hideSearchContainer` — show or hide the filtering UI (search field and column selector)  
+* `filterField` — access the text input presenter used for search  
+* `table` — access the internal `SpTablePresenter` for advanced configuration  
   
 > Column configuration is done by passing a dictionary of column name → accessor key.
 
@@ -625,14 +670,18 @@ Features
 
 #### API
 
-- `steps:` — set an ordered collection of steps (`{#title -> String. #content -> Presenter}`)
-- `goToNextStep`, `goToPreviousStep`, `goToStep:` — navigate steps
-- `stepPresenterAt:` — access the content presenter of a specific step
-- `whenStepChangedDo:` — callback after step is switched
-- `onFinishDo:` — callback when the final step is completed
-- `visibleStepCount:` — control how many step indicators are shown
-- `stepCircleRadius:`, `stepCircleTitleColor:`, `activeColor:` — style customization
-- `nextButton`, `backButton` — access navigation buttons for further customization
+* `steps:` — set an ordered collection of steps (each step must be a dictionary with keys `#title` and `#content`)
+* `goToNextStep` / `goToPreviousStep` / `goToStep:` — navigate to the next, previous, or specific step by index
+* `stepPresenterAt:` — access the content presenter of a specific step
+* `whenStepChangedDo:` — register a callback triggered when the active step changes
+* `onFinishDo:` — register a callback triggered when the wizard is completed
+* `visibleStepCount:` — set the maximum number of steps visible in the header at once
+* `stepCircleRadius:` — set the radius (in pixels) of the step indicator circles
+* `stepCircleTitleColor:` — set the color of the text labels inside step indicators
+* `activeColor:` — set the highlight color for the currently active step
+* `nextButtonLabel:` — set the label text for the Next button
+* `finishButtonLabel:` — set the label text for the Finish button
+* `nextButton` / `backButton` — access navigation buttons for custom configuration or styling
 
 #### Example
 
