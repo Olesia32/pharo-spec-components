@@ -46,6 +46,7 @@ The components are particularly well-suited for building:
 | `PaginatedTablePresenter`     | Data Display     | Table view with pagination controls              |
 | `NotificationPresenter`       | Feedback         | Overlay-style notifications with styling and timeout              |
 | `PresenterDecorator`          | Utility          | Wrapper that adds styling support to standard Spec presenters (e.g., buttons, labels, lists). |
+| `FormStyle`                   | Utility   | Declarative configuration object for form layout and appearance  |
 | `StyleManager`                | Utility          | Generates and installs STON-based styles from dictionaries        |
 
 ---
