@@ -16,6 +16,8 @@ Each step is defined by a dictionary containing at least a #title and a #content
 - _onStepExit_: a `BlockClosure` — optional callback triggered when a step is exited  
 - _onFinished_: a `BlockClosure` — optional callback triggered on wizard completion  
 - _visibleStepCount_: an `Integer` — optional limit on how many steps are shown in the header
+- _nextButtonLabel_: a `String` — custom label text for the Next button (e.g. ""Continue"")  
+- _finishLabel_: a `String` — custom label for the final step's button (e.g. ""Finish"")  
 
 ### Public API
 
@@ -23,14 +25,16 @@ Each step is defined by a dictionary containing at least a #title and a #content
 - `WizardPresenter>>#stepPresenterAt:` — returns the presenter of the step at the given index
 - `WizardPresenter>>#goToStep:` — moves to a specific step and updates layout and progress
 - `WizardPresenter>>#goToNextStep`, `WizardPresenter>>#goToPreviousStep` — navigates between steps
-- `WizardPresenter>>#onFinishDo:` — sets a callback to be executed when the wizard is completed
 - `WizardPresenter>>#activeColor:`, `WizardPresenter>>#stepCircleTitleColor:` — customize header appearance
 - `WizardPresenter>>#stepCircleRadius:` — sets the size of circles in the header
 - `WizardPresenter>>#visibleStepCount:` — limits the number of visible steps in the header
+- `WizardPresenter>>#nextButton`, `WizardPresenter>>#backButton` — provides access to the navigation buttons for custom configuration or styling  
+- `WizardPresenter>>#nextButtonLabel:`, `WizardPresenter>>#finishButtonLabel:` — allows setting custom labels for navigation buttons depending on step context  
 
 ### Events
 
 - `WizardPresenter>>#whenStepChangedDo:` — register callbacks for step transitions
+- `WizardPresenter>>#onFinishDo:` — sets a callback to be executed when the wizard is completed
 
 ### Usage
 
@@ -158,7 +162,9 @@ WizardPresenter >> nextButton [
 
 { #category : 'accessing' }
 WizardPresenter >> nextButtonLabel: aLabel [
-   nextButtonLabel := aLabel 
+
+	nextButtonLabel := aLabel.
+	nextButton ifNotNil: [ nextButton label: aLabel ]
 ]
 
 { #category : 'events' }
