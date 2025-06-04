@@ -460,6 +460,14 @@ time
     Transcript show: 'Time changed to: ', time hour printString, ':', time minutes printString; cr
   ].
 ```
+<p align="center">
+  <img src="examples/time_mode_am.png" alt="AM mode" width="200"/>
+  <img src="examples/time_mode_pm.png" alt="PM mode" width="200"/>
+  <img src="examples/time_mode_minutes.png" alt="Minute selection" width="200"/>
+  <br/>
+  <em>Time selection: AM/PM and minute picking in <code>TimePickerPresenter</code></em>
+</p>
+
 
 ## 4. Data Display
 
