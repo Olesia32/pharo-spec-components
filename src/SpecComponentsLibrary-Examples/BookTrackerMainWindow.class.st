@@ -82,7 +82,9 @@ BookTrackerMainWindow >> buildBooksPanel [
 	tmp7 add: (tmp9 add: tmp4) expand: false.
 	tmp5 := tmp7 yourself.
 	self reloadBooksInto: table.
-	tmp11 := BasePresenter new mainPresenter: (SpPresenter new layout: tmp5; yourself ).
+	tmp11 := PresenterDecorator wrap: (SpPresenter new
+			          layout: tmp5;
+			          yourself).
 	tmp11 backgroundColor: '#e7ebe7'.
 	^ tmp11 yourself
 ]
@@ -112,13 +114,16 @@ BookTrackerMainWindow >> buildProfilePanel [
 		add: tmp1 expand: false;
 		add: tmp2 expand: false.
 	tmp4 layout: tmp6 yourself.
-	^ (BasePresenter new mainPresenter: tmp4; backgroundColor: '#e7ebe7'; yourself)
+	tmp4 := PresenterDecorator wrap: tmp4.
+	^ tmp4
+		  backgroundColor: '#e7ebe7';
+		  yourself
 ]
 
 { #category : 'as yet unclassified' }
 BookTrackerMainWindow >> buildStatsPanel [
 
-	| books count avg first last days favoriteBook monthStats monthNames grid row |
+	| books count avg first last days favoriteBook monthStats monthNames grid row panel|
 	books := owner application repository getBooksForUser: username.
 	count := books size.
 	avg := count = 0
@@ -210,10 +215,12 @@ BookTrackerMainWindow >> buildStatsPanel [
 						add: (LabelPresenter new text: (monthStats at: month) asString)
 						atPoint: 2 @ row.
 					row := row + 1 ] ].
-
-	^ BasePresenter new mainPresenter: (SpPresenter new
-		  layout: grid;
-		  yourself); backgroundColor: '#e7ebe7'; yourself 
+   panel := PresenterDecorator wrap: (SpPresenter new
+				   layout: grid;
+				   yourself).
+	^panel
+		  backgroundColor: '#e7ebe7';
+		  yourself
 ]
 
 { #category : 'layout' }

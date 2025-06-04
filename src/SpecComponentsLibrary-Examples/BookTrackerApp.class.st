@@ -108,11 +108,12 @@ BookTrackerApp >> openLoginWindow [
 		             buttonWidth: 150;
 		             buttonHeight: 50.
 	form style: formStyle.
+    
+   form := PresenterDecorator wrap: form.
+   form backgroundColor: '#white'.
 
 	"5. Відображення у вікні"
-	window := (BasePresenter new
-		           mainPresenter: form;
-		           backgroundColor: '#white') open.
+	window := form open.
 	window title: 'Вхід'.
 	window window
 		removeExpandBox;
@@ -190,10 +191,11 @@ BookTrackerApp >> openRegisterWindow [
 		             buttonWidth: 150;
 		             buttonHeight: 50.
 	form style: formStyle.
+	
+	form := PresenterDecorator wrap: form.
+	form backgroundColor: '#white'.
 
-	window := (BasePresenter new
-		           mainPresenter: form;
-		           backgroundColor: '#white') open.
+	window := form open.
 	window title: 'Реєстрація'.
 	window window
 		removeExpandBox;

@@ -39,7 +39,7 @@ ExampleApp >> initialize [
 ExampleApp >> start [
 
 	| window p |
-	p := LibraryTable new.
+	p := EventRegistrationForm new.
 	p application: self.
 	window := p open.
 	window window
