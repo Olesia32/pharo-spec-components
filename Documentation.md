@@ -204,6 +204,12 @@ field
   ].
 ```
 
+<p align="center">
+  <img src="examples/validation_field.png" alt="TextInputPresenter email validation example" width="400"/>
+  <br/>
+  <em>Email validation using <code>TextInputPresenter</code></em>
+</p>
+
 ### ValidationRules
 
 `ValidationRules` is a utility class for defining reusable validation logic for text input fields. It allows bundling multiple rule blocks with error messages and applying them to any `TextInputPresenter` instance.
@@ -313,6 +319,11 @@ multi
   whenSelectionChangedDo: [ :selected |
     Transcript show: 'Selected OS: ', selected asString; cr ].
 ```
+<p align="center">
+  <img src="examples/multi_select_comboBox.png" alt="Multi-select combobox with filters" width="400"/>
+  <br/>
+  <em>Filterable multi-select combo box</em>
+</p>
 
 When the dropdown is closed, the text field shows a comma-separated list of selected items. When opened, it switches to filter mode.
 
@@ -360,6 +371,11 @@ group
   whenSelectionChangedDo: [ :indexes |
     Transcript show: 'Selected indexes: ', indexes printString; cr ].
 ```
+<p align="center">
+  <img src="examples/checkBox_group.png" alt="Checkbox group for contact methods" width="400"/>
+  <br/>
+  <em> Preferred contact methods using checkbox group</em>
+</p>
 
 ---
 
@@ -558,6 +574,11 @@ table
 }
   itemsPerPage: 2.
 ```
+<p align="center">
+  <img src="examples/paginated_table.png" alt="Paginated table inside tabbed notebook" width="400"/>
+  <br/>
+  <em>Reading Journal with tabbed pages and pagination</em>
+</p>
 
 The table shows pagination controls below the grid: current page, total pages, navigation arrows, and a text box for jumping directly to a page.
 
@@ -651,6 +672,12 @@ form
   height: 50;
   textField: #email label: 'Email' placeholder: '' rules: nil.
 ```
+<p align="center">
+  <img src="examples/form.png" alt="Event registration form interface" width="400"/>
+  <br/>
+  <em>Registration form with multiple input types</em>
+</p>
+
 
 ## 6. Process Control
 
@@ -687,23 +714,51 @@ Features
 #### Example
 
 ```smalltalk
-wizard := WizardPresenter new.
+wizard := WizardPresenter new
+nextButtonLabel: 'Next';
+finishButtonLabel: 'Finish';
+activeColor: '#8ca08b'.
+wizard backButton label: 'Back'.
 
-step1 := DynamicFormBuilder new.
-step1
-  header: 'User Info';
-  textField: #name label: 'Full Name' placeholder: '' rules: nil.
+form1 := DynamicFormBuilder new.
+form1
+  hideButtons;
+  textField: #name label: 'Name' placeholder: 'e.g. Alice' rules: nil.
 
-step2 := DynamicFormBuilder new.
-step2
-  header: 'Contact';
-  textField: #email label: 'Email' placeholder: 'example@domain.com' rules: nil.
+form2 := DynamicFormBuilder new.
+form2
+  hideButtons;
+  textField: #email label: 'Email' placeholder: 'example@mail.com' rules: nil.
+
+form3 := DynamicFormBuilder new.
+form3
+  hideButtons;
+  checkbox: #subscribe label: 'Subscribe to newsletter' text: ''.
+
+step1 := Dictionary new.
+step1 at: #title put: 'User'.
+step1 at: #content put: form1 layout.
+
+step2 := Dictionary new.
+step2 at: #title put: 'Email'.
+step2 at: #content put: form2 layout.
+
+step3 := Dictionary new.
+step3 at: #title put: 'Options'.
+step3 at: #content put: form3 layout.
 
 wizard
-  addStep: 'Step 1' title: 'User Info' presenter: step1;
-  addStep: 'Step 2' title: 'Contact Info' presenter: step2;
-  onFinish: [ Transcript show: 'Wizard finished'; cr ].
+  steps: { step1. step2. step3 };
+  onFinishDo: [
+    Transcript
+      show: 'Finish'; cr].
 ```
+<p align="center">
+  <img src="examples/wizard.png" alt="Three-step wizard form to add a book" width="400"/>
+  <br/>
+  <em>Multi-step wizard with genre selection</em>
+</p>
+
 
 ## 7. Notifications
 
@@ -744,5 +799,10 @@ notification
   duration: 3;
   show.
 ```
+<p align="center">
+  <img src="examples/notification.png" alt="Form submission notification example" width="400"/>
+  <br/>
+  <em>Notification with submitted data</em>
+</p>
 
 > The notification disappears automatically after the given duration. No user action is required.
