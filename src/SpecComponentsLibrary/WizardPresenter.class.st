@@ -163,7 +163,9 @@ WizardPresenter >> nextButton [
 
 { #category : 'accessing' }
 WizardPresenter >> nextButtonLabel: aLabel [
-   nextButtonLabel := aLabel 
+
+	nextButtonLabel := aLabel.
+	nextButton ifNotNil: [ nextButton label: aLabel ]
 ]
 
 { #category : 'events' }

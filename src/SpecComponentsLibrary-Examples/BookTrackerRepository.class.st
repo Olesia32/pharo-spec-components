@@ -73,10 +73,11 @@ BookTrackerRepository >> getUserByLogin: aLogin [
 BookTrackerRepository >> initialize [
 
 	| login accessor session |
+	super initialize.
 	login := Login new
 		         database: PostgreSQLPlatform new;
 		         username: 'postgres';
-		         password: '';
+		         password: '19724Kll';
 		         host: 'localhost';
 		         port: '5432';
 		         databaseName: 'BookTrackerDB'.

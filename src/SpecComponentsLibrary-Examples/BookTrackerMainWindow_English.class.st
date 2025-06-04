@@ -19,7 +19,7 @@ I organize the primary user interface into notebook pages for book management, u
 - Support logout and user-switching.
 "
 Class {
-	#name : 'BookTrackerMainWindow',
+	#name : 'BookTrackerMainWindow_English',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'username',
@@ -36,35 +36,35 @@ Class {
 }
 
 { #category : 'accessing' }
-BookTrackerMainWindow >> booksPage [
+BookTrackerMainWindow_English >> booksPage [
 
 	^ SpNotebookPage
-		  title: 'Мої книги'
+		  title: 'My books'
 		  icon: (self iconNamed: #book)
 		  provider: [ self buildBooksPanel ]
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> buildBooksPanel [
+BookTrackerMainWindow_English >> buildBooksPanel [
 
 	| tmp2 tmp3 tmp4 tmp5 tmp7 tmp9 tmp11 |
 	table := PaginatedTablePresenter new itemsPerPage: 8.
 	table columns: {
-			('Назва' -> #title).
-			('Автор' -> #author).
-			('Жанр' -> #genre).
-			('Рік' -> #year).
-			('Оцінка' -> #rating) }.
+		('Title' -> #title).
+		('Author' -> #author).
+		('Genre' -> #genre).
+		('Year' -> #year).
+		('Rating' -> #rating) }.
 	tmp2 := ButtonPresenter new
-		        label: 'Додати';
+		        label: 'Add';
 		        backgroundColor: '#8ca08b';
 		        height: 50.
 	tmp3 := ButtonPresenter new
-		        label: 'Деталі';
+		        label: 'Details';
 		        backgroundColor: '#8ca08b';
 		        height: 50.
 	tmp4 := ButtonPresenter new
-		        label: 'Видалити';
+		        label: 'Delete';
 		        backgroundColor: '#8ca08b';
 		        height: 50.
 	tmp2 onClick: [ self openAddBook ].
@@ -90,15 +90,15 @@ BookTrackerMainWindow >> buildBooksPanel [
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> buildProfilePanel [
+BookTrackerMainWindow_English >> buildProfilePanel [
 
 	| tmp1 tmp2 tmp4 tmp6 |
-	tmp1 := LabelPresenter new text: 'Вітаємо, ' , username.
+	tmp1 := LabelPresenter new text: 'Welcome, ' , username.
 	tmp1
 		fontSize: 14;
 		bold;
 		color: '#013220'.
-	tmp2 := ButtonPresenter new label: 'Вийти з акаунту'.
+	tmp2 := ButtonPresenter new label: 'Log out'.
 	tmp2
 		backgroundColor: '#8ca08b';
 		bold;
@@ -116,115 +116,118 @@ BookTrackerMainWindow >> buildProfilePanel [
 	tmp4 layout: tmp6 yourself.
 	tmp4 := PresenterDecorator wrap: tmp4.
 	^ tmp4
-		  backgroundColor: '#e7ebe7';
-		  yourself
+		backgroundColor: '#e7ebe7';
+		yourself
+
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> buildStatsPanel [
+BookTrackerMainWindow_English >> buildStatsPanel [
 
-	| books count avg first last days favoriteBook monthStats monthNames grid row panel|
+	| books count avg first last days favoriteBook monthStats monthNames grid row panel |
 	books := owner application repository getBooksForUser: username.
 	count := books size.
 	avg := count = 0
-		       ifTrue: [ 0 ]
-		       ifFalse: [
-		       (books collect: #rating) average asFloat roundTo: 0.1 ].
+		ifTrue: [ 0 ]
+		ifFalse: [
+			(books collect: #rating) average asFloat roundTo: 0.1 ].
 	first := books
-		         ifEmpty: [ nil ]
-		         ifNotEmpty: [ (books collect: #dateAdded) min ].
+		ifEmpty: [ nil ]
+		ifNotEmpty: [ (books collect: #dateAdded) min ].
 	last := books
-		        ifEmpty: [ nil ]
-		        ifNotEmpty: [ (books collect: #dateAdded) max ].
+		ifEmpty: [ nil ]
+		ifNotEmpty: [ (books collect: #dateAdded) max ].
 	days := (first notNil and: [ last notNil ])
-		        ifTrue: [ (last - first) days ]
-		        ifFalse: [ 0 ].
+		ifTrue: [ (last - first) days ]
+		ifFalse: [ 0 ].
 	favoriteBook := books
-		                ifEmpty: [ nil ]
-		                ifNotEmpty: [ books detectMax: #rating ].
+		ifEmpty: [ nil ]
+		ifNotEmpty: [ books detectMax: #rating ].
 
 	monthStats := Dictionary new.
-	monthNames := #( 'Січень' 'Лютий' 'Березень' 'Квітень' 'Травень'
-	                 'Червень' 'Липень' 'Серпень' 'Вересень' 'Жовтень'
-	                 'Листопад' 'Грудень' ).
+	monthNames := #( 'January' 'February' 'March' 'April' 'May'
+	                 'June' 'July' 'August' 'September' 'October'
+	                 'November' 'December' ).
 
 	books do: [ :book |
-			| monthName |
-			monthName := monthNames at: book dateAdded monthIndex.
-			monthStats at: monthName ifAbsentPut: [ 0 ].
-			monthStats at: monthName put: (monthStats at: monthName) + 1 ].
+		| monthName |
+		monthName := monthNames at: book dateAdded monthIndex.
+		monthStats at: monthName ifAbsentPut: [ 0 ].
+		monthStats at: monthName put: (monthStats at: monthName) + 1 ].
 
 	grid := SpGridLayout new
-		        columnSpacing: 20;
-		        beColumnNotHomogeneous;
-		        rowSpacing: 6.
+		columnSpacing: 20;
+		beColumnNotHomogeneous;
+		rowSpacing: 6.
 
 	row := 1.
 	grid
 		add: (LabelPresenter new
-				 text: 'Прочитано книг:';
+				 text: 'Books read:';
 				 bold)
 		atPoint: 1 @ row.
 	grid add: (LabelPresenter new text: count asString) atPoint: 2 @ row.
 	row := row + 1.
 
 	(first notNil and: [ last notNil ]) ifTrue: [
-			grid
-				add: (LabelPresenter new
-						 text: 'Період активності:';
-						 bold)
-				atPoint: 1 @ row.
-			grid
-				add: (LabelPresenter new text:
-						 first asDate asString , ' – ' , last asDate asString , ' ('
-						 , days asString , ' днів)')
-				atPoint: 2 @ row.
-			row := row + 1 ].
+		grid
+			add: (LabelPresenter new
+					 text: 'Activity period:';
+					 bold)
+			atPoint: 1 @ row.
+		grid
+			add: (LabelPresenter new text:
+					 first asDate asString , ' – ' , last asDate asString , ' (' ,
+					 days asString , ' days)')
+			atPoint: 2 @ row.
+		row := row + 1 ].
 
 	grid
 		add: (LabelPresenter new
-				 text: 'Середня оцінка:';
+				 text: 'Average rating:';
 				 bold)
 		atPoint: 1 @ row.
 	grid add: (LabelPresenter new text: avg asString) atPoint: 2 @ row.
 	row := row + 1.
 
 	favoriteBook ifNotNil: [
-			grid
-				add: (LabelPresenter new
-						 text: 'Улюблена книга:';
-						 bold)
-				atPoint: 1 @ row.
-			grid
-				add: (LabelPresenter new text:
-						 favoriteBook title , ' (' , favoriteBook rating asString , ')')
-				atPoint: 2 @ row.
-			row := row + 1 ].
+		grid
+			add: (LabelPresenter new
+					 text: 'Favorite book:';
+					 bold)
+			atPoint: 1 @ row.
+		grid
+			add: (LabelPresenter new text:
+					 favoriteBook title , ' (' , favoriteBook rating asString , ')')
+			atPoint: 2 @ row.
+		row := row + 1 ].
 
 	grid
 		add: (LabelPresenter new
-				 text: 'Динаміка по місяцях:';
+				 text: 'Monthly stats:';
 				 bold)
 		atPoint: 1 @ row.
 	row := row + 1.
 
 	monthNames do: [ :month |
-			(monthStats includesKey: month) ifTrue: [
-					grid add: (LabelPresenter new text: month) atPoint: 1 @ row.
-					grid
-						add: (LabelPresenter new text: (monthStats at: month) asString)
-						atPoint: 2 @ row.
-					row := row + 1 ] ].
-   panel := PresenterDecorator wrap: (SpPresenter new
-				   layout: grid;
-				   yourself).
-	^panel
-		  backgroundColor: '#e7ebe7';
-		  yourself
+		(monthStats includesKey: month) ifTrue: [
+			grid add: (LabelPresenter new text: month) atPoint: 1 @ row.
+			grid
+				add: (LabelPresenter new text: (monthStats at: month) asString)
+				atPoint: 2 @ row.
+			row := row + 1 ] ].
+
+	panel := PresenterDecorator wrap: (SpPresenter new
+		layout: grid;
+		yourself).
+	^ panel
+		backgroundColor: '#e7ebe7';
+		yourself
+
 ]
 
 { #category : 'layout' }
-BookTrackerMainWindow >> defaultLayout [
+BookTrackerMainWindow_English >> defaultLayout [
 
 	| tmp2 |
 	tmp2 := SpBoxLayout new.
@@ -233,26 +236,26 @@ BookTrackerMainWindow >> defaultLayout [
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> deleteBookFrom: aTable [ 
-	| selected confirmed book repository |
+BookTrackerMainWindow_English >> deleteBookFrom: aTable [
 
+	| selected confirmed book repository |
 	selected := aTable selectedItem.
 	selected ifNil: [ ^ self ].
 
-	confirmed := UIManager default confirm: 'Видалити книгу "', (selected at: #title), '"?'.	
+	confirmed := UIManager default confirm:
+             'Delete the book "' , (selected at: #title) , '"?'. 
+
 	confirmed ifFalse: [ ^ self ].
 
 	book := selected at: #model ifAbsent: [ nil ].
 	book ifNotNil: [
-		repository := owner application repository.
-		repository deleteBook: book.
-		self reloadBooksInto: aTable
-	].
-
+			repository := owner application repository.
+			repository deleteBook: book.
+			self reloadBooksInto: aTable ]
 ]
 
 { #category : 'initialization - deprecated' }
-BookTrackerMainWindow >> initializePresenter [
+BookTrackerMainWindow_English >> initializePresenter [
 
 	notebook := SpNotebookPresenter new.
 	notebook
@@ -262,15 +265,16 @@ BookTrackerMainWindow >> initializePresenter [
 ]
 
 { #category : 'initialization' }
-BookTrackerMainWindow >> initializeWindow: arg1 [
+BookTrackerMainWindow_English >> initializeWindow: arg1 [
 
 	arg1
-		title: 'Читацький щоденник';
+		title: 'Reading Journal';
 		initialExtent: 650 @ 400
+
 ]
 
 { #category : 'login' }
-BookTrackerMainWindow >> logout [
+BookTrackerMainWindow_English >> logout [
 
 	| tmp1 tmp3 |
 	owner application openLoginWindow.
@@ -279,82 +283,84 @@ BookTrackerMainWindow >> logout [
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> openAddBook [
+BookTrackerMainWindow_English >> openAddBook [
 
 	| wizard steps rules styles repository form1 genreGroup ratingInput reviewInput now book values window |
 	repository := owner application repository.
 	now := DateAndTime now.
 	rules := ValidationRules new addRulePair: ValidationRules nonEmpty.
 	styles := FormStyle new inputHeight: 40.
-	"=== КРОК 1 ==="
+
+	"=== STEP 1 ==="
 	form1 := DynamicFormBuilder new
 		         hideButtons;
 		         hideHeader;
 		         style: styles;
 		         height: 180;
 		         textField: #title
-		         label: 'Назва'
+		         label: 'Title'
 		         placeholder: ''
 		         rules: rules;
 		         textField: #author
-		         label: 'Автор'
+		         label: 'Author'
 		         placeholder: ''
 		         rules: rules;
 		         textField: #year
-		         label: 'Рік'
+		         label: 'Year'
 		         placeholder: ''
 		         rules: (ValidationRules new
 				          addRule: [ :txt |
 						          [ txt asInteger between: 1000 and: 2025 ]
 							          on: Error
 							          do: [ false ] ]
-				          message: 'Некоректний рік';
+				          message: 'Invalid year';
 				          yourself);
 		         yourself.
 
-	"=== КРОК 2 ==="
+	"=== STEP 2 ==="
 	genreGroup := RadioGroupPresenter new
-		              title: 'Жанр';
+		              title: 'Genre';
 		              showFrame: true;
 		              items:
-			              #( 'Історичний роман' 'Пригодницький роман'
-			                 'Психологічний роман' 'Драма' 'Фантастика'
-			                 'Сучасна проза' 'Поезія' 'Повість' 'Сатира'
-			                 'Фентезі' 'Антиутопія' 'Нонфікшн' );
+			              #( 'Historical Novel' 'Adventure Novel'
+			                 'Psychological Novel' 'Drama' 'Science Fiction'
+			                 'Contemporary Prose' 'Poetry' 'Novella' 'Satire'
+			                 'Fantasy' 'Dystopia' 'Nonfiction' );
 		              сolumnCount: 3.
 
-	"=== КРОК 3 ==="
-	reviewInput := self newText placeholder: 'Ваш відгук'.
+	"=== STEP 3 ==="
+	reviewInput := self newText placeholder: 'Your review'.
 
 	ratingInput := SpSliderPresenter new
-		               label: 'Оцінка';
+		               label: 'Rating';
 		               min: 1;
 		               max: 10.
 
-	"=== СПИСОК КРОКІВ ==="
+	"=== STEP LIST ==="
 	steps := {
 		         (Dictionary newFrom: {
-				          (#title -> 'Крок 1: Основне').
+				          (#title -> 'Step 1: Basic Info').
 				          (#content -> form1 layout) }).
 		         (Dictionary newFrom: {
-				          (#title -> 'Крок 2: Жанр').
+				          (#title -> 'Step 2: Genre').
 				          (#content -> genreGroup layout) }).
 		         (Dictionary newFrom: {
-				          (#title -> 'Крок 3: Враження').
+				          (#title -> 'Step 3: Impressions').
 				          (#content -> (SpBoxLayout newVertical
 					            spacing: 10;
 					            add: reviewInput;
 					            add: ratingInput expand: false;
 					            yourself)) }) }.
 
-
-
-	"=== СТВОРЕННЯ ВІЗАРДА ==="
+	"=== CREATE WIZARD ==="
 	wizard := WizardPresenter new.
 	wizard steps: steps.
 	wizard activeColor: '#8ca08b'.
 	wizard stepCircleRadius: 18.
 	wizard stepCircleTitleColor: Color black.
+	wizard nextButtonLabel: 'Next'.
+	wizard finishButtonLabel: 'Finish'.
+	wizard backButton label: 'Back'.
 
 	wizard onFinishDo: [
 			form1 validateFields
@@ -376,13 +382,13 @@ BookTrackerMainWindow >> openAddBook [
 						wizard window ifNotNil: [ :w | w delete ] ]
 				ifFalse: [
 						NotificationPresenter new
-							message: 'Будь ласка, заповніть усі поля';
+							message: 'Please fill in all fields';
 							type: '#error';
 							position: '#topLeft';
 							window: wizard window;
 							show ] ].
 	window := wizard open.
-	window title: 'Додавання книги'.
+	window title: 'Add a Book'.
 	window window
 		removeExpandBox;
 		removeCollapseBox;
@@ -390,7 +396,7 @@ BookTrackerMainWindow >> openAddBook [
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> openBookDetails: aRow [
+BookTrackerMainWindow_English >> openBookDetails: aRow [
 
 	| book layout textPresenter grid window |
 	aRow ifNil: [ ^ self ].
@@ -402,84 +408,84 @@ BookTrackerMainWindow >> openBookDetails: aRow [
 		text: book impression.
 
 	grid := SpGridLayout new
-		        columnSpacing: 15;
-		        rowSpacing: 6;
-		        add: (LabelPresenter new
-				         text: 'Назва:';
-				         bold)
-		        atPoint: 1 @ 1;
-		        add: (LabelPresenter new text: book title) atPoint: 2 @ 1;
-		        add: (LabelPresenter new
-				         text: 'Автор:';
-				         bold)
-		        atPoint: 1 @ 2;
-		        add: (LabelPresenter new text: book author) atPoint: 2 @ 2;
-		        add: (LabelPresenter new
-				         text: 'Жанр:';
-				         bold)
-		        atPoint: 1 @ 3;
-		        add: (LabelPresenter new text: book genre) atPoint: 2 @ 3;
-		        add: (LabelPresenter new
-				         text: 'Рік:';
-				         bold)
-		        atPoint: 1 @ 4;
-		        add: (LabelPresenter new text: book year asString)
-		        atPoint: 2 @ 4;
-		        add: (LabelPresenter new
-				         text: 'Оцінка:';
-				         bold)
-		        atPoint: 1 @ 5;
-		        add: (LabelPresenter new text: book rating asString)
-		        atPoint: 2 @ 5;
-		        add: (LabelPresenter new
-				         text: 'Дата додавання:';
-				         bold)
-		        atPoint: 1 @ 6;
-		        add:
-		        (LabelPresenter new text: book dateAdded asDate asString)
-		        atPoint: 2 @ 6;
-		        yourself;
-		        add: (LabelPresenter new
-				         text: 'Враження:';
-				         bold)
-		        atPoint: 1 @ 7.
+		columnSpacing: 15;
+		rowSpacing: 6;
+		add: (LabelPresenter new
+		         text: 'Title:';
+		         bold)
+		atPoint: 1 @ 1;
+		add: (LabelPresenter new text: book title) atPoint: 2 @ 1;
+		add: (LabelPresenter new
+		         text: 'Author:';
+		         bold)
+		atPoint: 1 @ 2;
+		add: (LabelPresenter new text: book author) atPoint: 2 @ 2;
+		add: (LabelPresenter new
+		         text: 'Genre:';
+		         bold)
+		atPoint: 1 @ 3;
+		add: (LabelPresenter new text: book genre) atPoint: 2 @ 3;
+		add: (LabelPresenter new
+		         text: 'Year:';
+		         bold)
+		atPoint: 1 @ 4;
+		add: (LabelPresenter new text: book year asString)
+		atPoint: 2 @ 4;
+		add: (LabelPresenter new
+		         text: 'Rating:';
+		         bold)
+		atPoint: 1 @ 5;
+		add: (LabelPresenter new text: book rating asString)
+		atPoint: 2 @ 5;
+		add: (LabelPresenter new
+		         text: 'Date added:';
+		         bold)
+		atPoint: 1 @ 6;
+		add: (LabelPresenter new text: book dateAdded asDate asString)
+		atPoint: 2 @ 6;
+		yourself;
+		add: (LabelPresenter new
+		         text: 'Impression:';
+		         bold)
+		atPoint: 1 @ 7.
 
 	layout := SpBoxLayout newVertical
-		          spacing: 5;
-		          add: grid;
-		          add: textPresenter;
-		          yourself.
+		spacing: 5;
+		add: grid;
+		add: textPresenter;
+		yourself.
 
 	window := (BasePresenter new
-		           mainPresenter: (SpPresenter new
-				            layout: layout;
-				            yourself);
-		           backgroundColor: '#e7ebe7') open.
+		mainPresenter: (SpPresenter new
+			layout: layout;
+			yourself);
+		backgroundColor: '#e7ebe7') open.
 
-	window title: 'Деталі книги'.
+	window title: 'Book Details'.
 	window window
 		removeExpandBox;
 		removeCollapseBox;
-		removeMenuBox
+		removeMenuBox.
+
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> openEditBookFrom: arg1 [
+BookTrackerMainWindow_English >> openEditBookFrom: arg1 [
 
 	
 ]
 
 { #category : 'accessing' }
-BookTrackerMainWindow >> profilePage [
+BookTrackerMainWindow_English >> profilePage [
 
 	^ SpNotebookPage
-		  title: 'Профіль'
+		  title: 'Profile'
 		  icon: (self iconNamed: #user)
 		  provider: [ self buildProfilePanel ]
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerMainWindow >> reloadBooksInto: aTable [ 
+BookTrackerMainWindow_English >> reloadBooksInto: aTable [ 
 	| books tableItems |
 	books := owner application repository getBooksForUser: username.
 
@@ -499,16 +505,17 @@ BookTrackerMainWindow >> reloadBooksInto: aTable [
 ]
 
 { #category : 'accessing' }
-BookTrackerMainWindow >> statsPage [
+BookTrackerMainWindow_English >> statsPage [
 
 	^ SpNotebookPage
-		  title: 'Статистика'
-		  icon: (self iconNamed: #chart)
-		  provider: [ self buildStatsPanel ]
+		title: 'Statistics'
+		icon: (self iconNamed: #chart)
+		provider: [ self buildStatsPanel ]
+
 ]
 
 { #category : 'accessing' }
-BookTrackerMainWindow >> username: arg1 [
+BookTrackerMainWindow_English >> username: arg1 [
 
 	username := arg1
 ]

@@ -29,7 +29,7 @@ BookTrackerApp new start
 
 "
 Class {
-	#name : 'BookTrackerApp',
+	#name : 'BookTrackerApp_English',
 	#superclass : 'SpApplication',
 	#instVars : [
 		'repository'
@@ -40,41 +40,38 @@ Class {
 }
 
 { #category : 'initialization' }
-BookTrackerApp >> initialize [ 
+BookTrackerApp_English >> initialize [ 
   super initialize.
   repository := BookTrackerRepository new.
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerApp >> openLoginWindow [
+BookTrackerApp_English >> openLoginWindow [
 
 	| form window validation formStyle |
 	repository := BookTrackerRepository new.
 
-	"1. Валідація для обох полів"
 	validation := ValidationRules new
 		              addRulePair: ValidationRules nonEmpty;
 		              yourself.
 
-	"2. Побудова форми"
 	form := DynamicFormBuilder new
 		        textField: #username
-		        label: 'Логін'
+		        label: 'Login'
 		        placeholder: ''
 		        rules: validation.
 
 	form
 		textField: #password
-		label: 'Пароль'
+		label: 'Password'
 		placeholder: ''
 		rules: validation.
 
 	(form presenterAt: 'password') mainPresenter bePassword.
 
-	form submitButtonLabel: 'Увійти'.
+	form submitButtonLabel: 'Sign in'.
 	form height: 150.
 
-	"3. Дії при натисканні кнопок"
 	form onSubmit: [ :values |
 			| user login pass |
 			login := values at: #username.
@@ -86,8 +83,8 @@ BookTrackerApp >> openLoginWindow [
 						type: '#error';
 						window: form window;
 						position: '#topLeft';
-						message: 'Неправильний логін або пароль';
-						title: 'Помилка входу';
+						message: 'Invalid login or password';
+						title: 'Login Error';
 						show.
 					^ self ].
 
@@ -95,12 +92,11 @@ BookTrackerApp >> openLoginWindow [
 					o delete.
 					self openMainWindow: login ] ].
 	form
-		backButtonLabel: 'Зареєструватися';
+		backButtonLabel: 'Register';
 		onBack: [
 				form owner ifNotNil: [ :o | o delete ].
 				self openRegisterWindow ].
 
-	"4. Стилізація"
 	formStyle := FormStyle new
 		             inputHeight: 40;
 		             buttonBackground: '#8ca08b';
@@ -108,13 +104,12 @@ BookTrackerApp >> openLoginWindow [
 		             buttonWidth: 150;
 		             buttonHeight: 50.
 	form style: formStyle.
-    
-   form := PresenterDecorator wrap: form.
-   form backgroundColor: '#white'.
 
-	"5. Відображення у вікні"
+	form := PresenterDecorator wrap: form.
+	form backgroundColor: '#white'.
+
 	window := form open.
-	window title: 'Вхід'.
+	window title: 'Sign in'.
 	window window
 		removeExpandBox;
 		removeCollapseBox;
@@ -122,10 +117,10 @@ BookTrackerApp >> openLoginWindow [
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerApp >> openMainWindow: aUsername [
+BookTrackerApp_English >> openMainWindow: aUsername [
 
 	| window |
-	window := self newPresenter: BookTrackerMainWindow.
+	window := self newPresenter: BookTrackerMainWindow_English.
 	window username: aUsername.
 	window := window open.
 	window window
@@ -135,7 +130,7 @@ BookTrackerApp >> openMainWindow: aUsername [
 ]
 
 { #category : 'as yet unclassified' }
-BookTrackerApp >> openRegisterWindow [
+BookTrackerApp_English >> openRegisterWindow [
 
 	| form window validation formStyle |
 	validation := ValidationRules new
@@ -145,17 +140,17 @@ BookTrackerApp >> openRegisterWindow [
 
 	form := DynamicFormBuilder new
 		        textField: #username
-		        label: 'Логін'
+		        label: 'Login'
 		        placeholder: ''
 		        rules: validation.
 
 	form
 		textField: #password
-		label: 'Пароль'
+		label: 'Password'
 		placeholder: ''
 		rules: validation.
 
-	form submitButtonLabel: 'Зареєструватись'.
+	form submitButtonLabel: 'Register'.
 	form height: 150.
 	(form presenterAt: 'password') mainPresenter bePassword.
 	form onSubmit: [ :values |
@@ -174,12 +169,12 @@ BookTrackerApp >> openRegisterWindow [
 							type: '#warning';
 							window: form window;
 							position: '#topLeft';
-							message: 'Користувач вже існує';
-							title: 'Помилка';
+							message: 'User already exists';
+							title: 'Error';
 							show ] ].
 
 	form
-		backButtonLabel: 'Увійти';
+		backButtonLabel: 'Sign in';
 		onBack: [
 				form owner ifNotNil: [ :o | o delete ].
 				self openLoginWindow ].
@@ -191,12 +186,12 @@ BookTrackerApp >> openRegisterWindow [
 		             buttonWidth: 150;
 		             buttonHeight: 50.
 	form style: formStyle.
-	
+
 	form := PresenterDecorator wrap: form.
 	form backgroundColor: '#white'.
 
 	window := form open.
-	window title: 'Реєстрація'.
+window title: 'Registration'.
 	window window
 		removeExpandBox;
 		removeCollapseBox;
@@ -204,11 +199,11 @@ BookTrackerApp >> openRegisterWindow [
 ]
 
 { #category : 'accessing' }
-BookTrackerApp >> repository [
+BookTrackerApp_English >> repository [
  ^repository 
 ]
 
 { #category : 'running' }
-BookTrackerApp >> start [  
+BookTrackerApp_English >> start [  
    self openLoginWindow 
 ]

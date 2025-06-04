@@ -18,7 +18,7 @@ EventRegistrationForm new open
 
 "
 Class {
-	#name : 'EventRegistrationForm',
+	#name : 'EventRegistrationForm_English',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'form'
@@ -29,13 +29,13 @@ Class {
 }
 
 { #category : 'layout' }
-EventRegistrationForm >> defaultLayout [
+EventRegistrationForm_English >> defaultLayout [
 
 	^ SpBoxLayout new add: form; yourself 
 ]
 
 { #category : 'initialization' }
-EventRegistrationForm >> initializePresenters [
+EventRegistrationForm_English >> initializePresenters [
 
 	| formStyles |
 	form := DynamicFormBuilder new.
@@ -51,46 +51,48 @@ EventRegistrationForm >> initializePresenters [
 		buttonWidth: 200;
 		buttonHeight: 50.
 	form
-		header: 'Форма реєстрації на подію';
+		header: 'Event Registration Form';
+		submitButtonLabel: 'Submit';
+		backButtonLabel: 'Cancel';
 		style: formStyles;
 		textField: #name
-		label: 'Ім’я'
-		placeholder: 'Ваше повне ім’я'
+		label: 'Name'
+		placeholder: 'Your full name'
 		rules: (ValidationRules new
 				 addRulePair: ValidationRules nonEmpty;
 				 addRule: [ :txt | (txt anySatisfy: [ :ch | ch isDigit ]) not ]
-				 message: 'Ім’я не повинно містити цифр');
+				 message: 'Name must not contain digits');
 		radioGroup: #gender
-		label: 'Стать'
-		items: #( 'Чоловік' 'Жінка' 'Інше' )
+		label: 'Gender'
+		items: #( 'Male' 'Female' 'Other' )
 		columns: 3
 		frame: false;
 		comboBox: #country
-		label: 'Країна'
-		items: #( 'Україна' 'Польща' 'Німеччина' 'США' 'Інше' );
+		label: 'Country'
+		items: #( 'Ukraine' 'Poland' 'Germany' 'USA' 'Other' );
 		multiComboBox: #interests
-		label: 'Інтереси'
-		items: #( 'Linux' 'Windows' 'macOS' );
+		label: 'Interests'
+		items: #( 'Programming' 'Design' 'Music' 'Gaming' 'Traveling' );
 		checkboxGroup: #languages
-		label: 'Мови'
-		items: #( 'Англійська' 'Українська' 'Німецька' 'Французька' )
+		label: 'Languages'
+		items: #( 'English' 'Ukrainian' 'German' 'French' )
 		columns: 2
 		frame: false;
 		checkbox: #notify
-		label: 'Сповіщення'
-		text: 'Отримувати сповіщення про подію';
-		timePicker: #time label: 'Час участі';
+		label: 'Notifications'
+		text: 'Receive updates about the event';
+		timePicker: #time label: 'Participation Time';
 		onSubmit: [ :vals | self show: vals ]
 ]
 
 { #category : 'initialization' }
-EventRegistrationForm >> initializeWindow: arg1 [
+EventRegistrationForm_English >> initializeWindow: arg1 [
 
-	arg1 title: 'Реєстрація'
+	arg1 title: 'Registration'
 ]
 
 { #category : 'layout' }
-EventRegistrationForm >> show: values [
+EventRegistrationForm_English >> show: values [
 
 	| name gender country interests languages time notify summaryText |
 	name := values at: #name ifAbsent: [ '?' ].
@@ -102,36 +104,38 @@ EventRegistrationForm >> show: values [
 		             joinUsing: ', '.
 	time := values at: #time ifAbsent: [ Dictionary new ].
 	notify := (values at: #notify ifAbsent: [ false ])
-		          ifTrue: [ 'так' ]
-		          ifFalse: [ 'ні' ].
+		          ifTrue: [ 'yes' ]
+		          ifFalse: [ 'no' ].
 
-	summaryText := Text streamContents: [ :s |
-			               s
-				               nextPutAll: 'Ім’я: ' , name;
-				               cr;
-				               nextPutAll: 'Стать: ' , gender;
-				               cr;
-				               nextPutAll: 'Країна: ' , country;
-				               cr;
-				               nextPutAll: 'Інтереси: ' , interests;
-				               cr;
-				               nextPutAll: 'Мови: ' , languages;
-				               cr;
-				               nextPutAll:
-					               'Час участі: '
-					               , (time at: #hour ifAbsent: [ '?' ]) asString
-					               , ':'
-					               , (time at: #minutes ifAbsent: [ '?' ]) asString;
-				               cr;
-				               nextPutAll: 'Сповіщення: ' , notify ].
-	NotificationPresenter new
-		type: '#success';
-		window: self window;
-		height: 220;
-		message: summaryText;
-		textColor: Color black;
-		title: 'Отримані дані';
-		duration: 5;
-		position: 'bottomLeft';
-		show
+summaryText := Text streamContents: [ :s |
+	s
+		nextPutAll: 'Name: ', name;
+		cr;
+		nextPutAll: 'Gender: ', gender;
+		cr;
+		nextPutAll: 'Country: ', country;
+		cr;
+		nextPutAll: 'Interests: ', interests;
+		cr;
+		nextPutAll: 'Languages: ', languages;
+		cr;
+		nextPutAll: 'Participation Time: ',
+			(time at: #hour ifAbsent: [ '?' ]) asString,
+			':',
+			(time at: #minutes ifAbsent: [ '?' ]) asString;
+		cr;
+		nextPutAll: 'Notifications: ', notify
+].
+
+NotificationPresenter new
+	type: '#success';
+	window: self window;
+	height: 220;
+	message: summaryText;
+	textColor: Color black;
+	title: 'Submitted Data';
+	duration: 5;
+	position: 'bottomLeft';
+	show.
+
 ]

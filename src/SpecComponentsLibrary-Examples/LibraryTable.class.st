@@ -46,21 +46,21 @@ LibraryTable >> initializePresenters [
 				('Рік' -> #year).
 				('Наявність' -> #available) };
 		itemsPerPage: 15.
-	table table isEditable.
 	self loadData
 ]
 
 { #category : 'initialization' }
 LibraryTable >> initializeWindow: arg1 [
 
-	arg1 title: 'Бібліотечний каталог'
+	arg1 title: 'Library catalog'
 ]
 
 { #category : 'as yet unclassified' }
 LibraryTable >> loadData [
 
 	| path csvContents headers rows |
-	path := FileLocator downloads / 'ukrainian_books_catalog_unique.csv'.
+	path := FileLocator downloads
+	        / 'ukrainian_books_catalog_unique.csv'.
 	csvContents := path readStream contents asString lines.
 	csvContents isEmpty ifTrue: [ ^ self ].
 
