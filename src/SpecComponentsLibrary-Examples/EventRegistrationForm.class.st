@@ -70,7 +70,7 @@ EventRegistrationForm >> initializePresenters [
 		items: #( 'Україна' 'Польща' 'Німеччина' 'США' 'Інше' );
 		multiComboBox: #interests
 		label: 'Інтереси'
-		items: #( 'Програмування' 'Дизайн' 'Математика' 'Історія' );
+		items: #( 'Linux' 'Windows' 'macOS' );
 		checkboxGroup: #languages
 		label: 'Мови'
 		items: #( 'Англійська' 'Українська' 'Німецька' 'Французька' )
@@ -80,7 +80,7 @@ EventRegistrationForm >> initializePresenters [
 		label: 'Сповіщення'
 		text: 'Отримувати сповіщення про подію';
 		timePicker: #time label: 'Час участі';
-		onSubmit: [ :vals | self show: vals]
+		onSubmit: [ :vals | self show: vals ]
 ]
 
 { #category : 'initialization' }
