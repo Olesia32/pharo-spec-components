@@ -36,16 +36,31 @@ To use a paginated table, create an instance as with `SearchableTablePresenter`,
 ```smalltalk
 | table |
 table := PaginatedTablePresenter new.
-table itemsPerPage: 10.
-table columns: {
-  'Title' -> #title.
-  'Author' -> #author.
-  'Genre' -> #genre }.
-table items: {
-  Dictionary newFromPairs: { #title -> '1984'. #author -> 'George Orwell'. #genre -> 'Dystopian' }.
-  Dictionary newFromPairs: { #title -> 'To Kill a Mockingbird'. #author -> 'Harper Lee'. #genre -> 'Novel' }.
-  Dictionary newFromPairs: { #title -> 'Brave New World'. #author -> 'Aldous Huxley'. #genre -> 'Science Fiction' } }.
-table open.
+table
+  columns: {
+    'Name' -> #name.
+    'Email' -> #email.
+    'Role' -> #role.
+  };
+  items: {
+    (Dictionary new
+        at: #name put: 'Alice';
+        at: #email put: 'alice@example.com';
+        at: #role put: 'Admin';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Bob';
+        at: #email put: 'bob@example.com';
+        at: #role put: 'User';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Charlie';
+        at: #email put: 'charlie@example.com';
+        at: #role put: 'Moderator';
+        yourself)};
+itemsPerPage: 2.
 
 "
 Class {

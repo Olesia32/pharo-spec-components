@@ -35,12 +35,14 @@ When validation is enabled, I show an error message below the field and adjust t
 ### Usage
 
 ```smalltalk
-input := TextInputPresenter new.
-input placeholder: 'Enter email'.
-input isValidationField: true.
-input addValidationRule: [ :text | text includes: '@' ] message: 'Email must include @'.
-input onValidationChangedDo: [ :isOk | Transcript show: 'Valid? ', isOk printString; cr ].
-input open.
+field := TextInputPresenter new.
+field
+  backgroundColor: '#F2F2F2';
+  isValidationField: true;
+  addValidationRule: [ :txt | txt includes: $@ ] message: 'Invalid email';
+  onValidationChangedDo: [ :isValid |
+    isValid ifTrue: [ Transcript show: 'Valid input' ]
+  ].
 
 "
 Class {

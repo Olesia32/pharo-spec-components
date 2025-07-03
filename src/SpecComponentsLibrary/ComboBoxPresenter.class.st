@@ -27,7 +27,7 @@ To use a `ComboBoxPresenter`, create an instance, set the list of items, and ope
 | combo |
 combo := ComboBoxPresenter new.
 combo items: #( 'Apple' 'Banana' 'Orange' 'Pear' ).
-combo openInWindow.
+combo open.
 
 "
 Class {

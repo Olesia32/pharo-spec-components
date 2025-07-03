@@ -50,9 +50,12 @@ To create a form programmatically:
 ```smalltalk
 | form |
 form := DynamicFormBuilder new.
-form textField: #name label: 'Your Name' placeholder: 'Enter full name' rules: { ValidationRules nonEmpty }.
-form checkbox: #terms label: 'Terms' text: 'I agree to the terms'.
-form onSubmit: [ Transcript show: form collectValues printString ].
+form
+  header: 'User Registration';
+  textField: #name label: 'Name' placeholder: 'Enter full name' rules: nil;
+  comboBox: #role label: 'Role' items: #('Admin' 'User' 'Guest');
+  onSubmit: [ :values | Transcript show: values; cr ].
+form open.
 form open.
 
 

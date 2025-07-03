@@ -42,13 +42,44 @@ To use a `WizardPresenter`, define a sequence of steps with titles and custom pr
 
 ```smalltalk
 | wizard |
-wizard := WizardPresenter new.
-wizard steps: {
-  Dictionary newFromPairs: { #title -> 'Step 1'. #content -> (LabelPresenter new text: 'Welcome') }.
-  Dictionary newFromPairs: { #title -> 'Step 2'. #content -> (LabelPresenter new text: 'Details') }.
-  Dictionary newFromPairs: { #title -> 'Step 3'. #content -> (LabelPresenter new text: 'Confirmation') } }.
-wizard onFinishDo: [ UIManager default inform: 'Wizard completed!' ].
-wizard open.
+wizard := WizardPresenter new
+nextButtonLabel: 'Next';
+finishButtonLabel: 'Finish';
+activeColor: '#8ca08b'.
+wizard backButton label: 'Back'.
+
+form1 := DynamicFormBuilder new.
+form1
+  hideButtons;
+  textField: #name label: 'Name' placeholder: 'e.g. Alice' rules: nil.
+
+form2 := DynamicFormBuilder new.
+form2
+  hideButtons;
+  textField: #email label: 'Email' placeholder: 'example@mail.com' rules: nil.
+
+form3 := DynamicFormBuilder new.
+form3
+  hideButtons;
+  checkbox: #subscribe label: 'Subscribe to newsletter' text: ''.
+
+step1 := Dictionary new.
+step1 at: #title put: 'User'.
+step1 at: #content put: form1 layout.
+
+step2 := Dictionary new.
+step2 at: #title put: 'Email'.
+step2 at: #content put: form2 layout.
+
+step3 := Dictionary new.
+step3 at: #title put: 'Options'.
+step3 at: #content put: form3 layout.
+
+wizard
+  steps: { step1. step2. step3 };
+  onFinishDo: [
+    Transcript
+      show: 'Finish'; cr].
 
 
 "

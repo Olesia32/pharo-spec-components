@@ -35,16 +35,33 @@ The ability to hide the search block is designed for subclasses like `PaginatedT
 To use a searchable table, specify the columns and items. Filtering will be applied automatically based on user input:
 
 ```smalltalk
-| table |
+|table|
 table := SearchableTablePresenter new.
-table columns: {
-  'Title' -> #title.
-  'Author' -> #author.
-  'Genre' -> #genre }.
-table items: {
-  Dictionary newFromPairs: { #title -> '1984'. #author -> 'George Orwell'. #genre -> 'Dystopian' }.
-  Dictionary newFromPairs: { #title -> 'To Kill a Mockingbird'. #author -> 'Harper Lee'. #genre -> 'Novel' } }.
-table open.
+table
+  columns: {
+    'Name' -> #name.
+    'Email' -> #email.
+    'Role' -> #role.
+  };
+  items: {
+    (Dictionary new
+        at: #name put: 'Alice';
+        at: #email put: 'alice@example.com';
+        at: #role put: 'Admin';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Bob';
+        at: #email put: 'bob@example.com';
+        at: #role put: 'User';
+        yourself).
+        
+    (Dictionary new
+        at: #name put: 'Charlie';
+        at: #email put: 'charlie@example.com';
+        at: #role put: 'Moderator';
+        yourself)
+}
 
 
 "

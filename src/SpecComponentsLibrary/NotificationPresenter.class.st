@@ -32,16 +32,16 @@ I am not a Spec presenter, but can be used inside Spec-based applications for tr
 To show a simple info notification in the bottom-right of the active window:
 
 ```smalltalk
-| n |
-n := NotificationPresenter new
-title: 'Saved';
-message: 'Your data has been successfully saved.';
-type: '#success';
-duration: 4;
-width: 200;
-position: '#center';
-window: World activeWindow;
-show.
+| notification |
+notification := NotificationPresenter new.
+notification
+  title: 'Saved';
+  message: 'Changes have been successfully saved.';
+  type: #success;
+  position: #topRight;
+  window: activeWindow;
+  duration: 3;
+  show.
 
 "
 Class {

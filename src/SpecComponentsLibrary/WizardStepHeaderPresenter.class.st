@@ -1,48 +1,38 @@
 "
-I am a visual presenter used to render the step headers in a multi-step wizard.  
-I show circular indicators with step numbers (or titles), and visually highlight the currently active step.  
-I am used by `WizardPresenter` to render the horizontal progress bar above the step content.  
+Class: WizardStepHeaderPresenter
+                                                                                                    
+I am a visual presenter used to render the step headers in a multi-step wizard.
+I show circular indicators with step numbers (or titles), and visually highlight the currently active step.
+I am used by WizardPresenter to render the horizontal progress bar above the step content.
 The display is based on Roassal and dynamically adapts to the number of steps and current selection.
 
-### Instance Variables
-
-- _roassalPresenter_: a `Roassal2Presenter` — responsible for visual drawing on the canvas  
-- _radius_: an `Integer` — radius of each step circle  
-- _stepSpacing_: an `Integer` — horizontal distance between steps  
-- _activeIndex_: an `Integer` — the currently selected (highlighted) step  
-- _stepTitles_: an `OrderedCollection` — list of step titles to display under the circles  
-- _activeColor_: a `Color` — fill color of the active step and progress lines  
-- _defaultColor_: a `Color` — fill color of inactive steps  
-- _borderColor_: a `Color` — border color of inactive steps  
-- _titleFontSize_: an `Integer` — font size of the text below each step  
-- _titleColor_: a `Color` — text color of step titles  
-- _labelFontSize_: an `Integer` — font size of the number inside the step circle 
-
-### Public API
-
-- `WizardStepHeaderPresenter>>#stepTitles:` — sets the list of step titles  
-- `WizardStepHeaderPresenter>>#activeIndex:` — sets the currently selected step and re-renders  
-- `WizardStepHeaderPresenter>>#activeColor:` — sets the color for the active step and completed segments  
-- `WizardStepHeaderPresenter>>#radius:` — sets the step circle size and recomputes spacing  
-- `WizardStepHeaderPresenter>>#visibleStepCount:` — limits the number of steps shown at once  
-- `WizardStepHeaderPresenter>>#titleFontSize:`, `>>#titleColor:` — style customization for step labels  
-- `WizardStepHeaderPresenter>>#labelFontSize:` — sets the font size for step numbers inside circles 
-- `WizardStepHeaderPresenter>>#canvas` — returns the underlying Roassal canvas
-
-### Usage
-
-This presenter is not used on its own. It is integrated automatically by `WizardPresenter`, which sets the step titles and updates the active index:
-
-```smalltalk
-wizard := WizardPresenter new.
-wizard steps: {
-  Dictionary newFromPairs: { #title -> 'Start'. #content -> MyStep1 new }.
-  Dictionary newFromPairs: { #title -> 'Details'. #content -> MyStep2 new } }.
-wizard stepCircleRadius: 18.
-wizard stepCircleTitleColor: Color gray.
-wizard open.
+Instance Variables
+•	roassalPresenter: a Roassal2Presenter — responsible for visual drawing on the canvas
+•	radius: an Integer — radius of each step circle
+•	stepSpacing: an Integer — horizontal distance between steps
+•	activeIndex: an Integer — the currently selected (highlighted) step
+•	stepTitles: an OrderedCollection — list of step titles to display under the circles
+•	activeColor: a Color — fill color of the active step and progress lines
+•	defaultColor: a Color — fill color of inactive steps
+•	borderColor: a Color — border color of inactive steps
+•	titleFontSize: an Integer — font size of the text below each step
+•	titleColor: a Color — text color of step titles
+•	labelFontSize: an Integer — font size of the number inside the step circle
 
 
+Public API
+•	WizardStepHeaderPresenter>>#stepTitles: — sets the list of step titles
+•	WizardStepHeaderPresenter>>#activeIndex: — sets the currently selected step and re-renders
+•	WizardStepHeaderPresenter>>#activeColor: — sets the color for the active step and completed segments
+•	WizardStepHeaderPresenter>>#radius: — sets the step circle size and recomputes spacing
+•	WizardStepHeaderPresenter>>#visibleStepCount: — limits the number of steps shown at once
+•	WizardStepHeaderPresenter>>#titleFontSize:, >>#titleColor: — style customization for step labels
+•	WizardStepHeaderPresenter>>#labelFontSize: — sets the font size for step numbers inside circles
+•	WizardStepHeaderPresenter>>#canvas — returns the underlying Roassal canvas
+
+
+Usage
+This presenter is not used on its own. It is integrated automatically by WizardPresenter, which sets the step titles and updates the active index
 "
 Class {
 	#name : 'WizardStepHeaderPresenter',
