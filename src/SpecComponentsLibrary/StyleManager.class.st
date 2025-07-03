@@ -10,19 +10,6 @@ I am primarily used by `BasePresenter` and its subclasses to dynamically apply u
 - `StyleManager class>>#installGeneratedStyleFrom:in:` — creates a new style from the given dictionary and installs it into the style sheet of the specified application. Returns the generated style name.
 - `StyleManager>>#stonFromProperties:` — converts a dictionary of style attributes into a STON-style Spec block with categorized sections (e.g., Font, Draw, Container).
 
-### Usage
-
-```smalltalk
-| props styleName |
-props := Dictionary newFromPairs: {
-  #fontSize -> 14.
-  #bold -> true.
-  #color -> Color black.
-  #backgroundColor -> Color veryLightGray.
-  #width -> 200 }.
-
-styleName := StyleManager installGeneratedStyleFrom: props in: self application.
-presenter mainPresenter addStyle: styleName.
 
 
 "

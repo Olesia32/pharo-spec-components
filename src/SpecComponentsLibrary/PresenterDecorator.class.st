@@ -16,7 +16,7 @@ I accept either a presenter instance or a class (from which I create an instance
 ""Wrap a class""
 styledButton := PresenterDecorator wrap: SpButtonPresenter.
 styledButton
-  backgroundColor: Color green;
+  backgroundColor: '#green';
   fontSize: 14.
 styledButton mainPresenter label: 'OK'.
 
@@ -26,7 +26,7 @@ label label: 'Name:'.
 
 styledLabel := PresenterDecorator wrap: label.
 styledLabel
-  color: Color gray;
+  color: '#gray';
   italic.
 
 "

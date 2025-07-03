@@ -186,12 +186,14 @@ WizardStepHeaderPresenter >> labelFontSize: aNumber [
 
 { #category : 'accessing' }
 WizardStepHeaderPresenter >> radius: aNumber [
-"Sets the radius for step circles, adjusts spacing, centers the view, and re-renders the header."
+	"Sets the radius for step circles, adjusts spacing, centers the view, and re-renders the header."
+
 	| totalWidth stepCount |
 	radius := aNumber.
 	stepSpacing := radius * 2 + 100.
 	stepCount := visibleStepCount min: stepTitles size.
 	totalWidth := stepCount - 1 * stepSpacing.
+	roassalPresenter canvas camera translateTo: 0@0.
 	roassalPresenter canvas camera translateBy:
 		(totalWidth / 2 @ (radius - 10)) negated.
 	self render

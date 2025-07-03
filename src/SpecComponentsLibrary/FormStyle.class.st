@@ -33,8 +33,8 @@ style
   labelFontSize: 12;
   inputFontSize: 14;
   headerFontSize: 16;
-  inputBackground: Color white;
-  buttonBackground: Color green.
+  inputBackground: '#white';
+  buttonBackground: '#green'.
 
 form := DynamicFormBuilder new.
 form style: style.
