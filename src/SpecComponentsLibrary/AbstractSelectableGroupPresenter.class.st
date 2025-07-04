@@ -81,6 +81,7 @@ AbstractSelectableGroupPresenter >> addItem: anObject [
 { #category : 'building' }
 AbstractSelectableGroupPresenter >> buildButton [
 	"Abstract method. Subclasses must implement this to create the appropriate button type."
+	self subclassResponsibility
 
 	
 ]
@@ -105,13 +106,6 @@ If only one column is requested, a single vertical layout is returned."
 			start to: end do: [ :i | vLayout add: (buttons at: i) ].
 			hLayout add: vLayout ].
 	^ hLayout
-]
-
-{ #category : 'initialization' }
-AbstractSelectableGroupPresenter >> connectPresenters [
-	"Empty by default. Subclasses should use this to attach event handlers to buttons."
-
-	
 ]
 
 { #category : 'accessing' }

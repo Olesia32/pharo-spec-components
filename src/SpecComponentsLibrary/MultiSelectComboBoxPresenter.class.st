@@ -178,12 +178,3 @@ Each checkbox is tied to a selection change handler that updates the internal st
 			morphList := listPresenter adapter widget.
 			self openMorphList ]
 ]
-
-{ #category : 'events' }
-MultiSelectComboBoxPresenter >> whenSelectionChangedDo: aBlock [
-"Registers an event handler that will be triggered when the selection changes."
-	announcer
-		when: ComboBoxItemSelected
-		do: [ :evt | aBlock value: evt item ]
-		for: self
-]

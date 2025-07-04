@@ -74,11 +74,6 @@ BasePresenter >> color: aColor [
 	self setGeneratedStyleProperty: #color value: aColor
 ]
 
-{ #category : 'events' }
-BasePresenter >> connectPresenters [
-    "Стандартне місце для визначення взаємодії між демонстраторами"
-]
-
 { #category : 'layout' }
 BasePresenter >> defaultLayout [
 	"Стандартний макет. За замовчуванням пустий контейнер"
@@ -87,6 +82,11 @@ BasePresenter >> defaultLayout [
 	^ SpBoxLayout newTopToBottom
 		  add: mainPresenter;
 		  yourself
+]
+
+{ #category : 'reflective operations' }
+BasePresenter >> doesNotUnderstand: aMessage [
+^ aMessage sendTo: mainPresenter 
 ]
 
 { #category : 'style' }

@@ -38,12 +38,6 @@ Class {
 	#tag : 'Dropdown'
 }
 
-{ #category : 'initialization' }
-ComboBoxPresenter >> connectPresenters [
-"Connects the text input to the filtering logic. The list is updated every time the user types."
-	textInput mainPresenter whenTextChangedDo: [ self filterList ]
-]
-
 { #category : 'private' }
 ComboBoxPresenter >> createMorphList [
 "Creates and returns a PluggableListMorph connected to the filteredItems and selectedIndex.

@@ -79,8 +79,9 @@ AbstractDropdownPresenter >> closeMorphList [
 
 { #category : 'initialization' }
 AbstractDropdownPresenter >> connectPresenters [
-"Abstract method. Subclasses must connect interaction logic between presenters (e.g., hook text changes to filtering)."
-	self subclassResponsibility
+	"Connects the text input to the filtering logic. The list is updated every time the user types."
+
+	textInput mainPresenter whenTextChangedDo: [ self filterList ]
 ]
 
 { #category : 'private' }
