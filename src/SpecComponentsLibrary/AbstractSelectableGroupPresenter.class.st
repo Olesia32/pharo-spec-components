@@ -1,46 +1,3 @@
-"
-I am an abstract presenter for building button groups such as checkboxes or radio buttons.  
-I provide reusable logic for displaying items in one or multiple columns with optional title, frame, and scrollable layout.  
-Each item is rendered as a button (created via `#buildButton`) and can be customized via display and layout settings.
-
-### Instance Variables
-
-- _title_: a `LabelPresenter` — optional title displayed above or inside a frame
-- _items_: an `OrderedCollection` — the collection of values represented by buttons
-- _buttons_: a `Collection` — the list of rendered buttons
-- _display_: a `BlockClosure` — defines how to convert items into button labels
-- _columnCount_: an `Integer` — number of columns for arranging the buttons
-- _isScrollable_: a `Boolean` — whether the group should be scrollable
-- _showFrame_: a `Boolean` — whether to wrap the group in a frame
-- _showTitle_: a `Boolean` — whether to show the title label above the group
-
-### Public API
-
-- `AbstractSelectableGroupPresenter>>#items:` — sets or updates the item collection and regenerates the group
-- `AbstractSelectableGroupPresenter>>#addItem:` — adds a new item to the group
-- `AbstractSelectableGroupPresenter>>#removeItem:` — removes an item and updates layout
-- `AbstractSelectableGroupPresenter>>#itemAtIndex:` — retrieves an item by index
-- `AbstractSelectableGroupPresenter>>#title`, `>>#title:` — gets or sets the group’s title text
-- `AbstractSelectableGroupPresenter>>#сolumnCount:` — sets the number of layout columns (minimum 1)
-- `AbstractSelectableGroupPresenter>>#display:` — sets a block to customize how items are displayed
-- `AbstractSelectableGroupPresenter>>#enableButtonAt:`, `AbstractSelectableGroupPresenter>>#disableButtonAt:` — enables or disables a button by index
-- `AbstractSelectableGroupPresenter>>#enableScrolling:` — toggles scrollability
-- `AbstractSelectableGroupPresenter>>#showFrame:`, `>>#showTitle:` — controls visibility of the frame and title
-
-### Usage
-
-This class is abstract and meant to be subclassed by components like `CheckboxGroupPresenter` or `RadioGroupPresenter`.  
-The subclass is responsible for implementing _buildButton_ to define the type of button used (e.g., checkbox or radiobutton),  
-and _handleItemClickAt:_ for handling user interactions.
-
-Example subclass responsibilities:
-- _buildButton_ → returns a specific presenter like `CheckboxPresenter`
-- _connectPresenters_ → sets up change handlers
-- _handleItemClickAt:_ → responds to selection
-
-Layout, labeling, and updates are handled by the superclass.
-
-"
 Class {
 	#name : 'AbstractSelectableGroupPresenter',
 	#superclass : 'SpPresenter',
@@ -106,6 +63,11 @@ If only one column is requested, a single vertical layout is returned."
 			start to: end do: [ :i | vLayout add: (buttons at: i) ].
 			hLayout add: vLayout ].
 	^ hLayout
+]
+
+{ #category : 'accessing' }
+AbstractSelectableGroupPresenter >> columnCount [ 
+  ^columnCount 
 ]
 
 { #category : 'accessing' }
@@ -212,6 +174,11 @@ AbstractSelectableGroupPresenter >> itemAtIndex: anIndex [
 ]
 
 { #category : 'accessing' }
+AbstractSelectableGroupPresenter >> items [ 
+^items 
+]
+
+{ #category : 'accessing' }
 AbstractSelectableGroupPresenter >> items: aCollection [
 "Sets a new item collection.
 If the size is the same as the previous one, only labels are updated; otherwise buttons are rebuilt."
@@ -236,11 +203,22 @@ AbstractSelectableGroupPresenter >> removeItem: anObject [
 	self updateCurrentLayout
 ]
 
+{ #category : 'private - display' }
+AbstractSelectableGroupPresenter >> showFrame [
+
+	^ showFrame
+]
+
 { #category : 'accessing' }
 AbstractSelectableGroupPresenter >> showFrame: aBoolean [
 "Enables or disables the frame layout around the group and refreshes layout."
 	showFrame := aBoolean.
 	self updateCurrentLayout
+]
+
+{ #category : 'accessing' }
+AbstractSelectableGroupPresenter >> showTitle [
+  ^ showTitle
 ]
 
 { #category : 'accessing' }

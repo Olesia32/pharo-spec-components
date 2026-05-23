@@ -1,45 +1,3 @@
-"
-I am a presenter for displaying a group of radio buttons that allow selecting exactly one item from a collection.  
-The layout can be structured in columns and optionally include a title and frame.  
-I provide an event mechanism to notify clients when the selection changes.
-
-### Hierarchy
-
-`SpAbstractPresenter`  
-  `SpPresenter` 
-    `AbstractSelectableGroupPresenter` 
-      `RadioGroupPresenter` (this is me)
-
-### Instance Variables
-
-- _index_: an `Integer` — index of the currently selected item (starting from 1)
-- _whenIndexChangedDo_: a `BlockClosure` — optional callback triggered when the selected index changes
-- _isEvenEvent_: a `Boolean` — internal toggle used to control event firing consistency
-
-### Public API
-
-- `RadioGroupPresenter>>#indexSelected` — returns the index of the currently selected button
-- `RadioGroupPresenter>>#itemSelected` — returns the selected item from the item collection
-
-### Events
-
-- `RadioGroupPresenter>>#whenIndexChangedDo:` — sets a callback to be triggered when selection changes
-
-### Usage
-
-To use a `RadioGroupPresenter`, provide a list of items and optionally configure layout properties:
-
-```smalltalk
-| group |
-group := RadioGroupPresenter new.
-group items: #( 'Low' 'Medium' 'High' ).
-group сolumnCount: 1.
-group showTitle: true.
-group title: 'Select priority'.
-group whenIndexChangedDo: [ :i | Transcript show: 'Selected index: ', i printString; cr ].
-group open.
-
-"
 Class {
 	#name : 'RadioGroupPresenter',
 	#superclass : 'AbstractSelectableGroupPresenter',
@@ -104,6 +62,11 @@ RadioGroupPresenter >> initialize [
 RadioGroupPresenter >> itemSelected [
 "Returns the currently selected item from the items collection based on the stored index."
 	^ items at: index ifAbsent: [ nil ]
+]
+
+{ #category : 'as yet unclassified' }
+RadioGroupPresenter >> itemSelected: anIndex [
+   index := anIndex 
 ]
 
 { #category : 'updating' }

@@ -1,46 +1,3 @@
-"
-I am a presenter that displays a group of checkboxes arranged in a configurable layout.  
-I support multiple selection, scrollable layout, column-based arrangement, and optional visual decorations such as a frame and title.  
-Each checkbox represents an item from the list. Users can select or deselect multiple items, and selection changes are reported via an event.
-
-### Hierarchy
-
-`SpAbstractPresenter`  
-  `SpPresenter` 
-    `AbstractSelectableGroupPresenter`  
-      `CheckboxGroupPresenter` (this is me)
-
-### Instance Variables
-
-- _selectedIndexes_: a `Set` — stores the indexes of selected checkboxes
-- _whenSelectionChangedDo_: a `BlockClosure` — optional callback executed when the selection changes
-
-### Public API
-
-- `CheckboxGroupPresenter>>#selectedIndexes` — returns the list of selected indexes in sorted order
-- `CheckboxGroupPresenter>>#selectedItems` — returns the corresponding items for selected indexes
-- `CheckboxGroupPresenter>>#clearSelection` — deselects all checkboxes
-- `CheckboxGroupPresenter>>#isCheckedAt:` — returns whether the checkbox at the given index is selected
-
-### Events
-
-- `CheckboxGroupPresenter>>#whenSelectionChangedDo:` — sets a callback block for selection change
-
-### Usage
-
-To use this component, provide it with a list of items and optionally configure its layout:
-
-```smalltalk
-| group |
-group := CheckboxGroupPresenter new.
-group items: #( 'Red' 'Green' 'Blue' 'Yellow' ).
-group сolumnCount: 2.
-group showFrame: true.
-group whenSelectionChangedDo: [ :selected | Transcript show: selected printString; cr ].
-group open.
-
-
-"
 Class {
 	#name : 'CheckboxGroupPresenter',
 	#superclass : 'AbstractSelectableGroupPresenter',
@@ -90,6 +47,23 @@ CheckboxGroupPresenter >> isCheckedAt: anIndex [
 CheckboxGroupPresenter >> selectedIndexes [
 "Returns a sorted collection of the indexes corresponding to selected checkboxes."
 	^ selectedIndexes asSortedCollection
+]
+
+{ #category : 'accessing' }
+CheckboxGroupPresenter >> selectedIndexes: aCollection [
+    "Sets the selected checkboxes by index collection.
+     Clears current selection and applies the new one."
+    
+    selectedIndexes := aCollection asSet.
+    
+    buttons withIndexDo: [ :btn :i |
+        btn mainPresenter whenChangedDo: []. 
+        btn mainPresenter state: (selectedIndexes includes: i) ].
+    
+    self connectPresenters.
+    
+    whenSelectionChangedDo ifNotNil: [
+        whenSelectionChangedDo value: self selectedIndexes ]
 ]
 
 { #category : 'accessing' }

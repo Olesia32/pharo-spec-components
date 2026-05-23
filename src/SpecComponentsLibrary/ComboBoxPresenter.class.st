@@ -1,35 +1,3 @@
-"
-I am a dropdown component with filterable text input. I display a list of selectable items and update the text field based on selection. The dropdown opens as a floating morph above other UI components.
-
-### Hierarchy
-
-`SpAbstractPresenter`  
-`SpPresenter`  
-`AbstractDropdownPresenter`  
-`ComboBoxPresenter` (this is me)
-
-### Instance Variables
-
-- _selectedIndex_: an `Integer` — the index of the currently selected item in the original item list
-
-### Public API
-
-- `ComboBoxPresenter>>#items:` — sets the full list of items and updates the filtered list
-- `ComboBoxPresenter>>#selectedIndex` — gets the index of the currently selected item
-- `ComboBoxPresenter>>#selectedItem` — returns the currently selected item from the original list
-- `ComboBoxPresenter>>#selectIndex:` — selects the item by index and updates the input field accordingly
-
-### Usage
-
-To use a `ComboBoxPresenter`, create an instance, set the list of items, and open it in a window:
-
-```smalltalk
-| combo |
-combo := ComboBoxPresenter new.
-combo items: #( 'Apple' 'Banana' 'Orange' 'Pear' ).
-combo open.
-
-"
 Class {
 	#name : 'ComboBoxPresenter',
 	#superclass : 'AbstractDropdownPresenter',
@@ -81,6 +49,12 @@ ComboBoxPresenter >> initialize [
 ComboBoxPresenter >> initializePresenters [
 
 	super initializePresenters
+]
+
+{ #category : 'accessing' }
+ComboBoxPresenter >> items [
+
+	^ list
 ]
 
 { #category : 'accessing' }
