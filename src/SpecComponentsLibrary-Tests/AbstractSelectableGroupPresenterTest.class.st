@@ -100,7 +100,7 @@ AbstractSelectableGroupPresenterTest >> testMultipleColumnsBuildsNestedLayouts [
 
 	| layout |
 	presenter items: #( 'A' 'B' 'C' 'D' ).
-	presenter сolumnCount: 2.
+	presenter columnCount: 2.
 	layout := presenter buildColumnLayout: 2.
 	self assert: (layout isKindOf: SpBoxLayout).
 	self assert: layout direction class equals: SpHorizontalLayoutDirection .
@@ -138,16 +138,15 @@ AbstractSelectableGroupPresenterTest >> testSingleColumnBuildsVerticalLayout [
 
 	| layout |
 	presenter items: #( 'A' 'B' 'C' ).
-	presenter сolumnCount: 1.
+	presenter columnCount: 1.
 	layout := presenter generateLayout.
 	self assert: (layout isKindOf: SpBoxLayout).
 	self assert: layout direction class equals: SpVerticalLayoutDirection.
-
 ]
 
 { #category : 'tests' }
 AbstractSelectableGroupPresenterTest >> testСolumnCount [
 
-	presenter сolumnCount: 0.
+	presenter columnCount: 0.
 	self assert: (presenter instVarNamed: 'columnCount') equals: 1
 ]

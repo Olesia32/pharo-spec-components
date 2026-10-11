@@ -70,6 +70,14 @@ AbstractSelectableGroupPresenter >> columnCount [
   ^columnCount 
 ]
 
+{ #category : 'api' }
+AbstractSelectableGroupPresenter >> columnCount: aNumber [
+"Sets the number of columns and refreshes layout.
+Ensures that column count is at least 1."
+	columnCount := aNumber max: 1.
+	self updateCurrentLayout
+]
+
 { #category : 'accessing' }
 AbstractSelectableGroupPresenter >> disableButtonAt: anIndex [
 "Disables the button at the given index, if it exists."
@@ -261,12 +269,4 @@ AbstractSelectableGroupPresenter >> updateLabels [
 "Updates button labels using the current display block."
 	buttons withIndexDo: [ :btn :ind |
 		btn mainPresenter label: (display value: (items at: ind)) ]
-]
-
-{ #category : 'api' }
-AbstractSelectableGroupPresenter >> сolumnCount: aNumber [
-"Sets the number of columns and refreshes layout.
-Ensures that column count is at least 1."
-	columnCount := aNumber max: 1.
-	self updateCurrentLayout
 ]

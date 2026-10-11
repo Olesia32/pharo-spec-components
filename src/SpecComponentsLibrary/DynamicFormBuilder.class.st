@@ -1,65 +1,3 @@
-"
-I am a high-level presenter for building dynamic forms in Spec.  
-I support automatic construction of labeled input fields using a wide variety of built-in presenters including:
-`TextInputPresenter`, `CheckboxPresenter`, `CheckboxGroupPresenter`, `RadioGroupPresenter`, `SpDatePresenter`, `TimePickerPresenter`, `SpDropListPresenter`, `ComboBoxPresenter`, and `MultiSelectComboBoxPresenter`.
-
-I also support:
-- Form-wide styling via `FormStyle`
-- Submit/Back buttons (which can be shown or hidden)
-- Optional header with custom styling
-- Collection of all field values as a dictionary
-- Input validation and button-driven event callbacks
-
-### Instance Variables
- 
-- _fieldLabels_: a `Dictionary` — maps field keys to label texts  
-- _fieldPresenters_: an `OrderedCollection` — contains key–presenter pairs  
-- _formData_: a `Dictionary` — stores collected values from the form  
-- _customTopPresenter_: a `SpPresenter` — optional presenter displayed above the form  
-- _submitButton_, _backButton_: `ButtonPresenter`s — buttons shown at the bottom for submission and navigation  
-- _headerLabel_: a `LabelPresenter` — optional header text displayed at the top  
-- _onSubmitAction_, _onBackAction_: `BlockClosure`s — callbacks for button events  
-- _formStyle_: a `FormStyle` — optional object controlling visual appearance of fields  
-- _isHideHeader_, _isHideButtons_: `Boolean`s — control visibility of header and buttons  
-- _height_: `Integer — optional size constraint for the form area
-
-### Public API
-
-- `DynamicFormBuilder>>#textField:label:placeholder:rules:` — adds a text input with validation
-- `DynamicFormBuilder>>#checkbox:label:text:` — adds a single checkbox
-- `DynamicFormBuilder>>#checkboxGroup:label:items:columns:frame:` — adds a checkbox group with layout options
-- `DynamicFormBuilder>>#radioGroup:label:items:columns:frame:` — adds a radio button group
-- `DynamicFormBuilder>>#dropList:label:items:` — adds a drop-down list
-- `DynamicFormBuilder>>#comboBox:label:items:` — adds a filterable combobox
-- `DynamicFormBuilder>>#multiComboBox:label:items:` — adds a multi-selection combobox
-- `DynamicFormBuilder>>#datePicker:label:` — adds a date picker
-- `DynamicFormBuilder>>#timePicker:label:` — adds a time picker
-- `DynamicFormBuilder>>#style:` — applies a `FormStyle` to all components
-- `DynamicFormBuilder>>#collectValues` — collects and returns a dictionary of all current field values
-- `DynamicFormBuilder>>#validateFields` — validates fields and returns `true` or `false`
-- `DynamicFormBuilder>>#onSubmit:` / `DynamicFormBuilder>>#onBack:` — sets callbacks for submit and back buttons
-- `DynamicFormBuilder>>#showHeader`, `DynamicFormBuilder>>#hideHeader`, `DynamicFormBuilder>>#showButtons`, `DynamicFormBuilder>>#hideButtons` — toggles UI elements
-- `DynamicFormBuilder>>#header:` — sets the form title
-- `DynamicFormBuilder>>#submitButtonLabel:` / `DynamicFormBuilder>>#backButtonLabel:` — sets button text
-- `DynamicFormBuilder>>#topPresenter:` — sets a custom presenter above the form
-
-### Usage
-
-To create a form programmatically:
-
-```smalltalk
-| form |
-form := DynamicFormBuilder new.
-form
-  header: 'User Registration';
-  textField: #name label: 'Name' placeholder: 'Enter full name' rules: nil;
-  comboBox: #role label: 'Role' items: #('Admin' 'User' 'Guest');
-  onSubmit: [ :values | Transcript show: values; cr ].
-form open.
-form open.
-
-
-"
 Class {
 	#name : 'DynamicFormBuilder',
 	#superclass : 'SpPresenter',
@@ -195,7 +133,7 @@ Optional frame and label are applied."
 	presenter := CheckboxGroupPresenter new.
 	presenter
 		items: itemsList;
-		сolumnCount: columnCount;
+		columnCount: columnCount;
 		showTitle: false;
 		showFrame: aBoolean.
 	fieldPresenters add: aKey -> presenter.
@@ -412,7 +350,7 @@ DynamicFormBuilder >> radioGroup: aKey label: aLabel items: itemsList columns: c
 	presenter := RadioGroupPresenter new.
 	presenter
 		items: itemsList;
-		сolumnCount: columnCount;
+		columnCount: columnCount;
 		showTitle: false.
 	aBoolean ifTrue: [ presenter showFrame: true ].
 	fieldPresenters add: aKey -> presenter.
